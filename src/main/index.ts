@@ -1,5 +1,7 @@
 import { app, BrowserWindow, Menu, ipcMain, nativeTheme } from "electron";
 import { join } from "node:path";
+import { createBackendServices } from "./backend/createBackendServices";
+import { registerBackendIpc } from "./backend/registerBackendIpc";
 
 const isDev = Boolean(process.env.ELECTRON_RENDERER_URL);
 const appIconPath = isDev
@@ -35,6 +37,8 @@ function createWindow(): void {
 
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null);
+  const backendServices = createBackendServices(app, app.getAppPath());
+  registerBackendIpc(backendServices);
   ipcMain.handle("app:get-version", () => app.getVersion());
   createWindow();
 

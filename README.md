@@ -6,9 +6,9 @@ BickSpec is the language. BickSpec Studio is the desktop application and IDE.
 
 ## Current Scope
 
-This repository contains the final polished desktop UI layer before backend compiler integration. Project loading, compile/run actions, Java generation, artifact output, report preview/export, and settings persistence use local placeholder services so the product can be reviewed and demonstrated without coupling the renderer to backend implementation details.
+This repository contains the polished desktop UI layer and the first backend foundation for linking to the external BickSpec language/compiler repository. Project loading, compile/run actions, Java generation, artifact output, report preview/export, and settings persistence still use local placeholder flows in the renderer while backend integration is built incrementally.
 
-The compiler remains a separate project. Future integration should connect through the existing service contracts and Electron preload/main boundaries.
+The compiler remains a separate project. BickSpec Studio must reference `bickspec-lang`; it must not duplicate compiler source or vendor the compiler implementation into this repository.
 
 ## Approved Brand Direction
 
@@ -40,20 +40,61 @@ The app includes a polished app shell, approved brand assets, light/dark/system 
 
 ## Future Backend Integration
 
-Integration points are intentionally explicit:
+BickSpec Studio expects the language/compiler repository to live beside this project by default:
+
+```text
+workspace/
+  bickspec-studio/
+  bickspec-lang/
+```
+
+The default linked compiler repository path is:
+
+```text
+../bickspec-lang
+```
+
+That path is configurable through the backend settings file stored in Electron `userData`, and can also be seeded for development with:
+
+```bash
+BICKSPEC_LANG_REPOSITORY=/path/to/bickspec-lang
+```
+
+The backend validates that the linked repository looks like `bickspec-lang` by checking for signals such as:
+
+- `app/pom.xml`
+- `app/target/`
+- `docs/BickSpec.g4`
+- known compiler artifact names under `app/target/` when present
+
+Current backend integration points are intentionally explicit:
 
 - `src/shared/contracts/services.ts`
 - `src/shared/contracts/domain.ts`
+- `src/shared/contracts/backend.ts`
+- `src/shared/contracts/bridge.ts`
+- `src/main/backend/`
+- `src/preload/index.ts`
 - `src/renderer/services/ServiceProvider.tsx`
 - `src/renderer/services/`
 
-The future compiler adapter should replace the current local service implementation while preserving the renderer/main/preload separation.
+Commit 1/4 of backend integration adds:
+
+- main-process backend services
+- persistent backend settings
+- linked compiler repository resolver
+- Java and Maven availability checks
+- typed preload IPC for backend status and linked compiler configuration
+- workspace information for later compile/run flows
+
+Later backend commits should use this foundation to compile the current file, run BickSpec on a project/folder, retrieve generated artifacts, surface diagnostics/results, and power report/export flows.
 
 ## Project Structure
 
 ```text
 src/
   main/                 Electron main process and window creation
+    backend/            linked compiler resolver, settings, status, and process services
   preload/              secure renderer bridge
   shared/contracts/     domain and service contracts
   assets/brand/         approved runtime brand assets copied from designs/brand
