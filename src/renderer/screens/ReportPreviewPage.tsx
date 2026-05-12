@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Download, FileSpreadsheet, FileText, History, LineChart, RefreshCw, Table2 } from "lucide-react";
+import { Download, Eye, FileSpreadsheet, FileText, History, LineChart, RefreshCw, Table2 } from "lucide-react";
 import type { ReportPreview } from "@shared/contracts/domain";
 import { MetricCard } from "../components/ui/MetricCard";
 import { Panel } from "../components/ui/Panel";
@@ -38,10 +38,11 @@ export function ReportPreviewPage() {
       <header style={{ gridColumn: "1 / 4", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px", borderBottom: "1px solid var(--color-outline-variant)", background: "var(--color-surface-low)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           <strong>BickSpec</strong>
-          <span className="label-caps">Documentation</span>
+          <span className="label-caps">Report Preview</span>
           <StatusBadge>{exportState === "exporting" ? "Exporting" : "Report Generated"}</StatusBadge>
         </div>
         <div style={{ display: "flex", gap: 8 }}>
+          <ToolbarButton icon={<Eye size={16} />}>Preview Report</ToolbarButton>
           <ToolbarButton icon={<FileText size={16} />} onClick={() => exportReport("pdf")}>Export PDF</ToolbarButton>
           <ToolbarButton icon={<FileSpreadsheet size={16} />} onClick={() => exportReport("excel")}>Excel</ToolbarButton>
           <ToolbarButton icon={<Download size={16} />} onClick={() => exportReport("csv")}>CSV</ToolbarButton>
@@ -118,4 +119,3 @@ export function ReportPreviewPage() {
     </div>
   );
 }
-

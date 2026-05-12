@@ -9,10 +9,14 @@
   "type": "module",
   "scripts": {
     "dev": "electron-vite dev",
+    "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit && electron-vite build",
     "preview": "electron-vite preview",
     "package:dir": "npm run build && electron-builder --dir",
-    "package": "npm run build && electron-builder"
+    "package": "npm run build && electron-builder",
+    "package:win": "npm run build && electron-builder --win",
+    "package:mac": "npm run build && electron-builder --mac",
+    "package:linux": "npm run build && electron-builder --linux"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
@@ -35,19 +39,30 @@
     "appId": "com.bickspec.studio",
     "productName": "BickSpec Studio",
     "directories": {
+      "buildResources": "buildResources",
       "output": "release"
     },
     "files": [
       "out/**",
       "package.json"
     ],
+    "extraResources": [
+      {
+        "from": "buildResources/icon.png",
+        "to": "icon.png"
+      }
+    ],
     "mac": {
+      "icon": "buildResources/icon.png",
       "category": "public.app-category.developer-tools"
     },
     "win": {
+      "icon": "buildResources/icon.png",
+      "signAndEditExecutable": false,
       "target": ["nsis"]
     },
     "linux": {
+      "icon": "buildResources/icon.png",
       "target": ["AppImage"]
     }
   }

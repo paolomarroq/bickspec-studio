@@ -1,10 +1,11 @@
-import { FilePlus2, FolderOpen, FileCode2, History, LayoutGrid } from "lucide-react";
+import { FilePlus2, FolderOpen, FileCode2, History } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Panel } from "../components/ui/Panel";
 import { LauncherActionCard } from "../components/launcher/LauncherActionCard";
 import { useServices } from "../services/ServiceProvider";
 import type { StudioProject } from "@shared/contracts/domain";
+import { BrandLogo } from "../components/brand/BrandLogo";
 
 export function WelcomePage() {
   const services = useServices();
@@ -16,27 +17,10 @@ export function WelcomePage() {
 
   return (
     <div className="launcher-grid">
-      <aside className="side-panel" style={{ padding: 18 }}>
-        <div className="label-caps">Workspace</div>
-        <div className="mono" style={{ marginTop: 4, color: "var(--color-teal)", fontSize: 12 }}>v1.0.4-stable</div>
-        <nav style={{ display: "grid", gap: 6, marginTop: 28 }}>
-          {["New File", "Open", "Recent", "Documentation"].map((item, index) => (
-            <Link className={`nav-row ${index === 0 ? "active" : ""}`} to={index === 2 ? "/" : "/workspace"} key={item}>
-              <LayoutGrid size={16} />
-              <span className="label-caps">{item}</span>
-            </Link>
-          ))}
-        </nav>
-      </aside>
       <main className="page spec-grid-pattern" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
         <section>
-          <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
-            <div className="brand-mark" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-              <span />
-            </div>
+          <div style={{ display: "grid", gap: 18, alignItems: "flex-start" }}>
+            <BrandLogo className="launcher-logo" />
             <div>
               <h1 style={{ margin: 0, fontSize: 48, lineHeight: 1.15 }}>BickSpec</h1>
               <p className="label-caps" style={{ color: "var(--color-teal)", marginTop: 8 }}>
@@ -70,12 +54,12 @@ export function WelcomePage() {
         </Panel>
         <Panel title="Recent Projects" action={<History size={16} />}>
           {projects.map((project) => (
-          <Link key={project.id} to="/workspace" style={{ display: "flex", justifyContent: "space-between", padding: 14, color: "inherit", textDecoration: "none", borderBottom: "1px solid var(--color-outline-variant)" }}>
-            <span>
+          <Link key={project.id} to="/workspace" className="recent-project-row">
+            <span style={{ minWidth: 0 }}>
               <strong>{project.name}</strong>
-              <span className="mono" style={{ display: "block", color: "var(--color-text-muted)", fontSize: 12 }}>{project.path}</span>
+              <span className="mono recent-project-path">{project.path}</span>
             </span>
-            <span style={{ color: "var(--color-text-muted)" }}>{project.modifiedAt}</span>
+            <span className="recent-project-time">{project.modifiedAt}</span>
           </Link>
           ))}
         </Panel>

@@ -2,6 +2,9 @@ import { app, BrowserWindow, ipcMain, nativeTheme } from "electron";
 import { join } from "node:path";
 
 const isDev = Boolean(process.env.ELECTRON_RENDERER_URL);
+const appIconPath = isDev
+  ? join(app.getAppPath(), "src/assets/brand/icon.png")
+  : join(process.resourcesPath, "icon.png");
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -10,6 +13,7 @@ function createWindow(): void {
     minWidth: 1100,
     minHeight: 720,
     title: "BickSpec Studio",
+    icon: appIconPath,
     backgroundColor: nativeTheme.shouldUseDarkColors ? "#0e1513" : "#f5faff",
     show: false,
     webPreferences: {
@@ -25,7 +29,7 @@ function createWindow(): void {
   if (isDev && process.env.ELECTRON_RENDERER_URL) {
     void mainWindow.loadURL(process.env.ELECTRON_RENDERER_URL);
   } else {
-    void mainWindow.loadFile(join(__dirname, "../../dist/index.html"));
+    void mainWindow.loadFile(join(__dirname, "../renderer/index.html"));
   }
 }
 
@@ -41,4 +45,3 @@ app.whenReady().then(() => {
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") app.quit();
 });
-

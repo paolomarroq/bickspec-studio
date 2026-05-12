@@ -1,53 +1,83 @@
 # BickSpec Studio
 
-BickSpec Studio is a lightweight desktop IDE for writing, compiling, reviewing, and exporting BickSpec financial specifications. This repository is the Electron desktop UI and launcher layer only.
+BickSpec Studio is a lightweight desktop IDE for writing, compiling, reviewing, and exporting BickSpec financial specifications.
 
-The compiler lives in a separate repository so the UI can evolve independently from parser, compiler, runtime, and backend concerns. This project is prepared for future integration through typed service contracts and mock service implementations.
+This repository is the desktop UI and launcher layer. It is intentionally separate from the compiler repository so the Electron shell, renderer experience, packaging, and brand system can mature independently from parser/compiler/runtime work.
 
-## Stack
+## Current Scope
 
-- Electron for the desktop shell
-- React for the renderer UI
-- TypeScript across main, preload, renderer, and shared contracts
-- Vite through `electron-vite`
-- Spec Grid brand system: navy and teal palette, structured grids, technical-financial typography, and panel-based IDE layouts
+The app is UI-only today. Project loading, compile/run actions, Java generation, artifact output, report preview/export, and settings persistence are represented with mock services and realistic placeholder state.
 
-## Approved UI Source
+The implementation is structured so future backend and compiler integration can attach through typed service contracts instead of being hardwired into React screens.
 
-The approved visual source lives in `designs/`.
+## Approved Visual Source
 
-The React screens in this commit translate the approved HTML exports into reusable application structure. The HTML files are not the final runtime UI, but they remain the visual reference for layout, hierarchy, spacing, colors, light mode, and dark mode.
+The approved UI source of truth lives in:
 
-## Current Commit Scope
+- `designs/`
+- `designs/brand/`
 
-### Commit 2/3
+The screen layouts, hierarchy, spacing, typography, navy/teal Spec Grid tone, and light/dark direction were translated from the approved HTML design exports. The top-left app chrome icon, launcher wordmark, and Electron app icon use approved PNG assets copied from `designs/brand/`.
 
-This commit implements the approved BickSpec Studio desktop UI screens as real React/Electron screens while keeping the app UI-only.
+## What Is Implemented
 
-- Translated the approved `designs/` HTML references into componentized React screens.
-- Implemented the light/dark Spec Grid visual system across the launcher, workspace, settings, artifacts, and report preview flows.
-- Added believable mock workflow state for selected projects, active files, editor tabs, compile state, terminal output, diagnostics, artifact selection, report export state, and settings values.
-- Introduced reusable UI components for status badges, toolbar actions, launcher cards, file trees, code editor shells, terminal output, diagnostics, artifact navigation, and settings groups.
-- Continued to use mock services behind typed interfaces so future compiler/backend integration can replace the mocks without restructuring the screens.
-
-The current app is still a UI-only desktop IDE layer. Compile, run, artifact generation, report export, settings persistence, and project access are mocked.
-
-### Commit 1/3
-
-- Electron main process foundation
-- Preload bridge foundation
-- React renderer foundation
-- Hash-based routing for Electron
-- Five UI-only screen shells:
+- Electron main process, preload bridge, and React renderer separation
+- React Router routes for:
   - Welcome / Launcher
   - Main IDE Workspace
   - Settings
   - Generated Artifacts / Results
   - Report Preview & Export
-- Light and dark theme architecture
-- Shared service contracts for future backend/compiler integration
-- Mock project, compiler, artifacts, report, and settings services
-- Packaging-ready npm scripts and `electron-builder` metadata for future GitHub Actions workflows
+- Spec Grid light and dark theme tokens
+- Approved brand logo/icon usage in app chrome, launcher, and Electron window icon
+- Componentized desktop UI:
+  - app shell and top toolbar
+  - launcher action cards
+  - recent project rows
+  - file tree
+  - editor shell
+  - terminal output
+  - diagnostics list
+  - artifact navigator
+  - settings groups
+  - status badges and toolbar buttons
+- Mock product workflow states:
+  - selected project/file
+  - active editor tab
+  - compile/run feedback
+  - generated artifact selection
+  - report preview/export feedback
+  - settings values
+
+## Future Backend Integration
+
+The future compiler/backend integration points are in:
+
+- `src/shared/contracts/services.ts`
+- `src/shared/contracts/domain.ts`
+- `src/renderer/services/ServiceProvider.tsx`
+- `src/renderer/services/mockServices.ts`
+
+The current mock services implement explicit contracts for projects, compiler actions, artifacts, reports, and settings. Real integration should replace the service implementation behind `ServiceProvider` and use the preload/main boundary for privileged desktop operations.
+
+## Project Structure
+
+```text
+src/
+  main/                 Electron main process and window creation
+  preload/              secure renderer bridge
+  shared/contracts/     domain and service contracts
+  assets/brand/         approved runtime brand assets copied from designs/brand
+  renderer/
+    components/         reusable UI components
+    screens/            route-level screens
+    services/           mock services and service provider
+    styles/             global Spec Grid CSS and theme variables
+    theme/              light/dark theme provider
+buildResources/         app icon resources for Electron Builder
+.github/workflows/      CI build and packaging scaffold
+designs/                approved HTML and brand references
+```
 
 ## Run Locally
 
@@ -63,15 +93,23 @@ Start the desktop app:
 npm run dev
 ```
 
-Build the app:
+Typecheck and build:
 
 ```bash
 npm run build
 ```
 
-Package scripts are present for future installer work:
+## Packaging
+
+Packaging is scaffolded with Electron Builder:
 
 ```bash
 npm run package:dir
 npm run package
+npm run package:win
+npm run package:mac
+npm run package:linux
 ```
+
+The initial GitHub Actions workflow installs dependencies, builds the app, runs a directory package, and uploads packaged artifacts from `release/`. Signing, notarization, release publishing, and platform-specific icon format hardening can be added when distribution requirements are finalized.
+

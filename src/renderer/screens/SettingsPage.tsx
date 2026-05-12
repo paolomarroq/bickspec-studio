@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Code2, Info, Palette, Search, SlidersHorizontal, TerminalSquare, Upload } from "lucide-react";
+import { Search } from "lucide-react";
 import type { StudioSettings } from "@shared/contracts/domain";
 import { SettingsGroup, SettingsRow } from "../components/settings/SettingsGroup";
 import { Panel } from "../components/ui/Panel";
@@ -8,20 +8,10 @@ import { ToolbarButton } from "../components/ui/ToolbarButton";
 import { useServices } from "../services/ServiceProvider";
 import { useTheme } from "../theme/ThemeProvider";
 
-const categories = [
-  { label: "General", icon: SlidersHorizontal },
-  { label: "Editor", icon: Code2 },
-  { label: "Compiler", icon: TerminalSquare },
-  { label: "Output", icon: Upload },
-  { label: "Appearance", icon: Palette },
-  { label: "About", icon: Info }
-];
-
 export function SettingsPage() {
   const services = useServices();
   const { theme, setTheme } = useTheme();
   const [settings, setSettings] = useState<StudioSettings | null>(null);
-  const [activeCategory, setActiveCategory] = useState("General");
 
   useEffect(() => {
     void services.settings.getSettings().then((nextSettings) => setSettings({ ...nextSettings, theme }));
@@ -36,8 +26,8 @@ export function SettingsPage() {
   }
 
   return (
-    <div className="screen-grid" style={{ gridTemplateColumns: "260px minmax(0, 1fr)", gridTemplateRows: "52px 1fr" }}>
-      <header style={{ gridColumn: "1 / 3", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px", borderBottom: "1px solid var(--color-outline-variant)", background: "var(--color-surface-low)" }}>
+    <div className="screen-grid" style={{ gridTemplateRows: "52px 1fr" }}>
+      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px", borderBottom: "1px solid var(--color-outline-variant)", background: "var(--color-surface-low)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <strong>BickSpec Settings</strong>
           <StatusBadge tone="neutral">UI-only mock</StatusBadge>
@@ -51,20 +41,16 @@ export function SettingsPage() {
         </div>
       </header>
 
-      <aside className="side-panel">
-        <div className="panel-header"><span className="label-caps">Categories</span></div>
-        <nav style={{ padding: 12, display: "grid", gap: 6 }}>
-          {categories.map(({ label, icon: Icon }) => (
-            <button key={label} className={`nav-row ${activeCategory === label ? "active" : ""}`} onClick={() => setActiveCategory(label)}>
-              <Icon size={17} />
-              <span>{label}</span>
-            </button>
-          ))}
-        </nav>
-      </aside>
-
-      <main style={{ padding: 24, overflow: "auto" }}>
-        <div style={{ maxWidth: 920, display: "grid", gap: 18 }}>
+      <main className="settings-canvas">
+        <div style={{ maxWidth: 980, display: "grid", gap: 18 }}>
+          <section className="settings-intro panel">
+            <div>
+              <span className="label-caps">Configuration</span>
+              <h1>Studio Settings</h1>
+              <p>UI preferences, mock compiler handoff points, and output defaults are grouped in a single reviewable surface.</p>
+            </div>
+            <StatusBadge tone="neutral">mock persistence</StatusBadge>
+          </section>
           <SettingsGroup title="General">
             <SettingsRow title="Project launch behavior" description="Choose what BickSpec Studio opens when the app starts.">
               <select className="field-control" defaultValue="recent">
@@ -114,4 +100,3 @@ export function SettingsPage() {
     </div>
   );
 }
-
