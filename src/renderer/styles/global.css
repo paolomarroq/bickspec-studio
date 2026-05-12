@@ -1,0 +1,296 @@
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;450;500;600;700&display=swap");
+
+:root {
+  color-scheme: light;
+  --color-surface: #f5faff;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #edf4fb;
+  --color-surface-container: #e8eff6;
+  --color-surface-high: #e2e9f0;
+  --color-surface-highest: #dce3ea;
+  --color-text: #151c21;
+  --color-text-muted: #44474d;
+  --color-outline: #74777e;
+  --color-outline-variant: #c4c6cd;
+  --color-navy: #0b1d33;
+  --color-teal: #006b5b;
+  --color-teal-bright: #50dcc1;
+  --color-amber: #f59e0b;
+  --color-red: #ba1a1a;
+  --shadow-panel: 0 4px 18px rgba(79, 95, 120, 0.08);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-surface: #0e1513;
+  --color-surface-lowest: #090f0e;
+  --color-surface-low: #161d1b;
+  --color-surface-container: #1a211f;
+  --color-surface-high: #252b29;
+  --color-surface-highest: #2f3634;
+  --color-text: #dde4e0;
+  --color-text-muted: #bbcac4;
+  --color-outline: #85948f;
+  --color-outline-variant: #3c4a46;
+  --color-navy: #0b1d33;
+  --color-teal: #00b39a;
+  --color-teal-bright: #50dcc1;
+  --color-amber: #f59e0b;
+  --color-red: #ffb4ab;
+  --shadow-panel: 0 4px 20px rgba(0, 0, 0, 0.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1100px;
+  min-height: 720px;
+  overflow: hidden;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: Sora, system-ui, sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+code,
+pre,
+.mono {
+  font-family: "IBM Plex Mono", Consolas, monospace;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-teal);
+}
+
+.app-root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-bar {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-low);
+}
+
+.brand-mark {
+  display: grid;
+  grid-template-columns: repeat(2, 10px);
+  grid-template-rows: repeat(2, 10px);
+  gap: 3px;
+  padding: 4px;
+  border: 1.5px solid var(--color-text);
+}
+
+.brand-mark span:first-child {
+  background: var(--color-teal);
+}
+
+.brand-mark span:not(:first-child) {
+  border: 1px solid var(--color-outline);
+}
+
+.layout {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+}
+
+.activity-bar {
+  width: 64px;
+  border-right: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-container);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.activity-button {
+  width: 100%;
+  height: 44px;
+  border: 0;
+  border-left: 2px solid transparent;
+  background: transparent;
+  color: var(--color-text-muted);
+  display: grid;
+  place-items: center;
+}
+
+.activity-button.active {
+  border-left-color: var(--color-teal);
+  background: color-mix(in srgb, var(--color-teal) 12%, transparent);
+  color: var(--color-teal);
+}
+
+.main-view {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  background: var(--color-surface);
+}
+
+.panel {
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-lowest);
+  border-radius: 4px;
+  box-shadow: var(--shadow-panel);
+}
+
+.panel-header {
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+
+.label-caps {
+  color: var(--color-text-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.page {
+  padding: 24px;
+}
+
+.grid-page {
+  display: grid;
+  gap: 16px;
+}
+
+.button {
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 4px;
+  background: var(--color-surface-high);
+  color: var(--color-text);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 0 12px;
+  font-weight: 700;
+}
+
+.button.primary {
+  border-color: var(--color-teal);
+  background: var(--color-teal);
+  color: white;
+}
+
+.status-bar {
+  height: 28px;
+  padding: 0 12px;
+  border-top: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-low);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.tabs {
+  display: flex;
+  background: var(--color-surface-container);
+  border-bottom: 1px solid var(--color-outline-variant);
+}
+
+.tab {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--color-text-muted);
+  padding: 10px 14px 8px;
+}
+
+.tab.active {
+  border-bottom-color: var(--color-teal);
+  color: var(--color-text);
+  background: var(--color-surface-lowest);
+}
+
+.code-editor {
+  margin: 0;
+  min-height: 420px;
+  padding: 16px 0;
+  overflow: auto;
+  background: var(--color-surface-lowest);
+  color: var(--color-text);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.code-line {
+  display: block;
+  padding: 0 16px;
+}
+
+.code-line::before {
+  content: attr(data-line);
+  display: inline-block;
+  width: 42px;
+  padding-right: 16px;
+  color: var(--color-outline);
+  text-align: right;
+  user-select: none;
+}
+
+.kw {
+  color: var(--color-teal);
+  font-weight: 700;
+}
+
+.str {
+  color: var(--color-navy);
+}
+
+:root[data-theme="dark"] .str {
+  color: var(--color-teal-bright);
+}
+
+.comment {
+  color: var(--color-outline);
+  font-style: italic;
+}
+

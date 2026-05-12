@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BickSpec - Welcome</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&amp;family=IBM+Plex+Mono:wght@400;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "primary": "#000206",
+                "surface-container-high": "#e2e9f0",
+                "surface-container": "#e8eff6",
+                "on-primary-fixed-variant": "#374860",
+                "surface-tint": "#4f5f78",
+                "on-error-container": "#93000a",
+                "surface-container-lowest": "#ffffff",
+                "on-surface-variant": "#44474d",
+                "on-error": "#ffffff",
+                "on-surface": "#151c21",
+                "inverse-on-surface": "#ebf2f9",
+                "on-secondary-fixed-variant": "#005144",
+                "background": "#f5faff",
+                "tertiary-fixed-dim": "#b7c8e1",
+                "surface": "#f5faff",
+                "on-secondary": "#ffffff",
+                "surface-container-low": "#edf4fb",
+                "secondary-fixed": "#71f9dd",
+                "on-primary": "#ffffff",
+                "surface-container-highest": "#dce3ea",
+                "on-background": "#151c21",
+                "secondary": "#006b5b",
+                "outline": "#74777e",
+                "primary-container": "#0b1d33",
+                "tertiary-container": "#0c1d30",
+                "secondary-fixed-dim": "#50dcc1",
+                "secondary-container": "#71f9dd",
+                "on-primary-container": "#7586a0",
+                "primary-fixed": "#d4e3ff",
+                "outline-variant": "#c4c6cd",
+                "inverse-primary": "#b7c7e5",
+                "surface-variant": "#dce3ea",
+                "on-tertiary-fixed-variant": "#38485d",
+                "on-primary-fixed": "#0a1c32",
+                "primary-fixed-dim": "#b7c7e5",
+                "on-tertiary-fixed": "#0b1c30",
+                "surface-bright": "#f5faff",
+                "on-tertiary-container": "#75869d",
+                "inverse-surface": "#2a3137",
+                "tertiary": "#000205",
+                "tertiary-fixed": "#d3e4fe",
+                "surface-dim": "#d4dbe2",
+                "on-secondary-fixed": "#00201a",
+                "error": "#ba1a1a",
+                "on-secondary-container": "#007261",
+                "on-tertiary": "#ffffff",
+                "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+            },
+            "spacing": {
+                "sm": "8px",
+                "gutter": "16px",
+                "lg": "24px",
+                "base": "4px",
+                "xl": "48px",
+                "margin": "24px",
+                "md": "16px",
+                "xs": "4px"
+            },
+            "fontFamily": {
+                "body-sm": ["Sora"],
+                "label-caps": ["IBM Plex Mono"],
+                "headline-md": ["Sora"],
+                "code-md": ["IBM Plex Mono"],
+                "display-lg": ["Sora"],
+                "body-md": ["Sora"]
+            },
+            "fontSize": {
+                "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                "code-md": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                "display-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body {
+            background-color: #F7F9FB; /* Base Level 0 from Style Guidance */
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface antialiased">
+<!-- Top Navigation (Shell Implementation) -->
+<header class="bg-surface docked full-width top-0 flex items-center justify-between px-margin h-16 w-full max-w-full border-b border-outline-variant">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
+<span class="font-headline-md text-headline-md font-semibold text-primary tracking-tight">BickSpec</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-container-low transition-colors p-sm rounded" data-icon="settings">settings</span>
+</div>
+</header>
+<main class="max-w-screen-md mx-auto px-margin py-xl space-y-xl">
+<!-- Hero / Brand Identity Section -->
+<section class="flex flex-col items-center text-center space-y-md">
+<img alt="BickSpec Logo" class="w-12 h-12" src="https://lh3.googleusercontent.com/aida/ADBb0ugUA-NIg5ij72dSAXwatURlmYvgnIyVbVIAF5zhAyZdpetbVJansT3h16V-OPBcdnWIKVVBspugVDJ2bahcg_YXXAhNWwpfSQB6sN3WgL-1vMNiSC1uY1C1mEUvgdKTZJwSIV0YUSNV8N1WYFfb_CSZvwkOzXrB4WFUuGSj-uJdTqtYOV9MHTFo0WzmZSzCEeeffsOeo-vhE08kA7zBNkvvuSPW4pQmulpnDC3Kqs3SWyT7fUhfTodlmA"/>
+<div>
+<h1 class="font-display-lg text-display-lg text-primary">BickSpec Launcher</h1>
+<p class="font-body-md text-on-surface-variant mt-xs">A specification language for finance.</p>
+</div>
+</section>
+<!-- Code Preview Card (Industrial/Technical) -->
+<section class="border border-outline-variant bg-primary-container rounded shadow-sm overflow-hidden">
+<div class="bg-surface-variant px-md py-xs border-b border-outline-variant flex items-center gap-sm">
+<div class="flex gap-1.5">
+<div class="w-2.5 h-2.5 rounded-full bg-error/40"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-secondary/40"></div>
+<div class="w-2.5 h-2.5 rounded-full bg-surface-tint/40"></div>
+</div>
+<span class="font-label-caps text-label-caps text-on-primary-container">portfolio.analysis</span>
+</div>
+<div class="p-md bg-primary-container">
+<pre class="font-code-md text-code-md text-primary-fixed overflow-x-auto"><code><span class="text-secondary-fixed-dim">spec</span> portfolio.analysis {
+  <span class="text-tertiary-fixed-dim">currency</span> base = USD
+  <span class="text-tertiary-fixed-dim">rate</span> discount = 12%
+  <span class="text-tertiary-fixed-dim">cashflow</span> cf = [-5000, 1200]
+  <span class="text-secondary-fixed-dim">npv</span> result = NPV(discount, cf)
+}</code></pre>
+</div>
+</section>
+<!-- Primary Actions -->
+<section class="grid grid-cols-1 gap-sm">
+<button class="w-full flex items-center justify-center gap-sm bg-secondary text-on-secondary font-body-md font-semibold py-md rounded transition-opacity active:opacity-80">
+<span class="material-symbols-outlined" data-icon="add_box">add_box</span>
+                New BickSpec File
+            </button>
+<div class="grid grid-cols-2 gap-sm">
+<button class="flex items-center justify-center gap-sm border border-outline-variant bg-surface-container-lowest text-on-surface font-body-sm py-md rounded hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-secondary" data-icon="file_open">file_open</span>
+                    Open .bks
+                </button>
+<button class="flex items-center justify-center gap-sm border border-outline-variant bg-surface-container-lowest text-on-surface font-body-sm py-md rounded hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-secondary" data-icon="folder_open">folder_open</span>
+                    Open Project
+                </button>
+</div>
+</section>
+<!-- Recent Projects Section (High Density) -->
+<section class="space-y-md">
+<h2 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Recent Projects</h2>
+<div class="bg-surface-container-lowest border border-outline-variant rounded divide-y divide-outline-variant">
+<div class="flex items-center justify-between p-md hover:bg-surface-container-low cursor-pointer transition-colors">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary" data-icon="description">description</span>
+<span class="font-body-md text-primary">portfolio-analysis.bks</span>
+</div>
+<span class="font-label-caps text-label-caps text-outline">2h ago</span>
+</div>
+<div class="flex items-center justify-between p-md hover:bg-surface-container-low cursor-pointer transition-colors">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary" data-icon="description">description</span>
+<span class="font-body-md text-primary">risk-model.bks</span>
+</div>
+<span class="font-label-caps text-label-caps text-outline">Yesterday</span>
+</div>
+<div class="flex items-center justify-between p-md hover:bg-surface-container-low cursor-pointer transition-colors">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary" data-icon="description">description</span>
+<span class="font-body-md text-primary">valuation.bks</span>
+</div>
+<span class="font-label-caps text-label-caps text-outline">Oct 24</span>
+</div>
+</div>
+</section>
+<!-- Templates Section (Bento Inspired Grid) -->
+<section class="space-y-md">
+<div class="flex items-center justify-between">
+<h2 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Templates</h2>
+<span class="font-body-sm text-secondary font-semibold cursor-pointer">View All</span>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded hover:border-secondary transition-colors cursor-pointer space-y-sm">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="account_balance">account_balance</span>
+<p class="font-body-sm font-semibold text-primary leading-tight">Investment NPV Model</p>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded hover:border-secondary transition-colors cursor-pointer space-y-sm">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="receipt_long">receipt_long</span>
+<p class="font-body-sm font-semibold text-primary leading-tight">Cash Flow Report</p>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded hover:border-secondary transition-colors cursor-pointer space-y-sm">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="currency_exchange">currency_exchange</span>
+<p class="font-body-sm font-semibold text-primary leading-tight">Currency Conversion</p>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded hover:border-secondary transition-colors cursor-pointer space-y-sm">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="payments">payments</span>
+<p class="font-body-sm font-semibold text-primary leading-tight">Loan Amortization</p>
+</div>
+</div>
+</section>
+<!-- Secondary Links -->
+<section class="grid grid-cols-2 gap-x-lg gap-y-md pt-md border-t border-outline-variant">
+<a class="flex items-center gap-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-body-sm">Documentation</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="lightbulb">lightbulb</span>
+<span class="font-body-sm">Examples</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span class="font-body-sm">Compiler Guide</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-body-sm">Settings</span>
+</a>
+</section>
+</main>
+<!-- Footer Implementation -->
+<footer class="bg-surface-container-lowest dark:bg-primary-container border-t border-outline-variant py-md px-margin w-full flex flex-col md:flex-row justify-between items-center gap-md mt-xl">
+<span class="font-label-caps text-label-caps font-bold text-primary">© 2024 BickSpec IDE. Precision Financial Engineering.</span>
+<div class="flex gap-md">
+<span class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors cursor-pointer">Documentation</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors cursor-pointer">Release Notes</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors cursor-pointer">Privacy Policy</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors cursor-pointer">Support</span>
+</div>
+</footer>
+</body></html>

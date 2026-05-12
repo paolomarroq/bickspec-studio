@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BickSpec IDE Launcher</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;family=IBM+Plex+Mono:wght@400;450;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #F8FAFC; /* Paper */
+            color: #0B132B; /* Deep Navy */
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .spec-grid-pattern {
+            background-image: radial-gradient(#E5E7EB 0.5px, transparent 0.5px); /* Light Gray */
+            background-size: 16px 16px;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary": "#0B132B", // Deep Navy
+                        "secondary": "#14B8A6", // Teal
+                        "on-background": "#0B132B",
+                        "on-surface": "#0B132B",
+                        "on-surface-variant": "#475569", // Slate
+                        "outline": "#E5E7EB", // Light Gray
+                        "outline-variant": "#E5E7EB",
+                        "surface": "#F8FAFC", // Paper
+                        "surface-container": "#F1F5F9",
+                        "surface-container-low": "#F8FAFC",
+                        "surface-container-lowest": "#FFFFFF",
+                        "surface-container-high": "#E2E8F0",
+                        "surface-container-highest": "#CBD5E1",
+                        "secondary-container": "#CCFBF1",
+                        "on-primary": "#FFFFFF",
+                        "surface-variant": "#F1F5F9"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "panel-gutter": "1px",
+                        "unit": "4px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "code-sm": ["IBM Plex Mono"],
+                        "h1": ["Sora"],
+                        "label-caps": ["Sora"],
+                        "h2": ["Sora"],
+                        "code-md": ["IBM Plex Mono"],
+                        "body-md": ["Sora"],
+                        "code-lg": ["IBM Plex Mono"],
+                        "body-lg": ["Sora"]
+                    },
+                    "fontSize": {
+                        "code-sm": ["12px", {"lineHeight": "18px", "fontWeight": "450"}],
+                        "h1": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "h2": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "code-md": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "code-lg": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="flex flex-col h-screen overflow-hidden selection:bg-secondary/30 selection:text-primary">
+<!-- TopAppBar Component -->
+<header class="bg-surface flex justify-between items-center h-12 px-md w-full border-b border-outline fixed top-0 z-50">
+<div class="flex items-center gap-sm">
+<span class="font-h1 text-h1 font-bold text-secondary tracking-tighter">BickSpec</span>
+</div>
+<div class="flex items-center gap-lg">
+<nav class="flex gap-md">
+<a class="font-label-caps text-label-caps text-on-surface-variant hover:text-secondary transition-colors duration-150" href="#">Documentation</a>
+</nav>
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant hover:text-secondary transition-colors duration-150 flex items-center justify-center h-8 w-8">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Layout -->
+<main class="flex-1 flex mt-12 mb-8 overflow-hidden">
+<!-- SideNavBar (Left Rail) -->
+<aside class="bg-surface-container-low flex flex-col h-full py-md border-r border-outline w-16 md:w-64">
+<div class="px-md mb-xl hidden md:block">
+<div class="font-label-caps text-label-caps text-on-surface-variant tracking-widest opacity-60">WORKSPACE</div>
+<div class="font-code-sm text-code-sm text-slate-500">v1.0.4-stable</div>
+</div>
+<div class="flex flex-col gap-xs">
+<button class="flex items-center px-md py-sm bg-secondary-container text-secondary border-l-2 border-secondary transition-all duration-75 ease-linear">
+<span class="material-symbols-outlined">add_box</span>
+<span class="ml-sm font-label-caps text-label-caps hidden md:inline">New File</span>
+</button>
+<button class="flex items-center px-md py-sm text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all duration-75 ease-linear">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="ml-sm font-label-caps text-label-caps hidden md:inline">Open</span>
+</button>
+<button class="flex items-center px-md py-sm text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all duration-75 ease-linear">
+<span class="material-symbols-outlined">history</span>
+<span class="ml-sm font-label-caps text-label-caps hidden md:inline">Recent</span>
+</button>
+</div>
+<div class="mt-auto px-md hidden md:block">
+<div class="border-t border-outline pt-md opacity-40">
+<img alt="Technical background" class="w-full h-32 object-cover grayscale opacity-50" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEfxgznmHNibIHporiRDjoYTq-TlKPzNZ1O77lN4EjKg0TfKOPXDcNsd1bbE3mnCjWwjH4jks0svJ2hvPevC6XXmTj4wrNPO5JwUOjzTuF9bQgF1TWMQrVj4_fstNqoeqaE6IlZJRq1FmKI2D0_fZf493v7_i6o_NZzJjYLnYXfNrizAofmqlB2VGBT39aYuzARf6GvtmaEw3YB8ewzMLneJn2rY-GK5NEJpLVzSQhjURU8zjriAbcZchDLRANZoxDNqQjrNgFPTQ"/>
+</div>
+</div>
+</aside>
+<!-- Launcher Core -->
+<div class="flex-1 flex flex-col md:flex-row overflow-hidden">
+<!-- Left: Welcome & Actions -->
+<section class="flex-1 p-xl flex flex-col justify-center max-w-2xl bg-surface-container-lowest spec-grid-pattern">
+<div class="mb-xl">
+<h1 class="font-h1 text-h1 text-on-background mb-sm">BickSpec Spec Grid</h1>
+<p class="font-body-lg text-body-lg text-slate-500 opacity-80">A specification language for finance.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md mb-xl">
+<button class="flex flex-col items-start p-lg bg-surface-container border border-outline hover:border-secondary transition-all group text-left">
+<span class="material-symbols-outlined text-secondary mb-sm">note_add</span>
+<span class="font-h2 text-h2 text-on-surface mb-xs">New BickSpec File</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Create a blank financial logic schema.</span>
+</button>
+<button class="flex flex-col items-start p-lg bg-surface-container border border-outline hover:border-secondary transition-all text-left">
+<span class="material-symbols-outlined text-secondary mb-sm">file_open</span>
+<span class="font-h2 text-h2 text-on-surface mb-xs">Open .bks File</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Load a single specification document.</span>
+</button>
+<button class="flex flex-col items-start p-lg bg-surface-container border border-outline hover:border-secondary transition-all col-span-1 md:col-span-2 text-left">
+<span class="material-symbols-outlined text-secondary mb-sm">folder_managed</span>
+<span class="font-h2 text-h2 text-on-surface mb-xs">Open Project Folder</span>
+<span class="font-body-md text-body-md text-on-surface-variant">Initialize a workspace from a directory.</span>
+</button>
+</div>
+<div>
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-md tracking-widest uppercase">Recent Projects</h3>
+<div class="flex flex-col border border-outline divide-y divide-outline bg-surface-container">
+<div class="p-sm px-md flex justify-between items-center hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary text-[18px]">account_balance</span>
+<span class="font-code-md text-code-md text-on-surface">Derivatives_Settlement_V2.bks</span>
+</div>
+<span class="font-code-sm text-code-sm text-on-surface-variant opacity-60">2m ago</span>
+</div>
+<div class="p-sm px-md flex justify-between items-center hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary text-[18px]">payments</span>
+<span class="font-code-md text-code-md text-on-surface">ISO20022_Mapping_Core.bks</span>
+</div>
+<span class="font-code-sm text-code-sm text-on-surface-variant opacity-60">4h ago</span>
+</div>
+<div class="p-sm px-md flex justify-between items-center hover:bg-surface-container-high transition-colors cursor-pointer">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-secondary text-[18px]">security</span>
+<span class="font-code-md text-code-md text-on-surface">Risk_Model_A_2024.prj</span>
+</div>
+<span class="font-code-sm text-code-sm text-on-surface-variant opacity-60">Yesterday</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Right: Technical Preview -->
+<section class="hidden lg:flex flex-1 flex-col bg-surface-container-low border-l border-outline">
+<div class="h-8 flex items-center px-md border-b border-outline bg-surface-container">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-tighter">Code Preview</span>
+</div>
+<div class="flex-1 p-md font-code-md text-code-md bg-surface-container-lowest overflow-hidden">
+<pre class="text-on-surface-variant leading-tight"><span class="text-secondary font-bold">type</span> <span class="text-primary font-bold">Trade</span> {
+    id: <span class="text-slate-500">UUID</span>;
+    asset: <span class="text-slate-500">CurrencyPair</span>;
+    notional: <span class="text-slate-500">Decimal</span>(18, 8);
+    counterparty: <span class="text-slate-500">LEI</span>;
+}
+
+<span class="text-secondary font-bold">logic</span> <span class="text-primary font-bold">ValidateMargin</span>(t: <span class="text-primary">Trade</span>) {
+    <span class="text-secondary font-bold">require</span> t.notional &gt; 0 <span class="text-red-500">!!</span> <span class="text-on-surface">"Invalid notional"</span>;
+    <span class="text-secondary font-bold">match</span> t.asset {
+        BTC/USD =&gt; <span class="text-slate-500">apply</span> HighVolRule;
+        _ =&gt; <span class="text-slate-500">apply</span> StandardRule;
+    }
+}
+
+<span class="text-slate-400">// System state: IDLE</span>
+<span class="text-slate-400">// Listening on port 8080...</span>
+                </pre>
+<div class="mt-lg border-t border-outline pt-md">
+<h4 class="font-label-caps text-label-caps text-secondary mb-sm uppercase">Templates</h4>
+<div class="grid grid-cols-1 gap-sm">
+<div class="p-md border border-outline bg-surface-container hover:bg-secondary/10 cursor-pointer">
+<div class="font-h2 text-h2 text-on-surface text-[14px]">OTC Clearing Schema</div>
+<div class="font-code-sm text-code-sm text-on-surface-variant mt-xs">Standardized protocol for over-the-counter derivatives.</div>
+</div>
+<div class="p-md border border-outline bg-surface-container hover:bg-secondary/10 cursor-pointer">
+<div class="font-h2 text-h2 text-on-surface text-[14px]">Real-Time Settlement</div>
+<div class="font-code-sm text-code-sm text-on-surface-variant mt-xs">Logic blocks for T+0 transaction finality models.</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Footer Component -->
+<footer class="bg-surface-container-lowest flex justify-between items-center px-md h-8 w-full border-t border-outline fixed bottom-0 z-50">
+<div class="font-code-sm text-code-sm text-slate-500">
+        BickSpec Compiler v2.4.0 • Main Branch • UTF-8
+    </div>
+<div class="flex items-center gap-md">
+<span class="font-code-sm text-code-sm text-secondary flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+            Status: Ready
+        </span>
+</div>
+</footer>
+</body></html>

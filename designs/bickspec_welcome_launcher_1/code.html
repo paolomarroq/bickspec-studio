@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BickSpec Welcome Launcher</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&amp;family=IBM+Plex+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#0c1d30",
+                    "inverse-on-surface": "#ebf2f9",
+                    "on-tertiary-fixed": "#0b1c30",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed": "#00201a",
+                    "inverse-primary": "#b7c7e5",
+                    "on-primary-fixed": "#0a1c32",
+                    "on-primary": "#ffffff",
+                    "background": "#f5faff",
+                    "surface-container": "#e8eff6",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#b7c8e1",
+                    "primary": "#000206",
+                    "primary-fixed-dim": "#b7c7e5",
+                    "on-background": "#151c21",
+                    "surface-dim": "#d4dbe2",
+                    "surface-bright": "#f5faff",
+                    "outline": "#74777e",
+                    "secondary": "#006b5b",
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#c4c6cd",
+                    "secondary-fixed": "#71f9dd",
+                    "secondary-container": "#71f9dd",
+                    "error": "#ba1a1a",
+                    "secondary-fixed-dim": "#50dcc1",
+                    "tertiary": "#000205",
+                    "surface-tint": "#4f5f78",
+                    "on-secondary-container": "#007261",
+                    "surface-container-highest": "#dce3ea",
+                    "on-primary-fixed-variant": "#374860",
+                    "on-tertiary-fixed-variant": "#38485d",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed": "#d4e3ff",
+                    "on-error": "#ffffff",
+                    "on-secondary-fixed-variant": "#005144",
+                    "error-container": "#ffdad6",
+                    "surface": "#f5faff",
+                    "on-primary-container": "#7586a0",
+                    "tertiary-fixed": "#d3e4fe",
+                    "primary-container": "#0b1d33",
+                    "surface-variant": "#dce3ea",
+                    "on-tertiary-container": "#75869d",
+                    "on-surface-variant": "#44474d",
+                    "inverse-surface": "#2a3137",
+                    "surface-container-low": "#edf4fb",
+                    "surface-container-high": "#e2e9f0",
+                    "on-surface": "#151c21"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "margin": "24px",
+                    "xl": "48px",
+                    "xs": "4px",
+                    "base": "4px"
+            },
+            "fontFamily": {
+                    "headline-md": ["Sora"],
+                    "label-caps": ["IBM Plex Mono"],
+                    "display-lg": ["Sora"],
+                    "body-md": ["Sora"],
+                    "code-md": ["IBM Plex Mono"],
+                    "body-sm": ["Sora"]
+            },
+            "fontSize": {
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "display-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "code-md": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .spec-grid-logo {
+            display: grid;
+            grid-template-columns: repeat(2, 8px);
+            gap: 2px;
+        }
+        body {
+            background-color: #F8FAFC;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="bg-surface-container flex justify-between items-center w-full px-md h-16 border-b border-outline-variant fixed top-0 z-50">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary text-headline-md">terminal</span>
+<span class="font-headline-md text-headline-md font-semibold tracking-tight text-primary">BickSpec</span>
+</div>
+<button class="hover:bg-surface-container-high transition-colors p-sm rounded">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+</header>
+<main class="pt-20 pb-24 px-margin max-w-2xl mx-auto space-y-xl">
+<!-- Hero Branding -->
+<section class="text-center space-y-md py-md">
+<div class="inline-flex items-center justify-center gap-md mb-xs">
+<div class="w-12 h-12 border-2 border-primary-container relative flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[32px]">folder_open</span>
+<div class="absolute -top-1 -left-1 w-2 h-2 bg-primary"></div>
+<div class="absolute -top-1 -right-1 w-2 h-2 bg-primary"></div>
+<div class="absolute -bottom-1 -left-1 w-2 h-2 bg-primary"></div>
+<div class="absolute -bottom-1 -right-1 w-2 h-2 bg-primary"></div>
+</div>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary tracking-tight">BickSpec</h1>
+<p class="font-body-md text-on-surface-variant max-w-xs mx-auto">A specification language for finance.</p>
+</section>
+<!-- Primary Actions -->
+<section class="space-y-sm">
+<button class="w-full bg-[#14B8A6] hover:bg-secondary transition-all active:scale-[0.98] py-lg px-md rounded flex items-center justify-center gap-sm group shadow-sm">
+<span class="material-symbols-outlined text-white" data-weight="fill">add_box</span>
+<span class="font-headline-md text-white">New BickSpec File</span>
+</button>
+<div class="grid grid-cols-2 gap-sm">
+<button class="bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-high transition-colors py-md rounded flex flex-col items-center gap-xs">
+<span class="material-symbols-outlined text-on-surface-variant">file_open</span>
+<span class="font-label-caps text-label-caps">Open .bks File</span>
+</button>
+<button class="bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-high transition-colors py-md rounded flex flex-col items-center gap-xs">
+<span class="material-symbols-outlined text-on-surface-variant">folder</span>
+<span class="font-label-caps text-label-caps">Open Project Folder</span>
+</button>
+</div>
+</section>
+<!-- Code Preview Section -->
+<section class="space-y-sm">
+<div class="flex items-center justify-between">
+<h2 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Active Schema Preview</h2>
+<span class="text-[10px] bg-secondary-container text-on-secondary-container px-2 py-0.5 rounded-full font-bold">STABLE</span>
+</div>
+<div class="bg-primary-container p-lg rounded border border-outline-variant shadow-inner overflow-x-auto">
+<pre class="font-code-md text-code-md text-on-tertiary-container"><span class="text-secondary-fixed">spec</span> <span class="text-secondary-fixed-dim">portfolio.analysis</span> {
+  <span class="text-secondary-fixed">currency</span> base = USD
+  <span class="text-secondary-fixed">rate</span> discount = <span class="text-secondary-fixed-dim">12%</span>
+  <span class="text-secondary-fixed">cashflow</span> cf = [-5000, 1200]
+  <span class="text-secondary-fixed">npv</span> result = <span class="text-secondary-fixed-dim">NPV</span>(discount, cf)
+}</pre>
+</div>
+</section>
+<!-- Recent Projects -->
+<section class="space-y-md">
+<h2 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Recent Projects</h2>
+<div class="space-y-xs">
+<div class="bg-surface-container-lowest p-md border border-outline-variant flex items-center justify-between hover:border-secondary cursor-pointer transition-colors">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">description</span>
+<div>
+<p class="font-body-md font-semibold text-primary">portfolio-analysis.bks</p>
+<p class="font-body-sm text-on-surface-variant">2h ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<div class="bg-surface-container-lowest p-md border border-outline-variant flex items-center justify-between hover:border-secondary cursor-pointer transition-colors">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">description</span>
+<div>
+<p class="font-body-md font-semibold text-primary">risk-model.bks</p>
+<p class="font-body-sm text-on-surface-variant">Yesterday</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+<div class="bg-surface-container-lowest p-md border border-outline-variant flex items-center justify-between hover:border-secondary cursor-pointer transition-colors">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">description</span>
+<div>
+<p class="font-body-md font-semibold text-primary">valuation.bks</p>
+<p class="font-body-sm text-on-surface-variant">Oct 24</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Templates Grid -->
+<section class="space-y-md">
+<h2 class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Templates</h2>
+<div class="grid grid-cols-2 gap-sm">
+<div class="bg-white border border-outline-variant p-md flex flex-col gap-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="w-8 h-8 bg-surface-container rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">account_balance</span>
+</div>
+<p class="font-body-sm font-bold text-primary leading-tight">Investment NPV Model</p>
+</div>
+<div class="bg-white border border-outline-variant p-md flex flex-col gap-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="w-8 h-8 bg-surface-container rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">receipt_long</span>
+</div>
+<p class="font-body-sm font-bold text-primary leading-tight">Cash Flow Report</p>
+</div>
+<div class="bg-white border border-outline-variant p-md flex flex-col gap-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="w-8 h-8 bg-surface-container rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">currency_exchange</span>
+</div>
+<p class="font-body-sm font-bold text-primary leading-tight">Currency Conversion</p>
+</div>
+<div class="bg-white border border-outline-variant p-md flex flex-col gap-sm hover:shadow-md transition-shadow cursor-pointer">
+<div class="w-8 h-8 bg-surface-container rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-on-surface-variant text-sm">calculate</span>
+</div>
+<p class="font-body-sm font-bold text-primary leading-tight">Loan Amortization</p>
+</div>
+</div>
+</section>
+<!-- Footer Links -->
+<section class="py-lg border-t border-outline-variant">
+<div class="grid grid-cols-2 gap-y-md gap-x-lg">
+<a class="flex items-center gap-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">auto_stories</span>
+<span class="font-label-caps text-[10px]">Documentation</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">lightbulb</span>
+<span class="font-label-caps text-[10px]">Examples</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">settings_suggest</span>
+<span class="font-label-caps text-[10px]">Compiler Guide</span>
+</a>
+<a class="flex items-center gap-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">tune</span>
+<span class="font-label-caps text-[10px]">Settings</span>
+</a>
+</div>
+<p class="mt-xl text-center font-label-caps text-[9px] text-outline tracking-[0.2em] uppercase">© 2024 BickSpec IDE. Precision by design.</p>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 bg-surface border-t border-outline-variant">
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-1 hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined">folder_open</span>
+<span class="font-label-caps text-[10px] mt-1">Projects</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-1 hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard_customize</span>
+<span class="font-label-caps text-[10px] mt-1">Templates</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary border-t-2 border-secondary pt-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">code</span>
+<span class="font-label-caps text-[10px] mt-1">Editor</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant pt-1 hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-caps text-[10px] mt-1">Docs</span>
+</a>
+</nav>
+</body></html>

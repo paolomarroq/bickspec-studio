@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BickSpec IDE - Portfolio Analysis</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        .code-line-number::before {
+            content: attr(data-line);
+            display: inline-block;
+            width: 3rem;
+            text-align: right;
+            padding-right: 1.5rem;
+            color: #74777e;
+            user-select: none;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c4c6cd;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #74777e;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#0b1c30",
+                        "surface-container": "#e8eff6",
+                        "inverse-on-surface": "#ebf2f9",
+                        "on-error-container": "#93000a",
+                        "surface-variant": "#dce3ea",
+                        "inverse-surface": "#2a3137",
+                        "background": "#f5faff",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#0a1c32",
+                        "surface-tint": "#4f5f78",
+                        "inverse-primary": "#b7c7e5",
+                        "on-primary-container": "#7586a0",
+                        "on-tertiary-container": "#75869d",
+                        "on-surface": "#151c21",
+                        "secondary-fixed-dim": "#50dcc1",
+                        "error-container": "#ffdad6",
+                        "outline": "#74777e",
+                        "outline-variant": "#c4c6cd",
+                        "primary-fixed": "#d4e3ff",
+                        "surface-container-high": "#e2e9f0",
+                        "primary": "#000206",
+                        "surface-container-highest": "#dce3ea",
+                        "primary-fixed-dim": "#b7c7e5",
+                        "on-error": "#ffffff",
+                        "surface": "#f5faff",
+                        "error": "#ba1a1a",
+                        "tertiary": "#000205",
+                        "on-secondary-fixed": "#00201a",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "on-surface-variant": "#44474d",
+                        "secondary": "#006b5b",
+                        "primary-container": "#0b1d33",
+                        "secondary-container": "#71f9dd",
+                        "tertiary-fixed": "#d3e4fe",
+                        "on-background": "#151c21",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "surface-bright": "#f5faff",
+                        "surface-container-low": "#edf4fb",
+                        "tertiary-container": "#0c1d30",
+                        "surface-dim": "#d4dbe2",
+                        "secondary-fixed": "#71f9dd",
+                        "on-secondary-fixed-variant": "#005144",
+                        "on-secondary-container": "#007261",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed-variant": "#374860"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "24px",
+                        "margin": "24px",
+                        "base": "4px",
+                        "xl": "48px",
+                        "md": "16px",
+                        "gutter": "16px",
+                        "sm": "8px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Sora"],
+                        "label-caps": ["IBM Plex Mono"],
+                        "display-lg": ["Sora"],
+                        "body-sm": ["Sora"],
+                        "headline-md": ["Sora"],
+                        "code-md": ["IBM Plex Mono"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-sm": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "code-md": ["14px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-surface-container-lowest font-body-md text-on-surface h-screen flex flex-col overflow-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface-container-low dark:bg-surface-container-lowest flex justify-between items-center w-full px-md h-12 border-b border-surface-variant dark:border-outline-variant z-50">
+<div class="flex items-center gap-md">
+<div class="flex items-center gap-sm">
+<span class="font-display-lg text-headline-md font-extrabold text-primary dark:text-primary-fixed">BickSpec</span>
+<span class="text-outline mx-xs">/</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">portfolio-analysis.bks</span>
+<span class="flex items-center gap-xs ml-sm px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-sm text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span> Ready
+                </span>
+</div>
+<nav class="hidden lg:flex items-center gap-md ml-lg">
+<span class="text-on-surface-variant hover:text-primary font-body-sm cursor-pointer transition-colors">File</span>
+<span class="text-on-surface-variant hover:text-primary font-body-sm cursor-pointer transition-colors">Edit</span>
+<span class="text-on-surface-variant hover:text-primary font-body-sm cursor-pointer transition-colors">Selection</span>
+<span class="text-on-surface-variant hover:text-primary font-body-sm cursor-pointer transition-colors">View</span>
+<span class="text-on-surface-variant hover:text-primary font-body-sm cursor-pointer transition-colors">Go</span>
+</nav>
+</div>
+<div class="flex items-center gap-sm">
+<button class="bg-secondary text-on-secondary flex items-center gap-xs px-md py-1.5 rounded-lg font-label-caps text-label-caps hover:bg-on-secondary-fixed-variant transition-all active:scale-95">
+<span class="material-symbols-outlined text-[18px]">play_arrow</span>
+                Run
+            </button>
+<button class="bg-surface-container-high text-on-surface flex items-center gap-xs px-md py-1.5 rounded-lg font-label-caps text-label-caps hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined text-[18px]">build</span>
+                Compile
+            </button>
+<button class="bg-surface-container-high text-on-surface flex items-center gap-xs px-md py-1.5 rounded-lg font-label-caps text-label-caps hover:bg-surface-variant transition-all">
+                Execute
+            </button>
+<button class="bg-surface-container-high text-on-surface flex items-center gap-xs px-md py-1.5 rounded-lg font-label-caps text-label-caps hover:bg-surface-variant transition-all">
+                Generate Java
+            </button>
+<div class="w-[1px] h-6 bg-outline-variant mx-xs"></div>
+<span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer p-1 rounded hover:bg-surface-variant">settings</span>
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-xs">JD</div>
+</div>
+</header>
+<div class="flex-1 flex overflow-hidden">
+<!-- SideNavBar Rail -->
+<aside class="bg-surface-container dark:bg-surface-container-high flex flex-col justify-between items-center py-md z-40 border-r border-surface-variant dark:border-outline-variant w-[64px] fixed left-0 top-12 bottom-6 md:static">
+<div class="flex flex-col gap-sm w-full">
+<div class="bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed border-l-2 border-secondary flex flex-col items-center py-sm transition-all active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+</div>
+<div class="text-on-surface-variant dark:text-surface-variant opacity-70 hover:bg-surface-variant dark:hover:bg-on-tertiary-container flex flex-col items-center py-sm transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</div>
+<div class="text-on-surface-variant dark:text-surface-variant opacity-70 hover:bg-surface-variant dark:hover:bg-on-tertiary-container flex flex-col items-center py-sm transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+</div>
+<div class="text-on-surface-variant dark:text-surface-variant opacity-70 hover:bg-surface-variant dark:hover:bg-on-tertiary-container flex flex-col items-center py-sm transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="bug_report">bug_report</span>
+</div>
+<div class="text-on-surface-variant dark:text-surface-variant opacity-70 hover:bg-surface-variant dark:hover:bg-on-tertiary-container flex flex-col items-center py-sm transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="extension">extension</span>
+</div>
+</div>
+<div class="flex flex-col gap-sm w-full">
+<div class="text-on-surface-variant dark:text-surface-variant opacity-70 hover:bg-surface-variant dark:hover:bg-on-tertiary-container flex flex-col items-center py-sm transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+</div>
+<div class="text-on-surface-variant dark:text-surface-variant opacity-70 hover:bg-surface-variant dark:hover:bg-on-tertiary-container flex flex-col items-center py-sm transition-all cursor-pointer">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</div>
+</div>
+</aside>
+<!-- Sidebar - File Explorer -->
+<aside class="w-64 bg-surface-container-low border-r border-surface-variant flex flex-col">
+<div class="px-md py-sm flex justify-between items-center border-b border-surface-variant">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Explorer</span>
+<span class="material-symbols-outlined text-[16px] text-outline cursor-pointer">more_horiz</span>
+</div>
+<div class="flex-1 overflow-y-auto py-xs font-body-sm text-[13px]">
+<!-- Project Root -->
+<div class="flex items-center gap-xs px-sm py-1 bg-surface-variant/30 font-semibold">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+<span class="material-symbols-outlined text-[18px] text-primary">work</span>
+                    portfolio-analysis.bks
+                </div>
+<!-- Folders -->
+<div class="pl-md">
+<div class="flex items-center gap-xs px-sm py-1 hover:bg-surface-variant/40 cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+<span class="material-symbols-outlined text-[18px] text-on-primary-container">folder</span>
+                        input/
+                    </div>
+<div class="flex items-center gap-xs px-sm py-1 hover:bg-surface-variant/40 cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">expand_more</span>
+<span class="material-symbols-outlined text-[18px] text-on-primary-container">folder_open</span>
+                        output/
+                    </div>
+<!-- Subfolders -->
+<div class="pl-md">
+<div class="flex items-center gap-xs px-sm py-1 hover:bg-surface-variant/40 cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+<span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim">folder</span>
+                            java/
+                        </div>
+<div class="flex items-center gap-xs px-sm py-1 hover:bg-surface-variant/40 cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+<span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim">folder</span>
+                            classes/
+                        </div>
+<div class="flex items-center gap-xs px-sm py-1 hover:bg-surface-variant/40 cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+<span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim">folder</span>
+                            symbols/
+                        </div>
+<div class="flex items-center gap-xs px-sm py-1 hover:bg-surface-variant/40 cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+<span class="material-symbols-outlined text-[18px] text-secondary-fixed-dim">folder</span>
+                            trees/
+                        </div>
+</div>
+<div class="flex items-center gap-xs px-sm py-1 hover:bg-surface-variant/40 cursor-pointer">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+<span class="material-symbols-outlined text-[18px] text-on-primary-container">folder</span>
+                        docs/
+                    </div>
+<!-- Active File -->
+<div class="flex items-center gap-xs px-sm py-1 bg-secondary-container/30 text-secondary font-semibold border-r-2 border-secondary">
+<span class="material-symbols-outlined text-[18px]">description</span>
+                        portfolio-analysis.bks
+                    </div>
+</div>
+</div>
+</aside>
+<!-- Main Workspace -->
+<main class="flex-1 flex flex-col bg-surface-container-lowest relative overflow-hidden">
+<!-- Tabs -->
+<div class="flex bg-surface-container-low border-b border-surface-variant">
+<div class="bg-surface-container-lowest px-md py-sm border-r border-surface-variant border-t-2 border-t-secondary flex items-center gap-xs font-label-caps text-label-caps text-primary">
+<span class="material-symbols-outlined text-[16px] text-secondary">description</span>
+                    portfolio-analysis.bks
+                    <span class="material-symbols-outlined text-[14px] ml-sm hover:bg-surface-variant rounded-sm cursor-pointer">close</span>
+</div>
+<div class="px-md py-sm border-r border-surface-variant flex items-center gap-xs font-label-caps text-label-caps text-on-surface-variant opacity-60 hover:opacity-100 cursor-pointer">
+<span class="material-symbols-outlined text-[16px]">description</span>
+                    report-template.bks
+                    <span class="material-symbols-outlined text-[14px] ml-sm">close</span>
+</div>
+</div>
+<!-- Editor -->
+<div class="flex-1 flex flex-col bg-surface-container-lowest overflow-hidden">
+<div class="flex-1 overflow-auto font-code-md text-code-md p-lg">
+<div class="flex flex-col gap-1">
+<div class="flex code-line-number" data-line="1"><span class="text-secondary font-bold">spec</span> <span class="text-primary">portfolio.analysis</span> {</div>
+<div class="flex code-line-number" data-line="2"><span class="ml-lg text-on-primary-container">currency</span> <span class="text-primary">base</span> = <span class="text-on-secondary-container">USD</span></div>
+<div class="flex code-line-number" data-line="3"><span class="ml-lg text-on-primary-container">rate</span> <span class="text-primary">discount</span> = <span class="text-on-secondary-container">12%</span></div>
+<div class="flex code-line-number" data-line="4"><span class="ml-lg text-on-primary-container">cashflow</span> <span class="text-primary">cf</span> = [<span class="text-on-secondary-container">-5000</span>, <span class="text-on-secondary-container">1200</span>, <span class="text-on-secondary-container">1800</span>, <span class="text-on-secondary-container">2400</span>, <span class="text-on-secondary-container">3000</span>]</div>
+<div class="flex code-line-number" data-line="5"><span class="ml-lg text-on-primary-container">npv</span> <span class="text-primary">result</span> = <span class="text-secondary font-bold">NPV</span>(discount, cf)</div>
+<div class="flex code-line-number" data-line="6"><span class="ml-lg text-secondary font-bold">emit</span> <span class="text-primary">report</span>(result)</div>
+<div class="flex code-line-number" data-line="7">}</div>
+<div class="flex code-line-number" data-line="8"> </div>
+<div class="flex code-line-number" data-line="9"><span class="text-outline-variant italic">// End of specification</span></div>
+</div>
+</div>
+<!-- Bottom Panel (Console) -->
+<div class="h-48 border-t border-surface-variant flex flex-col bg-surface-container-low">
+<div class="flex border-b border-surface-variant bg-surface-container">
+<div class="px-md py-xs font-label-caps text-label-caps text-secondary font-bold border-b-2 border-secondary bg-surface-container-low">CONSOLE</div>
+<div class="px-md py-xs font-label-caps text-label-caps text-on-surface-variant opacity-60 hover:opacity-100 cursor-pointer">PROBLEMS</div>
+<div class="px-md py-xs font-label-caps text-label-caps text-on-surface-variant opacity-60 hover:opacity-100 cursor-pointer">BUILD</div>
+</div>
+<div class="flex-1 overflow-y-auto p-sm font-code-md text-[12px] bg-primary-container/5">
+<div class="flex gap-sm">
+<span class="text-secondary opacity-70">[LEX]</span>
+<span class="text-on-surface">Lexical analysis completed</span>
+</div>
+<div class="flex gap-sm">
+<span class="text-secondary opacity-70">[SYN]</span>
+<span class="text-on-surface">Syntax tree generated successfully</span>
+</div>
+<div class="flex gap-sm">
+<span class="text-secondary opacity-70">[SEM]</span>
+<span class="text-on-surface">Semantic validation passed: 0 errors, 0 warnings</span>
+</div>
+<div class="flex gap-sm">
+<span class="text-on-secondary-container font-bold">[GEN]</span>
+<span class="text-on-surface">Java code generated at /output/java/PortfolioAnalysis.java</span>
+</div>
+</div>
+<div class="p-xs bg-surface-container-low border-t border-surface-variant flex items-center gap-sm">
+<span class="material-symbols-outlined text-[16px] text-outline">chevron_right</span>
+<input class="w-full bg-transparent border-none focus:ring-0 font-code-md text-code-md py-0 placeholder:text-outline-variant text-on-surface" placeholder="Enter runtime input..." type="text"/>
+</div>
+</div>
+</div>
+</main>
+<!-- Right Panel - Artifacts -->
+<aside class="w-72 bg-surface-container-low border-l border-surface-variant flex flex-col">
+<div class="px-md py-sm border-b border-surface-variant flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Generated Artifacts</span>
+<span class="material-symbols-outlined text-[16px] text-outline cursor-pointer">sync</span>
+</div>
+<div class="flex-1 overflow-y-auto p-sm flex flex-col gap-sm">
+<!-- Artifact Item -->
+<div class="p-sm bg-surface-container-lowest border border-surface-variant rounded hover:shadow-sm transition-all group cursor-pointer">
+<div class="flex items-center gap-sm mb-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary">code_blocks</span>
+<span class="font-label-caps text-label-caps text-primary text-[11px] truncate">Java Output</span>
+<span class="ml-auto flex items-center gap-xs px-1.5 py-0.5 bg-secondary/10 text-secondary rounded-full text-[9px] font-bold">GENERATED</span>
+</div>
+<div class="text-[11px] text-outline truncate pl-7">PortfolioAnalysis.java</div>
+</div>
+<!-- Artifact Item -->
+<div class="p-sm bg-surface-container-lowest border border-surface-variant rounded hover:shadow-sm transition-all group cursor-pointer">
+<div class="flex items-center gap-sm mb-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary">memory</span>
+<span class="font-label-caps text-label-caps text-primary text-[11px] truncate">Compiled Classes</span>
+<span class="ml-auto flex items-center gap-xs px-1.5 py-0.5 bg-secondary/10 text-secondary rounded-full text-[9px] font-bold">UPDATED</span>
+</div>
+<div class="text-[11px] text-outline truncate pl-7">PortfolioAnalysis.class</div>
+</div>
+<!-- Artifact Item -->
+<div class="p-sm bg-surface-container-lowest border border-surface-variant border-dashed opacity-70 rounded hover:shadow-sm transition-all group cursor-pointer">
+<div class="flex items-center gap-sm mb-xs">
+<span class="material-symbols-outlined text-[20px] text-outline">table_chart</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant text-[11px] truncate">Symbols CSV</span>
+<span class="ml-auto flex items-center gap-xs px-1.5 py-0.5 bg-surface-variant text-on-surface-variant rounded-full text-[9px] font-bold uppercase">Pending</span>
+</div>
+<div class="text-[11px] text-outline truncate pl-7">Not yet generated...</div>
+</div>
+<!-- Artifact Item -->
+<div class="p-sm bg-secondary-container/10 border border-secondary rounded shadow-sm transition-all group cursor-pointer">
+<div class="flex items-center gap-sm mb-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+<span class="font-label-caps text-label-caps text-primary text-[11px] truncate">Parse Tree SVG</span>
+<span class="ml-auto flex items-center gap-xs px-1.5 py-0.5 bg-secondary text-on-secondary rounded-full text-[9px] font-bold uppercase">Open</span>
+</div>
+<div class="text-[11px] text-outline truncate pl-7">view_syntax_tree.svg</div>
+<div class="mt-sm rounded overflow-hidden border border-outline-variant">
+<img alt="Parse Tree Preview" class="w-full h-32 object-cover" data-alt="A clean vector technical diagram representing a computer science syntax tree structure with nodes and connector lines. The graphic is presented in a minimalist, high-tech style with a neutral light-mode background and teal accents. The lighting is flat and professional, conveying a sense of clear data visualization and engineering precision used in financial IDEs." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAuZxY6FFJXkgWnbfNM438Cf8ICXE6sps3K5afy7M86s5JCX6K7vzU59EvwqEveDpf3SWKfzoK7pGGK6KUqXTE5pvX8RyZ17iEbOZQk8FHfv3Ptpsp2hgO0JQ0RikqMm_PW0dEI8vZBch1VrpnGlvd6mokTeAif-xdtpdqgJpQ7OMSgFp47L0pJZt_jp563n-3k4FPKfpi6dSUEzNnWTbsFjoZ9kQvUj9XP1kg_vgyY2LolCoVURCtGvPwcEdADXpYKE9n3Qzfoyc"/>
+</div>
+</div>
+<!-- Artifact Item -->
+<div class="p-sm bg-surface-container-lowest border border-surface-variant rounded hover:shadow-sm transition-all group cursor-pointer">
+<div class="flex items-center gap-sm mb-xs">
+<span class="material-symbols-outlined text-[20px] text-secondary">analytics</span>
+<span class="font-label-caps text-label-caps text-primary text-[11px] truncate">Execution Report</span>
+<span class="ml-auto flex items-center gap-xs px-1.5 py-0.5 bg-secondary/10 text-secondary rounded-full text-[9px] font-bold">GENERATED</span>
+</div>
+<div class="text-[11px] text-outline truncate pl-7">analysis_report_v1.pdf</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- Footer Status Bar -->
+<footer class="bg-primary-container dark:bg-on-tertiary-container text-on-primary-container dark:text-tertiary-fixed-dim flex justify-between items-center px-md h-6 font-code-md text-[11px] z-50">
+<div class="flex items-center gap-md">
+<span class="hover:text-secondary-fixed cursor-pointer transition-opacity duration-200">Language: <span class="text-on-secondary-fixed">BickSpec</span></span>
+<span class="opacity-30">|</span>
+<span class="hover:text-secondary-fixed cursor-pointer transition-opacity duration-200">Status: <span class="text-secondary-fixed font-bold">Ready</span></span>
+<span class="opacity-30">|</span>
+<span class="hover:text-secondary-fixed cursor-pointer transition-opacity duration-200">Last run: <span class="text-secondary-fixed">124ms</span></span>
+</div>
+<div class="flex items-center gap-md">
+<span class="hover:text-secondary-fixed cursor-pointer transition-opacity duration-200">Env: <span class="text-on-secondary-fixed">production</span></span>
+<span class="opacity-30">|</span>
+<span class="hover:text-secondary-fixed cursor-pointer transition-opacity duration-200">Branch: <span class="text-on-secondary-fixed">main</span></span>
+<span class="opacity-30">|</span>
+<span class="hover:text-secondary-fixed cursor-pointer transition-opacity duration-200">UTF-8</span>
+<div class="flex gap-xs ml-sm">
+<span class="material-symbols-outlined text-[12px]">notifications</span>
+<span class="material-symbols-outlined text-[12px]">code</span>
+</div>
+</div>
+</footer>
+</body></html>

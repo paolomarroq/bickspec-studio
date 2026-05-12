@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BickSpec IDE - portfolio-analysis.bks</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&amp;family=IBM+Plex+Mono:wght@400;450;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#4f5f78",
+                        "surface-bright": "#f5faff",
+                        "tertiary": "#000205",
+                        "on-tertiary": "#ffffff",
+                        "primary": "#006b5b",
+                        "tertiary-fixed": "#d3e4fe",
+                        "tertiary-container": "#0c1d30",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#0b1c30",
+                        "on-surface-variant": "#44474d",
+                        "outline-variant": "#c4c6cd",
+                        "outline": "#74777e",
+                        "surface-variant": "#dce3ea",
+                        "on-secondary-container": "#007261",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#71f9dd",
+                        "on-background": "#151c21",
+                        "error": "#ba1a1a",
+                        "on-surface": "#151c21",
+                        "surface-container-low": "#edf4fb",
+                        "surface-container-highest": "#dce3ea",
+                        "on-tertiary-fixed-variant": "#38485d",
+                        "on-primary-fixed": "#0a1c32",
+                        "secondary-fixed-dim": "#50dcc1",
+                        "surface-dim": "#d4dbe2",
+                        "primary-fixed-dim": "#b7c7e5",
+                        "on-tertiary-container": "#75869d",
+                        "on-secondary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed-variant": "#005144",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#e2e9f0",
+                        "primary-container": "#0b1d33",
+                        "inverse-on-surface": "#ebf2f9",
+                        "on-primary-container": "#7586a0",
+                        "inverse-surface": "#2a3137",
+                        "on-primary-fixed-variant": "#374860",
+                        "background": "#f5faff",
+                        "tertiary-fixed-dim": "#b7c8e1",
+                        "surface-container": "#e8eff6",
+                        "surface": "#f5faff",
+                        "primary-fixed": "#d4e3ff",
+                        "inverse-primary": "#b7c7e5",
+                        "on-secondary-fixed": "#00201a",
+                        "secondary": "#006b5b",
+                        "secondary-fixed": "#71f9dd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "md": "16px",
+                        "xl": "32px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "panel-gutter": "1px",
+                        "unit": "4px",
+                        "xs": "4px"
+                    },
+                    "fontFamily": {
+                        "code-sm": ["IBM Plex Mono"],
+                        "h1": ["Sora"],
+                        "label-caps": ["Sora"],
+                        "h2": ["Sora"],
+                        "code-md": ["IBM Plex Mono"],
+                        "body-md": ["Sora"],
+                        "code-lg": ["IBM Plex Mono"],
+                        "body-lg": ["Sora"]
+                    },
+                    "fontSize": {
+                        "code-sm": ["12px", {"lineHeight": "18px", "fontWeight": "450"}],
+                        "h1": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "label-caps": ["11px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "h2": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "code-md": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "code-lg": ["14px", {"lineHeight": "22px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .spec-grid-border { border: 1px solid #c4c6cd; }
+        .editor-bg { background-color: #ffffff; }
+        .active-tab { border-top: 2px solid #006b5b; background-color: #e8eff6; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md text-body-md h-screen flex flex-col overflow-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface-container flex justify-between items-center h-12 px-md w-full border-b border-outline-variant shrink-0">
+<div class="flex items-center gap-xl">
+<span class="font-h1 text-h1 font-bold text-primary tracking-tighter">BickSpec</span>
+<nav class="hidden md:flex gap-md items-center">
+<button class="flex items-center gap-xs px-sm py-1 font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors duration-150 active:opacity-80">
+<span class="material-symbols-outlined text-[18px]" data-icon="play_arrow">play_arrow</span>
+                Run
+            </button>
+<button class="flex items-center gap-xs px-sm py-1 font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors duration-150 active:opacity-80">
+<span class="material-symbols-outlined text-[18px]" data-icon="build">build</span>
+                Compile
+            </button>
+<button class="flex items-center gap-xs px-sm py-1 font-label-caps text-label-caps text-on-surface-variant hover:text-primary transition-colors duration-150 active:opacity-80">
+<span class="material-symbols-outlined text-[18px]" data-icon="terminal">terminal</span>
+                Execute
+            </button>
+<div class="h-4 w-[1px] bg-outline-variant mx-sm"></div>
+<button class="flex items-center gap-xs px-sm py-1 font-label-caps text-label-caps text-primary border-b-2 border-primary pb-1 active:opacity-80">
+<span class="material-symbols-outlined text-[18px]" data-icon="java">javascript</span>
+                Generate Java
+            </button>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="text-on-surface-variant hover:text-primary transition-colors flex items-center gap-xs">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+<span class="font-label-caps text-label-caps">DOCS</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar (Left Sidebar - File Explorer) -->
+<aside class="bg-surface-container-low flex flex-col h-full w-64 border-r border-outline-variant shrink-0">
+<div class="px-md py-sm border-b border-outline-variant bg-surface-container flex justify-between items-center">
+<div>
+<h2 class="font-label-caps text-label-caps text-on-surface-variant">WORKSPACE</h2>
+<p class="font-code-sm text-code-sm text-outline">v1.0.4-stable</p>
+</div>
+<span class="material-symbols-outlined text-outline text-[18px]" data-icon="unfold_more">unfold_more</span>
+</div>
+<div class="flex-1 overflow-y-auto py-sm">
+<div class="px-md mb-xs flex items-center gap-xs text-primary">
+<span class="material-symbols-outlined text-[16px]" data-icon="folder_open" style="font-variation-settings: 'FILL' 1;">folder_open</span>
+<span class="font-label-caps text-label-caps">portfolio-analysis.bks</span>
+</div>
+<ul class="space-y-[1px]">
+<li class="bg-surface-variant border-l-2 border-primary px-md py-xs flex items-center gap-xs group cursor-pointer transition-all duration-75 ease-linear">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="description">description</span>
+<span class="font-code-sm text-code-sm text-primary">portfolio-analysis.bks</span>
+</li>
+<li class="hover:bg-surface-variant px-md py-xs flex items-center gap-xs group cursor-pointer transition-all duration-75 ease-linear">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="description">description</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant group-hover:text-on-surface">risk-matrix.bks</span>
+</li>
+<li class="hover:bg-surface-variant px-md py-xs flex items-center gap-xs group cursor-pointer transition-all duration-75 ease-linear">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="folder">folder</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant group-hover:text-on-surface">templates</span>
+</li>
+<li class="hover:bg-surface-variant px-md py-xs flex items-center gap-xs group cursor-pointer transition-all duration-75 ease-linear">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant" data-icon="settings_suggest">settings_suggest</span>
+<span class="font-code-sm text-code-sm text-on-surface-variant group-hover:text-on-surface">config.json</span>
+</li>
+</ul>
+<div class="mt-lg px-md">
+<h2 class="font-label-caps text-label-caps text-outline mb-sm">QUICK ACTIONS</h2>
+<div class="grid grid-cols-1 gap-xs">
+<button class="flex items-center gap-sm p-sm hover:bg-surface-variant text-on-surface-variant transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="add_box">add_box</span>
+<span class="font-label-caps text-label-caps">New File</span>
+</button>
+<button class="flex items-center gap-sm p-sm hover:bg-surface-variant text-on-surface-variant transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="folder_open">folder_open</span>
+<span class="font-label-caps text-label-caps">Open</span>
+</button>
+<button class="flex items-center gap-sm p-sm hover:bg-surface-variant text-on-surface-variant transition-all">
+<span class="material-symbols-outlined text-[18px]" data-icon="history">history</span>
+<span class="font-label-caps text-label-caps">Recent</span>
+</button>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Workspace Area -->
+<main class="flex-1 flex flex-col min-w-0">
+<!-- Tabs & Editor Container -->
+<div class="flex-1 flex flex-col min-h-0">
+<!-- Editor Tabs -->
+<div class="flex bg-surface-container-lowest border-b border-outline-variant h-9 shrink-0">
+<div class="active-tab px-md flex items-center gap-sm border-r border-outline-variant">
+<span class="material-symbols-outlined text-[14px] text-primary" data-icon="description">description</span>
+<span class="font-code-sm text-code-sm text-on-surface">portfolio-analysis.bks</span>
+<span class="material-symbols-outlined text-[14px] text-outline cursor-pointer hover:text-on-surface" data-icon="close">close</span>
+</div>
+<div class="px-md flex items-center gap-sm border-r border-outline-variant opacity-60 hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[14px]" data-icon="description">description</span>
+<span class="font-code-sm text-code-sm">risk-matrix.bks</span>
+<span class="material-symbols-outlined text-[14px]" data-icon="close">close</span>
+</div>
+</div>
+<!-- Code Editor Area -->
+<div class="flex-1 flex editor-bg overflow-hidden relative">
+<!-- Line Numbers Gutter -->
+<div class="w-12 bg-surface-container-lowest flex flex-col items-end py-md pr-sm select-none border-r border-outline-variant shrink-0">
+<span class="font-code-sm text-code-sm text-outline leading-[22px]">1</span>
+<span class="font-code-sm text-code-sm text-outline leading-[22px]">2</span>
+<span class="font-code-sm text-code-sm text-outline leading-[22px]">3</span>
+<span class="font-code-sm text-code-sm text-outline leading-[22px]">4</span>
+<span class="font-code-sm text-code-sm text-outline leading-[22px]">5</span>
+<span class="font-code-sm text-code-sm text-primary leading-[22px]">6</span>
+<span class="font-code-sm text-code-sm text-outline leading-[22px]">7</span>
+<span class="font-code-sm text-code-sm text-outline leading-[22px]">8</span>
+<span class="font-code-sm text-code-sm text-outline leading-[22px]">9</span>
+<span class="font-code-sm text-code-sm text-outline leading-[22px]">10</span>
+<span class="font-code-sm text-code-sm text-outline leading-[22px]">11</span>
+<span class="font-code-sm text-code-sm text-outline leading-[22px]">12</span>
+<span class="font-code-sm text-code-sm text-outline leading-[22px]">13</span>
+</div>
+<!-- Code Content -->
+<div class="flex-1 overflow-auto py-md px-md font-code-lg text-code-lg leading-[22px] whitespace-pre text-on-surface">
+<span class="text-secondary">package</span> <span class="text-on-surface">com.bickspec.finance.portfolio;</span>
+<span class="text-primary font-semibold">specification</span> <span class="text-on-surface">PortfolioAnalysis {</span>
+<span class="text-outline italic">// Define standard risk metrics</span>
+<span class="text-primary font-semibold">type</span> <span class="text-on-surface">Metric</span> = {
+        <span class="text-on-surface-variant">sharpeRatio</span>: <span class="text-primary">Decimal</span>,
+        <span class="text-on-surface-variant">alpha</span>: <span class="text-primary">Decimal</span>,
+        <span class="text-on-surface-variant">beta</span>: <span class="text-primary">Decimal</span>
+    };
+
+    <span class="text-primary font-semibold">rule</span> <span class="text-on-surface">CalculateVolatility</span>(<span class="text-on-surface-variant">assets</span>: <span class="text-primary">List&lt;Asset&gt;</span>) {
+        <span class="text-secondary">validate</span> assets.size() &gt; <span class="text-secondary">0</span>;
+        
+        <span class="text-secondary">return</span> assets.map(a =&gt; a.returns)
+                     .variance()
+                     .sqrt();
+    }
+
+<span class="text-on-surface">}</span></div>
+<!-- Highlight active line overlay -->
+<div class="absolute top-[125px] left-0 w-full h-[22px] bg-primary/10 pointer-events-none border-y border-primary/20"></div>
+</div>
+</div>
+<!-- Bottom Tabbed Console -->
+<div class="h-48 border-t border-outline-variant flex flex-col bg-surface-container-lowest shrink-0">
+<div class="flex border-b border-outline-variant h-8">
+<button class="px-md border-b-2 border-primary text-primary font-label-caps text-label-caps flex items-center gap-xs">
+                    CONSOLE
+                </button>
+<button class="px-md text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps flex items-center gap-xs">
+                    PROBLEMS <span class="bg-error-container text-on-error-container px-1 rounded-sm text-[10px]">2</span>
+</button>
+<button class="px-md text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps">
+                    BUILD
+                </button>
+<button class="px-md text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps">
+                    OUTPUT
+                </button>
+<button class="px-md text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps">
+                    REPORTS
+                </button>
+</div>
+<div class="flex-1 overflow-auto p-md font-code-sm text-code-sm bg-background">
+<div class="flex gap-md opacity-80 mb-1">
+<span class="text-outline">[10:42:01]</span>
+<span class="text-on-surface">Initializing BickSpec Compiler v2.4.0...</span>
+</div>
+<div class="flex gap-md opacity-80 mb-1">
+<span class="text-outline">[10:42:02]</span>
+<span class="text-primary font-bold">SUCCESS</span>
+<span class="text-on-surface">Validation complete: portfolio-analysis.bks (0.4s)</span>
+</div>
+<div class="flex gap-md opacity-80 mb-1">
+<span class="text-outline">[10:42:03]</span>
+<span class="text-secondary font-bold">WARNING</span>
+<span class="text-on-surface">Unused variable 'alpha' at line 8</span>
+</div>
+<div class="flex gap-md opacity-80">
+<span class="text-outline">[10:42:04]</span>
+<span class="text-on-surface">Waiting for changes...</span>
+<span class="animate-pulse bg-primary w-2 h-4"></span>
+</div>
+</div>
+</div>
+</main>
+<!-- Right Sidebar (Artifacts) -->
+<aside class="w-72 bg-surface-container border-l border-outline-variant flex flex-col shrink-0">
+<div class="px-md py-sm border-b border-outline-variant flex justify-between items-center">
+<span class="font-label-caps text-label-caps text-on-surface-variant">ARTIFACTS</span>
+<span class="material-symbols-outlined text-outline text-[18px]" data-icon="filter_list">filter_list</span>
+</div>
+<div class="flex-1 p-md overflow-y-auto space-y-md">
+<!-- Artifact Card -->
+<div class="spec-grid-border p-sm bg-surface-container-high space-y-sm">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[20px]" data-icon="verified">verified</span>
+<h3 class="font-body-md text-on-surface font-semibold">PortfolioMapper.java</h3>
+</div>
+<span class="text-[10px] font-code-sm text-outline">2.4kb</span>
+</div>
+<p class="font-code-sm text-code-sm text-on-surface-variant">Generated 2m ago</p>
+<div class="flex gap-xs">
+<button class="flex-1 py-1 bg-surface-container-lowest border border-outline-variant text-on-surface font-label-caps text-[10px] hover:bg-surface-variant transition-colors">VIEW SOURCE</button>
+<button class="flex-1 py-1 bg-primary text-on-primary font-label-caps text-[10px] hover:bg-secondary transition-colors">DOWNLOAD</button>
+</div>
+</div>
+<!-- Artifact Card -->
+<div class="spec-grid-border p-sm bg-surface-container-high space-y-sm">
+<div class="flex justify-between items-start">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]" data-icon="pending">pending</span>
+<h3 class="font-body-md text-on-surface font-semibold">RiskProfile.json</h3>
+</div>
+<span class="text-[10px] font-code-sm text-outline">0.8kb</span>
+</div>
+<div class="w-full bg-outline-variant h-1 overflow-hidden">
+<div class="bg-primary h-full w-2/3"></div>
+</div>
+<p class="font-code-sm text-code-sm text-on-surface-variant italic">Compiling schema...</p>
+</div>
+<!-- System Stats/Diagram Mini -->
+<div class="mt-xl">
+<h4 class="font-label-caps text-label-caps text-outline mb-sm">DEPENDENCY GRAPH</h4>
+<div class="relative w-full h-40 bg-surface-container-lowest spec-grid-border flex items-center justify-center">
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#006b5b 1px, transparent 1px); background-size: 8px 8px;"></div>
+<div class="flex flex-col items-center gap-sm z-10">
+<div class="w-24 h-12 border border-primary flex items-center justify-center bg-surface-container">
+<span class="font-code-sm text-code-sm text-primary">CoreSpec</span>
+</div>
+<div class="w-1 h-8 bg-outline-variant"></div>
+<div class="w-24 h-12 border border-outline-variant flex items-center justify-center bg-surface-container">
+<span class="font-code-sm text-code-sm text-on-surface-variant">Analysis</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+<!-- Footer / Status Bar -->
+<footer class="bg-surface-container-lowest flex justify-between items-center px-md h-8 w-full border-t border-outline-variant shrink-0">
+<div class="flex items-center gap-md font-code-sm text-code-sm text-on-surface">
+<span class="flex items-center gap-xs">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            Status: Ready
+        </span>
+<span class="text-outline">Main Branch</span>
+<span class="text-outline">UTF-8</span>
+</div>
+<div class="flex items-center gap-md font-code-sm text-code-sm text-on-surface-variant">
+<span>Line 6, Col 12</span>
+<span>BickSpec Compiler v2.4.0</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="notifications">notifications</span>
+</div>
+</footer>
+</body></html>
