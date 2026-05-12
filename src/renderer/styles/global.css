@@ -466,6 +466,28 @@ pre,
   line-height: 1.55;
 }
 
+.settings-category-strip {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-outline-variant);
+}
+
+.settings-category-strip span {
+  min-height: 38px;
+  display: grid;
+  place-items: center;
+  background: var(--color-surface-lowest);
+  color: var(--color-text-muted);
+}
+
+.settings-category-strip span:nth-child(5) {
+  color: var(--color-teal);
+}
+
 .recent-project-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 82px;
@@ -512,6 +534,29 @@ pre,
   background: var(--color-surface-lowest);
   color: var(--color-text);
   padding: 0 10px;
+}
+
+.theme-options {
+  display: inline-grid;
+  grid-template-columns: repeat(3, minmax(76px, 1fr));
+  border: 1px solid var(--color-outline-variant);
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--color-outline-variant);
+}
+
+.theme-option {
+  min-height: 34px;
+  border: 0;
+  background: var(--color-surface-lowest);
+  color: var(--color-text-muted);
+  padding: 0 12px;
+  font-weight: 700;
+}
+
+.theme-option.selected {
+  background: var(--color-teal);
+  color: #ffffff;
 }
 
 .toggle {

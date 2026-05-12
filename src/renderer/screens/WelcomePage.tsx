@@ -17,7 +17,7 @@ export function WelcomePage() {
 
   return (
     <div className="launcher-grid">
-      <main className="page spec-grid-pattern" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+      <main className="page" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
         <section>
           <div style={{ display: "grid", gap: 18, alignItems: "flex-start" }}>
             <BrandLogo className="launcher-logo" />

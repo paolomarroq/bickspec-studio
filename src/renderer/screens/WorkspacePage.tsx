@@ -84,7 +84,7 @@ export function WorkspacePage() {
             <div><span className="label-caps">Current Spec</span><strong style={{ display: "block" }}>PortfolioAnalysis</strong></div>
             <div><span className="label-caps">Inputs</span><strong style={{ display: "block" }}>assets, horizon, confidence</strong></div>
             <div><span className="label-caps">Artifacts</span><strong style={{ display: "block", color: "var(--color-teal)" }}>5 staged</strong></div>
-            <ToolbarButton primary icon={<Play size={16} />} onClick={runBuild}>Run Compile</ToolbarButton>
+            <ToolbarButton primary icon={<Play size={16} />} onClick={runBuild}>Compile & Run</ToolbarButton>
           </div>
         </Panel>
         <Panel title="Outline">
@@ -118,4 +118,3 @@ export function WorkspacePage() {
     </div>
   );
 }
-

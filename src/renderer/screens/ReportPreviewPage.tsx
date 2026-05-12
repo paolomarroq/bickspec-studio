@@ -110,7 +110,7 @@ export function ReportPreviewPage() {
             <p className="mono" style={{ color: "var(--color-text-muted)", lineHeight: 1.7 }}>
               reportId: portfolio-report<br />
               source: portfolio-analysis.bks<br />
-              service: mock-report-service<br />
+              service: Local report service<br />
               selected: {selectedSection}
             </p>
           </div>

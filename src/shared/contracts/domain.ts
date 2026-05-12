@@ -1,4 +1,4 @@
-export type ThemeMode = "light" | "dark";
+export type ThemeMode = "light" | "dark" | "system";
 export type ArtifactKind = "java" | "json" | "pdf" | "csv" | "excel";
 export type CompileStatus = "idle" | "ready" | "running" | "succeeded" | "failed";
 

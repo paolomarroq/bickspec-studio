@@ -1,64 +1,53 @@
 # BickSpec Studio
 
-BickSpec Studio is a lightweight desktop IDE for writing, compiling, reviewing, and exporting BickSpec financial specifications.
+BickSpec Studio is a lightweight desktop IDE for writing, compiling, reviewing, and exporting financial specifications built with BickSpec.
 
-This repository is the desktop UI and launcher layer. It is intentionally separate from the compiler repository so the Electron shell, renderer experience, packaging, and brand system can mature independently from parser/compiler/runtime work.
+BickSpec is the language. BickSpec Studio is the desktop application and IDE.
 
 ## Current Scope
 
-The app is UI-only today. Project loading, compile/run actions, Java generation, artifact output, report preview/export, and settings persistence are represented with mock services and realistic placeholder state.
+This repository contains the final polished desktop UI layer before backend compiler integration. Project loading, compile/run actions, Java generation, artifact output, report preview/export, and settings persistence use local placeholder services so the product can be reviewed and demonstrated without coupling the renderer to backend implementation details.
 
-The implementation is structured so future backend and compiler integration can attach through typed service contracts instead of being hardwired into React screens.
+The compiler remains a separate project. Future integration should connect through the existing service contracts and Electron preload/main boundaries.
 
-## Approved Visual Source
+## Approved Brand Direction
 
-The approved UI source of truth lives in:
+The approved brand is BickSpec Option 03: Spec Grid.
+
+The UI preserves the approved direction:
+
+- structure, specification, brackets, grid, and financial clarity
+- navy and teal palette
+- Sora for interface typography
+- IBM Plex Mono for code, console, and technical output
+- desktop-first panel composition
+- approved Spec Grid logo/icon assets only
+
+The visual source of truth lives in:
 
 - `designs/`
 - `designs/brand/`
 
-The screen layouts, hierarchy, spacing, typography, navy/teal Spec Grid tone, and light/dark direction were translated from the approved HTML design exports. The top-left app chrome icon, launcher wordmark, and Electron app icon use approved PNG assets copied from `designs/brand/`.
+## Implemented UI
 
-## What Is Implemented
+- Welcome / Launcher
+- Main IDE Workspace
+- Settings
+- Generated Artifacts / Results
+- Report Preview & Export
 
-- Electron main process, preload bridge, and React renderer separation
-- React Router routes for:
-  - Welcome / Launcher
-  - Main IDE Workspace
-  - Settings
-  - Generated Artifacts / Results
-  - Report Preview & Export
-- Spec Grid light and dark theme tokens
-- Approved brand logo/icon usage in app chrome, launcher, and Electron window icon
-- Componentized desktop UI:
-  - app shell and top toolbar
-  - launcher action cards
-  - recent project rows
-  - file tree
-  - editor shell
-  - terminal output
-  - diagnostics list
-  - artifact navigator
-  - settings groups
-  - status badges and toolbar buttons
-- Mock product workflow states:
-  - selected project/file
-  - active editor tab
-  - compile/run feedback
-  - generated artifact selection
-  - report preview/export feedback
-  - settings values
+The app includes a polished app shell, approved brand assets, light/dark/system theme selection, recent project states, editor tabs, diagnostics, terminal output, generated artifacts, report preview, export actions, and local status feedback.
 
 ## Future Backend Integration
 
-The future compiler/backend integration points are in:
+Integration points are intentionally explicit:
 
 - `src/shared/contracts/services.ts`
 - `src/shared/contracts/domain.ts`
 - `src/renderer/services/ServiceProvider.tsx`
-- `src/renderer/services/mockServices.ts`
+- `src/renderer/services/`
 
-The current mock services implement explicit contracts for projects, compiler actions, artifacts, reports, and settings. Real integration should replace the service implementation behind `ServiceProvider` and use the preload/main boundary for privileged desktop operations.
+The future compiler adapter should replace the current local service implementation while preserving the renderer/main/preload separation.
 
 ## Project Structure
 
@@ -71,9 +60,9 @@ src/
   renderer/
     components/         reusable UI components
     screens/            route-level screens
-    services/           mock services and service provider
+    services/           local service provider and placeholder implementation
     styles/             global Spec Grid CSS and theme variables
-    theme/              light/dark theme provider
+    theme/              light/dark/system theme provider
 buildResources/         app icon resources for Electron Builder
 .github/workflows/      CI build and packaging scaffold
 designs/                approved HTML and brand references
@@ -81,15 +70,8 @@ designs/                approved HTML and brand references
 
 ## Run Locally
 
-Install dependencies:
-
 ```bash
 npm install
-```
-
-Start the desktop app:
-
-```bash
 npm run dev
 ```
 
@@ -111,5 +93,4 @@ npm run package:mac
 npm run package:linux
 ```
 
-The initial GitHub Actions workflow installs dependencies, builds the app, runs a directory package, and uploads packaged artifacts from `release/`. Signing, notarization, release publishing, and platform-specific icon format hardening can be added when distribution requirements are finalized.
-
+The GitHub Actions workflow installs dependencies, builds the app, runs a Windows directory package, and uploads packaged artifacts from `release/`. Signing, notarization, release publishing, and platform-specific installer hardening can be added when distribution requirements are finalized.

@@ -17,13 +17,13 @@ const navItems = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { theme, toggleTheme } = useTheme();
-  const [statusMessage, setStatusMessage] = useState("BickSpec language server: mock");
+  const [statusMessage, setStatusMessage] = useState("BickSpec language server: Ready");
   const ThemeIcon = theme === "light" ? Moon : Sun;
 
   function showActionFeedback(action: string) {
-    setStatusMessage(`${action}: queued in mock UI`);
-    window.setTimeout(() => setStatusMessage(`${action}: mock completed`), 450);
-    window.setTimeout(() => setStatusMessage("BickSpec language server: mock"), 1400);
+    setStatusMessage(`${action}: processing locally`);
+    window.setTimeout(() => setStatusMessage(`${action}: ready`), 450);
+    window.setTimeout(() => setStatusMessage("BickSpec language server: Ready"), 1400);
   }
 
   return (
@@ -36,6 +36,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span>File</span>
             <span>Edit</span>
             <span>View</span>
+            <span>Window</span>
+            <span>About</span>
           </nav>
           <span className="label-caps">portfolio-analysis.bks</span>
           <StatusBadge>Ready</StatusBadge>

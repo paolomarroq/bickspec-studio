@@ -1,7 +1,7 @@
 import { useTheme } from "../../theme/ThemeProvider";
 
-const logoLightUrl = new URL("../../../assets/brand/logo_transparent.png", import.meta.url).href;
-const logoDarkUrl = new URL("../../../assets/brand/logo_dark_transparent.png", import.meta.url).href;
+const logoLightUrl = new URL("../../../assets/brand/logo.png", import.meta.url).href;
+const logoDarkUrl = new URL("../../../assets/brand/logo_dark.png", import.meta.url).href;
 const iconUrl = new URL("../../../assets/brand/icon.png", import.meta.url).href;
 
 export function BrandLogo({ variant = "wordmark", className = "" }: { variant?: "wordmark" | "icon"; className?: string }) {
@@ -11,4 +11,3 @@ export function BrandLogo({ variant = "wordmark", className = "" }: { variant?: 
 
   return <img className={className} src={src} alt={alt} draggable={false} />;
 }
-

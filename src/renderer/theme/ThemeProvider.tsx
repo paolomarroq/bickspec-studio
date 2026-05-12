@@ -15,7 +15,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   });
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme;
+    const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    document.documentElement.dataset.theme = theme === "system" ? systemTheme : theme;
     localStorage.setItem("bickspec.theme", theme);
   }, [theme]);
 
@@ -23,7 +24,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     () => ({
       theme,
       setTheme,
-      toggleTheme: () => setTheme((current) => (current === "light" ? "dark" : "light"))
+      toggleTheme: () => setTheme((current) => (current === "dark" ? "light" : "dark"))
     }),
     [theme]
   );
@@ -36,4 +37,3 @@ export function useTheme() {
   if (!context) throw new Error("useTheme must be used inside ThemeProvider");
   return context;
 }
-
