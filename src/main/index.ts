@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, nativeTheme } from "electron";
+import { app, BrowserWindow, Menu, ipcMain, nativeTheme } from "electron";
 import { join } from "node:path";
 
 const isDev = Boolean(process.env.ELECTRON_RENDERER_URL);
@@ -34,6 +34,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
+  Menu.setApplicationMenu(null);
   ipcMain.handle("app:get-version", () => app.getVersion());
   createWindow();
 
