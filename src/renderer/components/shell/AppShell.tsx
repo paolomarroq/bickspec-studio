@@ -1,7 +1,9 @@
-import { BarChart3, FileCode2, FolderOpen, Home, Moon, PackageCheck, Settings, Sun } from "lucide-react";
+import { BarChart3, Bell, FileCode2, FolderOpen, Home, Moon, PackageCheck, Search, Settings, Sun } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { useTheme } from "../../theme/ThemeProvider";
 import type { ReactNode } from "react";
+import { ToolbarButton } from "../ui/ToolbarButton";
+import { StatusBadge } from "../ui/StatusBadge";
 
 const navItems = [
   { to: "/", label: "Welcome", icon: Home },
@@ -26,18 +28,26 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span />
           </div>
           <strong style={{ fontSize: 18 }}>BickSpec Studio</strong>
+          <nav className="top-menu">
+            <span>File</span>
+            <span>Edit</span>
+            <span>Selection</span>
+            <span>View</span>
+            <span>Go</span>
+          </nav>
           <span className="label-caps">portfolio-analysis.bks</span>
-          <span className="label-caps" style={{ color: "var(--color-teal)" }}>
-            Ready
-          </span>
+          <StatusBadge>Ready</StatusBadge>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <button className="button primary">
-            <FileCode2 size={16} />
-            Run
+          <button className="icon-button" aria-label="Search">
+            <Search size={16} />
           </button>
-          <button className="button">Compile</button>
-          <button className="button">Generate Java</button>
+          <ToolbarButton primary icon={<FileCode2 size={16} />}>Run</ToolbarButton>
+          <ToolbarButton>Compile</ToolbarButton>
+          <ToolbarButton>Generate Java</ToolbarButton>
+          <button className="icon-button" aria-label="Notifications">
+            <Bell size={16} />
+          </button>
           <button className="button" onClick={toggleTheme} aria-label="Toggle color theme">
             <ThemeIcon size={16} />
           </button>
@@ -71,4 +81,3 @@ export function AppShell({ children }: { children: ReactNode }) {
     </div>
   );
 }
-

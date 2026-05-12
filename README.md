@@ -20,6 +20,20 @@ The React screens in this commit translate the approved HTML exports into reusab
 
 ## Current Commit Scope
 
+### Commit 2/3
+
+This commit implements the approved BickSpec Studio desktop UI screens as real React/Electron screens while keeping the app UI-only.
+
+- Translated the approved `designs/` HTML references into componentized React screens.
+- Implemented the light/dark Spec Grid visual system across the launcher, workspace, settings, artifacts, and report preview flows.
+- Added believable mock workflow state for selected projects, active files, editor tabs, compile state, terminal output, diagnostics, artifact selection, report export state, and settings values.
+- Introduced reusable UI components for status badges, toolbar actions, launcher cards, file trees, code editor shells, terminal output, diagnostics, artifact navigation, and settings groups.
+- Continued to use mock services behind typed interfaces so future compiler/backend integration can replace the mocks without restructuring the screens.
+
+The current app is still a UI-only desktop IDE layer. Compile, run, artifact generation, report export, settings persistence, and project access are mocked.
+
+### Commit 1/3
+
 - Electron main process foundation
 - Preload bridge foundation
 - React renderer foundation
@@ -61,4 +75,3 @@ Package scripts are present for future installer work:
 npm run package:dir
 npm run package
 ```
-

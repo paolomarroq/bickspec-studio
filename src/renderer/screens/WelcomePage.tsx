@@ -1,13 +1,35 @@
-import { FilePlus2, FolderOpen, FileCode2 } from "lucide-react";
+import { FilePlus2, FolderOpen, FileCode2, History, LayoutGrid } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Panel } from "../components/ui/Panel";
-import { recentProjects } from "../services/mockData";
+import { LauncherActionCard } from "../components/launcher/LauncherActionCard";
+import { useServices } from "../services/ServiceProvider";
+import type { StudioProject } from "@shared/contracts/domain";
 
 export function WelcomePage() {
+  const services = useServices();
+  const [projects, setProjects] = useState<StudioProject[]>([]);
+
+  useEffect(() => {
+    void services.projects.listRecentProjects().then(setProjects);
+  }, [services]);
+
   return (
-    <div className="page grid-page">
-      <section style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 24, alignItems: "center" }}>
-        <div>
+    <div className="launcher-grid">
+      <aside className="side-panel" style={{ padding: 18 }}>
+        <div className="label-caps">Workspace</div>
+        <div className="mono" style={{ marginTop: 4, color: "var(--color-teal)", fontSize: 12 }}>v1.0.4-stable</div>
+        <nav style={{ display: "grid", gap: 6, marginTop: 28 }}>
+          {["New File", "Open", "Recent", "Documentation"].map((item, index) => (
+            <Link className={`nav-row ${index === 0 ? "active" : ""}`} to={index === 2 ? "/" : "/workspace"} key={item}>
+              <LayoutGrid size={16} />
+              <span className="label-caps">{item}</span>
+            </Link>
+          ))}
+        </nav>
+      </aside>
+      <main className="page spec-grid-pattern" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+        <section>
           <div style={{ display: "flex", gap: 18, alignItems: "flex-start" }}>
             <div className="brand-mark" aria-hidden="true">
               <span />
@@ -25,41 +47,29 @@ export function WelcomePage() {
           <p style={{ maxWidth: 740, color: "var(--color-text-muted)", lineHeight: 1.6 }}>
             A structured desktop workspace for writing, compiling, reviewing, and exporting financial specifications.
           </p>
-        </div>
+        </section>
+
+        <section style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginTop: 30 }}>
+          <LauncherActionCard to="/workspace" primary icon={<FilePlus2 />} title="New BickSpec File" description="Create a blank financial logic schema." />
+          <LauncherActionCard to="/workspace" icon={<FileCode2 color="var(--color-teal)" />} title="Open .bks File" description="Open an existing single specification file." />
+          <LauncherActionCard to="/workspace" icon={<FolderOpen color="var(--color-teal)" />} title="Open Project Folder" description="Load a multi-file financial project." />
+        </section>
+      </main>
+
+      <aside style={{ padding: 18, background: "var(--color-surface)", borderLeft: "1px solid var(--color-outline-variant)", overflow: "auto" }}>
         <Panel title="Code Preview">
-          <pre className="code-editor" style={{ minHeight: 220 }}>
+          <pre className="code-editor" style={{ minHeight: 240 }}>
             <code>
               <span className="code-line" data-line="1"><span className="kw">spec</span> PortfolioAnalysis {"{"}</span>
               <span className="code-line" data-line="2">  <span className="kw">input</span> assets: Array&lt;Asset&gt;;</span>
-              <span className="code-line" data-line="3">  <span className="kw">input</span> horizon: Duration = <span className="str">"1y"</span>;</span>
-              <span className="code-line" data-line="4">  <span className="comment">// Compute weighted CAGR</span></span>
-              <span className="code-line" data-line="5">  <span className="kw">calculate</span> expected_return = assets.sum(a =&gt; a.weight * a.cagr);</span>
-              <span className="code-line" data-line="6">{"}"}</span>
+              <span className="code-line" data-line="3">  <span className="kw">calculate</span> expected_return = assets.sum(a =&gt; a.weight * a.cagr);</span>
+              <span className="code-line" data-line="4">  <span className="kw">export</span> pdf, csv, excel;</span>
+              <span className="code-line" data-line="5">{"}"}</span>
             </code>
           </pre>
         </Panel>
-      </section>
-
-      <section style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-        <Link className="panel" to="/workspace" style={{ padding: 24, color: "inherit", textDecoration: "none", background: "var(--color-teal)" }}>
-          <FilePlus2 />
-          <h2>New BickSpec File</h2>
-          <p>Start from a clean specification template.</p>
-        </Link>
-        <Link className="panel" to="/workspace" style={{ padding: 24, color: "inherit", textDecoration: "none" }}>
-          <FileCode2 color="var(--color-teal)" />
-          <h2>Open .bks File</h2>
-          <p>Open an existing single specification file.</p>
-        </Link>
-        <Link className="panel" to="/workspace" style={{ padding: 24, color: "inherit", textDecoration: "none" }}>
-          <FolderOpen color="var(--color-teal)" />
-          <h2>Open Project Folder</h2>
-          <p>Load a complete multi-file financial project.</p>
-        </Link>
-      </section>
-
-      <Panel title="Recent Projects" action={<button className="button">Clear Recent</button>}>
-        {recentProjects.map((project) => (
+        <Panel title="Recent Projects" action={<History size={16} />}>
+          {projects.map((project) => (
           <Link key={project.id} to="/workspace" style={{ display: "flex", justifyContent: "space-between", padding: 14, color: "inherit", textDecoration: "none", borderBottom: "1px solid var(--color-outline-variant)" }}>
             <span>
               <strong>{project.name}</strong>
@@ -67,9 +77,9 @@ export function WelcomePage() {
             </span>
             <span style={{ color: "var(--color-text-muted)" }}>{project.modifiedAt}</span>
           </Link>
-        ))}
-      </Panel>
+          ))}
+        </Panel>
+      </aside>
     </div>
   );
 }
-

@@ -1,6 +1,8 @@
 import type {
   CompileResult,
   GeneratedArtifact,
+  ProjectFile,
+  ReportPreview,
   ReportExportRequest,
   StudioProject,
   StudioSettings
@@ -13,6 +15,8 @@ export interface CompilerService {
 
 export interface ProjectService {
   listRecentProjects(): Promise<StudioProject[]>;
+  getCurrentProject(): Promise<StudioProject>;
+  listProjectFiles(projectId: string): Promise<ProjectFile[]>;
   createProject(name: string): Promise<StudioProject>;
   openProject(path: string): Promise<StudioProject>;
 }
@@ -23,7 +27,7 @@ export interface ArtifactsService {
 }
 
 export interface ReportService {
-  getPreview(reportId: string): Promise<string>;
+  getPreview(reportId: string): Promise<ReportPreview>;
   exportReport(request: ReportExportRequest): Promise<GeneratedArtifact>;
 }
 
@@ -39,4 +43,3 @@ export interface StudioServices {
   reports: ReportService;
   settings: SettingsService;
 }
-

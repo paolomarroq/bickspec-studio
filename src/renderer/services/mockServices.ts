@@ -1,5 +1,5 @@
 import type { StudioServices } from "@shared/contracts/services";
-import { generatedArtifacts, recentProjects } from "./mockData";
+import { currentProject, diagnostics, generatedArtifacts, projectFiles, recentProjects, reportPreview } from "./mockData";
 
 export const mockServices: StudioServices = {
   compiler: {
@@ -7,10 +7,7 @@ export const mockServices: StudioServices = {
       return {
         status: "succeeded",
         durationMs: 284,
-        diagnostics: [
-          { severity: "info", message: "PortfolioAnalysis compiled with mock backend.", location: "portfolio-analysis.bks:1" },
-          { severity: "warning", message: "Sensitivity range uses default confidence interval.", location: "portfolio-analysis.bks:24" }
-        ]
+        diagnostics
       };
     },
     async run(projectId) {
@@ -20,6 +17,12 @@ export const mockServices: StudioServices = {
   projects: {
     async listRecentProjects() {
       return recentProjects;
+    },
+    async getCurrentProject() {
+      return currentProject;
+    },
+    async listProjectFiles() {
+      return projectFiles;
     },
     async createProject(name) {
       return { id: name.toLowerCase().replace(/\s+/g, "-"), name, path: "/projects/bickspec/new", modifiedAt: "Now" };
@@ -38,7 +41,7 @@ export const mockServices: StudioServices = {
   },
   reports: {
     async getPreview() {
-      return "Mock report preview";
+      return reportPreview;
     },
     async exportReport(request) {
       return {
@@ -59,4 +62,3 @@ export const mockServices: StudioServices = {
     }
   }
 };
-

@@ -1,47 +1,120 @@
-import { Download, FileSpreadsheet, FileText } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Download, FileSpreadsheet, FileText, History, LineChart, RefreshCw, Table2 } from "lucide-react";
+import type { ReportPreview } from "@shared/contracts/domain";
+import { MetricCard } from "../components/ui/MetricCard";
 import { Panel } from "../components/ui/Panel";
+import { StatusBadge } from "../components/ui/StatusBadge";
+import { ToolbarButton } from "../components/ui/ToolbarButton";
+import { useServices } from "../services/ServiceProvider";
+
+const reportNav = [
+  { label: "Summary", icon: FileText },
+  { label: "Cash Flow Table", icon: Table2 },
+  { label: "NPV Analysis", icon: LineChart },
+  { label: "Sensitivity Chart", icon: LineChart },
+  { label: "Recent Reports", icon: History }
+];
 
 export function ReportPreviewPage() {
+  const services = useServices();
+  const [preview, setPreview] = useState<ReportPreview | null>(null);
+  const [selectedSection, setSelectedSection] = useState("Summary");
+  const [exportState, setExportState] = useState<"ready" | "exporting" | "exported">("ready");
+
+  useEffect(() => {
+    void services.reports.getPreview("portfolio-report").then(setPreview);
+  }, [services]);
+
+  function exportReport(format: "pdf" | "csv" | "excel") {
+    setExportState("exporting");
+    void services.reports.exportReport({ reportId: "portfolio-report", format }).then(() => {
+      setExportState("exported");
+      window.setTimeout(() => setExportState("ready"), 900);
+    });
+  }
+
   return (
-    <div style={{ height: "100%", display: "grid", gridTemplateColumns: "260px 1fr 320px" }}>
-      <Panel title="Workspace">
-        <nav style={{ display: "grid", padding: 8 }}>
-          {["Summary", "Cash Flow Table", "NPV Analysis", "Sensitivity Chart", "Recent Reports"].map((item, index) => (
-            <button key={item} className={`tab ${index === 0 ? "active" : ""}`} style={{ textAlign: "left" }}>{item}</button>
+    <div className="screen-grid" style={{ gridTemplateColumns: "260px minmax(0, 1fr) 320px", gridTemplateRows: "52px 1fr" }}>
+      <header style={{ gridColumn: "1 / 4", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px", borderBottom: "1px solid var(--color-outline-variant)", background: "var(--color-surface-low)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <strong>BickSpec</strong>
+          <span className="label-caps">Documentation</span>
+          <StatusBadge>{exportState === "exporting" ? "Exporting" : "Report Generated"}</StatusBadge>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          <ToolbarButton icon={<FileText size={16} />} onClick={() => exportReport("pdf")}>Export PDF</ToolbarButton>
+          <ToolbarButton icon={<FileSpreadsheet size={16} />} onClick={() => exportReport("excel")}>Excel</ToolbarButton>
+          <ToolbarButton icon={<Download size={16} />} onClick={() => exportReport("csv")}>CSV</ToolbarButton>
+          <button className="icon-button" aria-label="Refresh preview"><RefreshCw size={16} /></button>
+        </div>
+      </header>
+
+      <aside className="side-panel">
+        <div style={{ padding: 18 }}>
+          <div className="label-caps">Workspace</div>
+          <div className="mono" style={{ marginTop: 4, color: "var(--color-teal)", fontSize: 12 }}>v1.0.4-stable</div>
+        </div>
+        <nav style={{ display: "grid", gap: 5, padding: "0 10px" }}>
+          {reportNav.map(({ label, icon: Icon }) => (
+            <button className={`nav-row ${selectedSection === label ? "active" : ""}`} key={label} onClick={() => setSelectedSection(label)}>
+              <Icon size={17} />
+              <span className="label-caps">{label}</span>
+            </button>
           ))}
         </nav>
-      </Panel>
-      <main style={{ padding: 24, overflow: "auto" }}>
-        <article className="panel" style={{ maxWidth: 860, margin: "0 auto", padding: 32, minHeight: 720 }}>
-          <p className="label-caps" style={{ color: "var(--color-teal)" }}>Report Generated</p>
-          <h1 style={{ marginTop: 8 }}>Portfolio Analysis Report</h1>
-          <p style={{ color: "var(--color-text-muted)" }}>Generated from portfolio-analysis.bks using the UI mock report service.</p>
-          <hr style={{ border: 0, borderTop: "1px solid var(--color-outline-variant)", margin: "24px 0" }} />
-          <h2>Executive Summary</h2>
-          <p>Expected return is calculated from weighted asset CAGR. The report preview is static for this foundation commit and will later bind to compiler output.</p>
-          <table style={{ width: "100%", borderCollapse: "collapse", marginTop: 24 }}>
+      </aside>
+
+      <main style={{ padding: 24, overflow: "auto", background: "var(--color-surface-container)" }}>
+        <article className="report-sheet">
+          <p className="label-caps" style={{ color: "var(--color-teal)" }}>{preview?.status ?? "generated"} report</p>
+          <h1 style={{ margin: "8px 0 8px", fontSize: 32 }}>{preview?.title ?? "Portfolio Analysis Report"}</h1>
+          <p style={{ color: "var(--color-text-muted)" }}>Generated from portfolio-analysis.bks at {preview?.generatedAt ?? "loading"}.</p>
+
+          <section className="metric-grid" style={{ margin: "26px 0" }}>
+            {(preview?.metrics ?? []).map((metric) => (
+              <MetricCard key={metric.label} label={metric.label} value={metric.value} tone={metric.tone} />
+            ))}
+          </section>
+
+          {(preview?.sections ?? []).map((section) => (
+            <section key={section.title} style={{ marginTop: 26 }}>
+              <h2>{section.title}</h2>
+              <p style={{ color: "var(--color-text-muted)", lineHeight: 1.65 }}>{section.body}</p>
+            </section>
+          ))}
+
+          <table className="content-table" style={{ marginTop: 28 }}>
+            <thead>
+              <tr><th>Output</th><th>Value</th><th>Status</th></tr>
+            </thead>
             <tbody>
-              {["Expected Return", "Total Weight", "Horizon", "Validation Status"].map((label, index) => (
-                <tr key={label}>
-                  <td className="label-caps" style={{ border: "1px solid var(--color-outline-variant)", padding: 12 }}>{label}</td>
-                  <td className="mono" style={{ border: "1px solid var(--color-outline-variant)", padding: 12 }}>{["7.82%", "1.0", "1y", "Passing"][index]}</td>
-                </tr>
-              ))}
+              <tr><td>Expected Return</td><td className="mono">7.82%</td><td>Validated</td></tr>
+              <tr><td>Total Weight</td><td className="mono">1.0</td><td>Passing</td></tr>
+              <tr><td>Export Targets</td><td className="mono">pdf, csv, excel</td><td>Ready</td></tr>
             </tbody>
           </table>
         </article>
       </main>
-      <Panel title="Export">
-        <div style={{ padding: 16, display: "grid", gap: 12 }}>
-          <button className="button primary"><FileText size={16} /> Export PDF</button>
-          <button className="button"><FileSpreadsheet size={16} /> Export Excel</button>
-          <button className="button"><Download size={16} /> Export CSV</button>
-          <div style={{ borderTop: "1px solid var(--color-outline-variant)", paddingTop: 16 }}>
-            <span className="label-caps">Report Metadata</span>
-            <p className="mono" style={{ color: "var(--color-text-muted)" }}>v1.0.4-stable<br />mock service<br />portfolio-analysis.bks</p>
+
+      <aside style={{ borderLeft: "1px solid var(--color-outline-variant)", background: "var(--color-surface-low)", overflow: "auto" }}>
+        <Panel title="Export Actions">
+          <div style={{ padding: 16, display: "grid", gap: 12 }}>
+            <ToolbarButton primary icon={<FileText size={16} />} onClick={() => exportReport("pdf")}>Export PDF</ToolbarButton>
+            <ToolbarButton icon={<FileSpreadsheet size={16} />} onClick={() => exportReport("excel")}>Export Excel</ToolbarButton>
+            <ToolbarButton icon={<Download size={16} />} onClick={() => exportReport("csv")}>Export CSV</ToolbarButton>
           </div>
-        </div>
-      </Panel>
+        </Panel>
+        <Panel title="Report Metadata">
+          <div style={{ padding: 16 }}>
+            <p className="mono" style={{ color: "var(--color-text-muted)", lineHeight: 1.7 }}>
+              reportId: portfolio-report<br />
+              source: portfolio-analysis.bks<br />
+              service: mock-report-service<br />
+              selected: {selectedSection}
+            </p>
+          </div>
+        </Panel>
+      </aside>
     </div>
   );
 }
