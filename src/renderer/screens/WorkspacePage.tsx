@@ -1,19 +1,19 @@
 import { BarChart3, Bug, GitBranch, MoreHorizontal, PackageCheck, Play, Save, Search, X } from "lucide-react";
 import { CodeEditor } from "../components/ide/CodeEditor";
-import { DiagnosticsList } from "../components/ide/DiagnosticsList";
 import { FileTree } from "../components/ide/FileTree";
-import { TerminalPanel } from "../components/ide/TerminalPanel";
+import { SessionOutputTabs } from "../components/ide/SessionOutputTabs";
 import { Panel } from "../components/ui/Panel";
 import { StatusBadge } from "../components/ui/StatusBadge";
 import { ToolbarButton } from "../components/ui/ToolbarButton";
 import { useStudioSession } from "../state/StudioSessionProvider";
-import type { CompileDiagnostic, ProjectFile, TerminalEntry } from "@shared/contracts/domain";
+import type { ProjectFile } from "@shared/contracts/domain";
 
 export function WorkspacePage() {
   const {
     workspace,
     openTabs,
     activeFile,
+    lastSession,
     diagnostics,
     consoleOutput,
     artifacts,
@@ -27,8 +27,6 @@ export function WorkspacePage() {
   } = useStudioSession();
 
   const files = (workspace?.fileTree ?? []) as ProjectFile[];
-  const output = toTerminalEntries(consoleOutput);
-
   return (
     <div className="screen-grid" style={{ gridTemplateColumns: "260px minmax(520px, 1fr) 320px", gridTemplateRows: "1fr 230px" }}>
       <aside className="side-panel">
@@ -105,30 +103,11 @@ export function WorkspacePage() {
         </Panel>
       </aside>
 
-      <section className="split-bottom" style={{ gridColumn: "1 / 4" }}>
-        <Panel title="Terminal / Output">
-          <TerminalPanel entries={output} />
-        </Panel>
-        <Panel title="Diagnostics" action={<Search size={15} />}>
-          <DiagnosticsList diagnostics={diagnostics.map(toCompileDiagnostic)} />
+      <section className="split-bottom session-output-bottom" style={{ gridColumn: "1 / 4" }}>
+        <Panel title="Session Output" action={<Search size={15} />} className="session-output-wrapper">
+          <SessionOutputTabs session={lastSession} consoleOutput={consoleOutput} diagnostics={diagnostics} isRunning={isRunning} />
         </Panel>
       </section>
     </div>
   );
-}
-
-function toTerminalEntries(output: string): TerminalEntry[] {
-  if (!output) return [{ level: "info", text: "No compiler output yet." }];
-  return output.split(/\r?\n/).filter(Boolean).map((text) => ({
-    level: text.includes("[ERROR]") ? "error" : text.includes("[SUCCESS]") ? "success" : "info",
-    text
-  }));
-}
-
-function toCompileDiagnostic(diagnostic: { severity: "info" | "warning" | "error"; message: string; filePath?: string; line?: number; column?: number }): CompileDiagnostic {
-  return {
-    severity: diagnostic.severity,
-    message: diagnostic.message,
-    location: [diagnostic.filePath, diagnostic.line, diagnostic.column].filter(Boolean).join(":") || "compiler"
-  };
 }
