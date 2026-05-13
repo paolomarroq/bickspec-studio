@@ -60,7 +60,7 @@ export function WorkspacePage() {
               {tab.name}{tab.dirty ? " *" : ""}
               <X size={13} style={{ marginLeft: 8 }} onClick={(event) => {
                 event.stopPropagation();
-                closeTab(tab.path);
+                void closeTab(tab.path);
               }} />
             </button>
           ))}
@@ -132,4 +132,3 @@ function toCompileDiagnostic(diagnostic: { severity: "info" | "warning" | "error
     location: [diagnostic.filePath, diagnostic.line, diagnostic.column].filter(Boolean).join(":") || "compiler"
   };
 }
-

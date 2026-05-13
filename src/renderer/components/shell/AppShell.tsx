@@ -52,7 +52,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <button onClick={openFilePicker}>Open File</button>
                 <button onClick={openFolderPicker}>Open Folder</button>
                 <button onClick={() => void saveActiveFile()} disabled={!activeFile}>Save</button>
-                <button onClick={() => activeFile && closeTab(activeFile.path)} disabled={!activeFile}>Close Tab</button>
+                <button onClick={() => activeFile && void closeTab(activeFile.path)} disabled={!activeFile}>Close Tab</button>
               </span>
             </span>
             <span className="top-menu-item">

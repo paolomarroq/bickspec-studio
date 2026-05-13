@@ -6,7 +6,7 @@ BickSpec is the language. BickSpec Studio is the desktop application and IDE.
 
 ## Current Scope
 
-This repository contains the polished desktop UI layer and the first backend foundation for linking to the external BickSpec language/compiler repository. Project loading, compile/run actions, Java generation, artifact output, report preview/export, and settings persistence still use local placeholder flows in the renderer while backend integration is built incrementally.
+This repository contains the polished desktop UI layer and backend foundation for linking to the external BickSpec language/compiler repository. File creation, file opening, saving, tab management, workspace loading, recent files/projects, compile/run actions, generated artifact output, report preview/export, and settings persistence are wired through Electron main/preload APIs so the renderer stays separated from filesystem and process execution.
 
 The compiler remains a separate project. BickSpec Studio must reference `bickspec-lang`; it must not duplicate compiler source or vendor the compiler implementation into this repository.
 
@@ -121,6 +121,16 @@ Commit 4/4 wires the existing Studio UI to real application behavior:
 - toolbar Run, Compile, Generate Java, Documentation, Open Output Folder, Export Report, Re-run, and Back to Editor actions are connected to backend/session behavior
 - Generated Artifacts / Results uses the last real compiler session for artifacts, diagnostics, build log, timing, target, and previews
 - diagnostics panels read structured backend diagnostics instead of sample warnings
+
+The final filesystem cleanup strengthens the workspace behavior:
+
+- New BickSpec File and File > New File create a real `.bks` file with starter content, open it immediately, and register it in recent files
+- Open File supports `.bks` plus readable Studio artifacts such as Java, CSV, JSON, logs, SVG, DOT, text, and Markdown files
+- Save writes the active editor contents to disk and clears dirty tab state
+- Close Tab prompts for unsaved changes and can save before closing
+- Open Project Folder loads the selected directory as the active workspace and persists it locally
+- the explorer reads the active workspace from the filesystem, supports expandable/collapsible folders, and opens real files into tabs
+- recent files/folders are persisted in Electron user data and can be reopened from the launcher
 
 Later backend commits should use this foundation to compile the current file, run BickSpec on a project/folder, retrieve generated artifacts, surface diagnostics/results, and power report/export flows.
 

@@ -29,7 +29,7 @@ interface StudioSessionContextValue {
   openWorkspaceFile(path: string): Promise<void>;
   updateActiveFileContent(content: string): void;
   saveActiveFile(): Promise<void>;
-  closeTab(path: string): void;
+  closeTab(path: string): Promise<void>;
   runActiveFile(): Promise<void>;
   rerunLastTarget(): Promise<void>;
   openDocumentation(): Promise<void>;
@@ -139,12 +139,29 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
     setStatusMessage(`Saved ${saved.name}`);
   }
 
-  function closeTab(path: string) {
-    setOpenTabs((tabs) => tabs.filter((tab) => tab.path !== path));
-    if (activePath === path) {
-      const next = openTabs.find((tab) => tab.path !== path);
-      setActivePath(next?.path ?? null);
+  async function closeTab(path: string) {
+    const tab = openTabs.find((openTab) => openTab.path === path);
+    if (!tab) return;
+
+    if (tab.dirty) {
+      const shouldClose = window.confirm(`${tab.name} has unsaved changes. Close this tab?`);
+      if (!shouldClose) return;
+      const shouldSave = window.confirm(`Save changes to ${tab.name} before closing? Select Cancel to discard changes.`);
+      if (shouldSave && bridge) {
+        const saved = await bridge.saveWorkspaceFile({ filePath: tab.path, content: tab.content });
+        setStatusMessage(`Saved ${saved.name}`);
+      }
     }
+
+    setOpenTabs((tabs) => {
+      const closingIndex = tabs.findIndex((openTab) => openTab.path === path);
+      const nextTabs = tabs.filter((openTab) => openTab.path !== path);
+      if (activePath === path) {
+        const nextActive = nextTabs[Math.max(0, closingIndex - 1)] ?? nextTabs[0] ?? null;
+        setActivePath(nextActive?.path ?? null);
+      }
+      return nextTabs;
+    });
   }
 
   async function runActiveFile() {

@@ -1,4 +1,4 @@
-import { basename, dirname, extname, join, relative, resolve } from "node:path";
+import { basename, dirname, extname, isAbsolute, join, relative, resolve } from "node:path";
 import { dialog, shell } from "electron";
 import type {
   OpenFileResult,
@@ -55,9 +55,13 @@ export class AppWorkspaceService {
 
   async chooseAndOpenBickSpecFile(): Promise<OpenFileResult | null> {
     const result = await dialog.showOpenDialog({
-      title: "Open BickSpec File",
+      title: "Open Studio File",
       properties: ["openFile"],
-      filters: [{ name: "BickSpec Files", extensions: ["bks"] }]
+      filters: [
+        { name: "BickSpec Files", extensions: ["bks"] },
+        { name: "Readable Studio Files", extensions: ["bks", "java", "csv", "json", "log", "svg", "txt", "md", "dot"] },
+        { name: "All Files", extensions: ["*"] }
+      ]
     });
     if (result.canceled || !result.filePaths[0]) return null;
     return this.openWorkspaceFile(result.filePaths[0]);
@@ -93,7 +97,10 @@ export class AppWorkspaceService {
     const normalizedPath = resolve(filePath);
     const content = await this.fileSystem.readText(normalizedPath);
     const persisted = await this.readPersistedState();
-    const workspaceFolderPath = persisted.workspaceFolderPath ?? dirname(normalizedPath);
+    const workspaceFolderPath =
+      persisted.workspaceFolderPath && this.isPathInside(normalizedPath, persisted.workspaceFolderPath)
+        ? persisted.workspaceFolderPath
+        : dirname(normalizedPath);
     const recentEntries = this.addRecent(persisted.recentEntries, {
       kind: "file",
       path: normalizedPath
@@ -189,10 +196,10 @@ export class AppWorkspaceService {
   }
 
   private async walk(folderPath: string, depth: number, nodes: WorkspaceFileNode[], rootPath: string): Promise<void> {
-    if (depth > 4) return;
+    if (depth > 8) return;
     const entries = (await this.fileSystem.listDirectory(folderPath)).sort((a, b) => Number(b.isDirectory) - Number(a.isDirectory) || a.name.localeCompare(b.name));
     for (const entry of entries) {
-      if (entry.name.startsWith(".") || entry.name === "node_modules" || entry.name === "target") continue;
+      if (entry.name.startsWith(".") || entry.name === "node_modules") continue;
       const extension = extname(entry.name).toLowerCase();
       if (entry.isFile && !allowedExtensions.has(extension)) continue;
       nodes.push({
@@ -219,5 +226,9 @@ export class AppWorkspaceService {
     if (extension === ".txt") return "text";
     return "other";
   }
-}
 
+  private isPathInside(filePath: string, folderPath: string): boolean {
+    const relativePath = relative(resolve(folderPath), resolve(filePath));
+    return relativePath === "" || (!relativePath.startsWith("..") && !isAbsolute(relativePath));
+  }
+}
