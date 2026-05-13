@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { BarChart3, Bug, GitBranch, MoreHorizontal, PackageCheck, Play, Search } from "lucide-react";
-import type { CompileDiagnostic, ProjectFile, StudioProject, TerminalEntry } from "@shared/contracts/domain";
+import { BarChart3, Bug, GitBranch, MoreHorizontal, PackageCheck, Play, Save, Search, X } from "lucide-react";
 import { CodeEditor } from "../components/ide/CodeEditor";
 import { DiagnosticsList } from "../components/ide/DiagnosticsList";
 import { FileTree } from "../components/ide/FileTree";
@@ -8,40 +6,28 @@ import { TerminalPanel } from "../components/ide/TerminalPanel";
 import { Panel } from "../components/ui/Panel";
 import { StatusBadge } from "../components/ui/StatusBadge";
 import { ToolbarButton } from "../components/ui/ToolbarButton";
-import { terminalEntries } from "../services/mockData";
-import { useServices } from "../services/ServiceProvider";
+import { useStudioSession } from "../state/StudioSessionProvider";
+import type { CompileDiagnostic, ProjectFile, TerminalEntry } from "@shared/contracts/domain";
 
 export function WorkspacePage() {
-  const services = useServices();
-  const [project, setProject] = useState<StudioProject | null>(null);
-  const [files, setFiles] = useState<ProjectFile[]>([]);
-  const [selectedFile, setSelectedFile] = useState<ProjectFile | null>(null);
-  const [activeTab, setActiveTab] = useState("portfolio-analysis.bks");
-  const [diagnostics, setDiagnostics] = useState<CompileDiagnostic[]>([]);
-  const [buildState, setBuildState] = useState<"ready" | "running" | "succeeded">("ready");
-  const [output, setOutput] = useState<TerminalEntry[]>(terminalEntries.slice(0, 2));
+  const {
+    workspace,
+    openTabs,
+    activeFile,
+    diagnostics,
+    consoleOutput,
+    artifacts,
+    isRunning,
+    setActiveFile,
+    openWorkspaceFile,
+    updateActiveFileContent,
+    saveActiveFile,
+    closeTab,
+    runActiveFile
+  } = useStudioSession();
 
-  useEffect(() => {
-    void services.projects.getCurrentProject().then((nextProject) => {
-      setProject(nextProject);
-      void services.projects.listProjectFiles(nextProject.id).then((nextFiles) => {
-        setFiles(nextFiles);
-        setSelectedFile(nextFiles.find((file) => file.status === "active") ?? nextFiles[0]);
-      });
-    });
-    void services.compiler.compile("portfolio-analysis").then((result) => setDiagnostics(result.diagnostics));
-  }, [services]);
-
-  function runBuild() {
-    setBuildState("running");
-    setOutput([{ level: "command", text: "> bickspec compile portfolio-analysis.bks --target java --report" }]);
-    window.setTimeout(() => {
-      setBuildState("succeeded");
-      setOutput(terminalEntries);
-    }, 450);
-  }
-
-  const selectedName = selectedFile?.name ?? activeTab;
+  const files = (workspace?.fileTree ?? []) as ProjectFile[];
+  const output = toTerminalEntries(consoleOutput);
 
   return (
     <div className="screen-grid" style={{ gridTemplateColumns: "260px minmax(520px, 1fr) 320px", gridTemplateRows: "1fr 230px" }}>
@@ -51,49 +37,61 @@ export function WorkspacePage() {
           <MoreHorizontal size={16} />
         </div>
         <div style={{ padding: "12px 12px 4px" }}>
-          <strong>{project?.name ?? "portfolio-analysis.bks"}</strong>
-          <div className="mono" style={{ color: "var(--color-text-muted)", fontSize: 12, marginTop: 3 }}>{project?.path}</div>
+          <strong>{workspace?.workspaceName ?? "No folder open"}</strong>
+          <div className="mono" style={{ color: "var(--color-text-muted)", fontSize: 12, marginTop: 3 }}>
+            {workspace?.workspaceFolderPath ?? "Open a folder or .bks file to begin"}
+          </div>
         </div>
         <FileTree
           files={files}
-          selectedFileId={selectedFile?.id ?? ""}
+          selectedFileId={activeFile?.path ?? ""}
           onSelect={(file) => {
-            setSelectedFile(file);
-            if (file.kind !== "folder") setActiveTab(file.name);
+            if (file.kind !== "folder") void openWorkspaceFile(file.path);
           }}
         />
       </aside>
 
       <section style={{ minWidth: 0, minHeight: 0, display: "flex", flexDirection: "column", borderRight: "1px solid var(--color-outline-variant)" }}>
         <div className="tabs">
-          {["portfolio-analysis.bks", "assets.csv", "PortfolioAnalysis.java"].map((tab) => (
-            <button className={`tab ${activeTab === tab ? "active" : ""}`} key={tab} onClick={() => setActiveTab(tab)}>
-              {tab}
+          {openTabs.length === 0 ? (
+            <button className="tab active">No file open</button>
+          ) : openTabs.map((tab) => (
+            <button className={`tab ${activeFile?.path === tab.path ? "active" : ""}`} key={tab.path} onClick={() => setActiveFile(tab.path)}>
+              {tab.name}{tab.dirty ? " *" : ""}
+              <X size={13} style={{ marginLeft: 8 }} onClick={(event) => {
+                event.stopPropagation();
+                closeTab(tab.path);
+              }} />
             </button>
           ))}
           <span style={{ marginLeft: "auto", padding: "9px 12px" }}>
-            <StatusBadge tone={buildState === "running" ? "neutral" : "success"}>{buildState}</StatusBadge>
+            <StatusBadge tone={isRunning ? "neutral" : "success"}>{isRunning ? "running" : "ready"}</StatusBadge>
           </span>
         </div>
-        <CodeEditor activeFileName={selectedName} />
+        {activeFile ? (
+          <CodeEditor content={activeFile.content} onChange={updateActiveFileContent} />
+        ) : (
+          <div style={{ padding: 24, color: "var(--color-text-muted)" }}>Open or create a BickSpec file to start editing.</div>
+        )}
       </section>
 
       <aside style={{ minWidth: 0, minHeight: 0, overflow: "auto" }}>
         <Panel title="Context Inspector">
           <div style={{ padding: 16, display: "grid", gap: 14 }}>
-            <div><span className="label-caps">Current Spec</span><strong style={{ display: "block" }}>PortfolioAnalysis</strong></div>
-            <div><span className="label-caps">Inputs</span><strong style={{ display: "block" }}>assets, horizon, confidence</strong></div>
-            <div><span className="label-caps">Artifacts</span><strong style={{ display: "block", color: "var(--color-teal)" }}>5 staged</strong></div>
-            <ToolbarButton primary icon={<Play size={16} />} onClick={runBuild}>Compile & Run</ToolbarButton>
+            <div><span className="label-caps">Current File</span><strong style={{ display: "block" }}>{activeFile?.name ?? "None"}</strong></div>
+            <div><span className="label-caps">Diagnostics</span><strong style={{ display: "block" }}>{diagnostics.length}</strong></div>
+            <div><span className="label-caps">Artifacts</span><strong style={{ display: "block", color: "var(--color-teal)" }}>{artifacts.length} discovered</strong></div>
+            <ToolbarButton icon={<Save size={16} />} onClick={() => void saveActiveFile()}>Save</ToolbarButton>
+            <ToolbarButton primary icon={<Play size={16} />} onClick={() => void runActiveFile()}>Compile & Run</ToolbarButton>
           </div>
         </Panel>
         <Panel title="Outline">
           <div style={{ padding: 12, display: "grid", gap: 8 }}>
             {[
-              [GitBranch, "inputs", "3 declarations"],
-              [BarChart3, "calculations", "2 formulas"],
-              [Bug, "validations", "1 rule"],
-              [PackageCheck, "report", "3 export formats"]
+              [GitBranch, "workspace", workspace?.workspaceName ?? "not loaded"],
+              [BarChart3, "artifacts", `${artifacts.length} files`],
+              [Bug, "diagnostics", `${diagnostics.length} issues`],
+              [PackageCheck, "session", isRunning ? "running" : "ready"]
             ].map(([Icon, label, detail]) => {
               const Component = Icon as typeof GitBranch;
               return (
@@ -112,9 +110,26 @@ export function WorkspacePage() {
           <TerminalPanel entries={output} />
         </Panel>
         <Panel title="Diagnostics" action={<Search size={15} />}>
-          <DiagnosticsList diagnostics={diagnostics} />
+          <DiagnosticsList diagnostics={diagnostics.map(toCompileDiagnostic)} />
         </Panel>
       </section>
     </div>
   );
 }
+
+function toTerminalEntries(output: string): TerminalEntry[] {
+  if (!output) return [{ level: "info", text: "No compiler output yet." }];
+  return output.split(/\r?\n/).filter(Boolean).map((text) => ({
+    level: text.includes("[ERROR]") ? "error" : text.includes("[SUCCESS]") ? "success" : "info",
+    text
+  }));
+}
+
+function toCompileDiagnostic(diagnostic: { severity: "info" | "warning" | "error"; message: string; filePath?: string; line?: number; column?: number }): CompileDiagnostic {
+  return {
+    severity: diagnostic.severity,
+    message: diagnostic.message,
+    location: [diagnostic.filePath, diagnostic.line, diagnostic.column].filter(Boolean).join(":") || "compiler"
+  };
+}
+

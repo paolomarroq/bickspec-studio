@@ -1,6 +1,7 @@
 import type { App } from "electron";
 import { ArtifactAccessService } from "./ArtifactAccessService";
 import { ArtifactDiscoveryService } from "./ArtifactDiscoveryService";
+import { AppWorkspaceService } from "./AppWorkspaceService";
 import { BackendSettingsService } from "./BackendSettingsService";
 import { CompilerBridgeService } from "./CompilerBridgeService";
 import { CompilerDiagnosticsParser } from "./CompilerDiagnosticsParser";
@@ -15,6 +16,7 @@ import { ProjectWorkspaceService } from "./ProjectWorkspaceService";
 export interface BackendServices {
   compilerBridge: CompilerBridgeService;
   compilerExecution: CompilerExecutionService;
+  appWorkspace: AppWorkspaceService;
   settings: BackendSettingsService;
   workspace: ProjectWorkspaceService;
 }
@@ -43,6 +45,7 @@ export function createBackendServices(app: App, appRootPath: string): BackendSer
       artifactAccess,
       sessionMapper
     ),
+    appWorkspace: new AppWorkspaceService(settings, fileSystem),
     settings,
     workspace: new ProjectWorkspaceService(appRootPath, settings)
   };

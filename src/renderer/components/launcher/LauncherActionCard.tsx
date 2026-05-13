@@ -6,16 +6,23 @@ export function LauncherActionCard({
   title,
   description,
   icon,
-  primary = false
+  primary = false,
+  onClick
 }: {
   to: string;
   title: string;
   description: string;
   icon: ReactNode;
   primary?: boolean;
+  onClick?: () => void;
 }) {
   return (
-    <Link to={to} className={`action-card ${primary ? "primary" : ""}`}>
+    <Link to={to} className={`action-card ${primary ? "primary" : ""}`} onClick={(event) => {
+      if (onClick) {
+        event.preventDefault();
+        onClick();
+      }
+    }}>
       {icon}
       <strong style={{ fontSize: 18 }}>{title}</strong>
       <span style={{ color: primary ? "rgba(255,255,255,0.82)" : "var(--color-text-muted)", lineHeight: 1.45 }}>{description}</span>

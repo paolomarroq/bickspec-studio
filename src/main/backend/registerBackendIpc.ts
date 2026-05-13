@@ -43,4 +43,16 @@ export function registerBackendIpc(backend: BackendServices): void {
   });
   ipcMain.handle("backend:get-compiler-console-output", () => backend.compilerExecution.getCompilerConsoleOutput());
   ipcMain.handle("backend:clear-last-compiler-session", () => backend.compilerExecution.clearLastSession());
+  ipcMain.handle("backend:get-studio-workspace-state", () => backend.appWorkspace.getWorkspaceState());
+  ipcMain.handle("backend:create-new-bickspec-file", () => backend.appWorkspace.createNewBickSpecFile());
+  ipcMain.handle("backend:choose-and-open-bickspec-file", () => backend.appWorkspace.chooseAndOpenBickSpecFile());
+  ipcMain.handle("backend:choose-and-open-workspace-folder", () => backend.appWorkspace.chooseAndOpenWorkspaceFolder());
+  ipcMain.handle("backend:reopen-recent-entry", (_event, entryPath: string) => backend.appWorkspace.reopenRecentEntry(entryPath));
+  ipcMain.handle("backend:open-workspace-file", (_event, filePath: string) => backend.appWorkspace.openWorkspaceFile(filePath));
+  ipcMain.handle("backend:save-workspace-file", (_event, request) => backend.appWorkspace.saveWorkspaceFile(request));
+  ipcMain.handle("backend:list-workspace-files", (_event, folderPath: string) => backend.appWorkspace.listWorkspaceFiles(folderPath));
+  ipcMain.handle("backend:get-recent-workspace-entries", () => backend.appWorkspace.getRecentWorkspaceEntries());
+  ipcMain.handle("backend:open-documentation", () => backend.appWorkspace.openDocumentation());
+  ipcMain.handle("backend:open-output-folder", (_event, folderPath: string) => backend.appWorkspace.openOutputFolder(folderPath));
+  ipcMain.handle("backend:export-artifact", (_event, artifactPath: string) => backend.appWorkspace.exportArtifact(artifactPath));
 }

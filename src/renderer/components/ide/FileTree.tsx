@@ -1,4 +1,4 @@
-import { ChevronRight, FileCode2, FileJson, FileText, Folder, Table2, TerminalSquare } from "lucide-react";
+import { ChevronRight, FileCode2, FileJson, FileText, Folder, Image, Table2, TerminalSquare } from "lucide-react";
 import type { ProjectFile } from "@shared/contracts/domain";
 
 const iconMap = {
@@ -8,7 +8,12 @@ const iconMap = {
   java: FileCode2,
   json: FileJson,
   markdown: FileText,
-  log: TerminalSquare
+  log: TerminalSquare,
+  svg: Image,
+  dot: FileText,
+  text: FileText,
+  class: FileCode2,
+  other: FileText
 };
 
 export function FileTree({
@@ -42,4 +47,3 @@ export function FileTree({
     </div>
   );
 }
-

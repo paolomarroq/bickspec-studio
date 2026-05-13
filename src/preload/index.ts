@@ -44,7 +44,31 @@ const bridge: StudioBridge = {
     getCompilerConsoleOutput: () =>
       ipcRenderer.invoke("backend:get-compiler-console-output") as ReturnType<StudioBridge["backend"]["getCompilerConsoleOutput"]>,
     clearLastCompilerSession: () =>
-      ipcRenderer.invoke("backend:clear-last-compiler-session") as ReturnType<StudioBridge["backend"]["clearLastCompilerSession"]>
+      ipcRenderer.invoke("backend:clear-last-compiler-session") as ReturnType<StudioBridge["backend"]["clearLastCompilerSession"]>,
+    getStudioWorkspaceState: () =>
+      ipcRenderer.invoke("backend:get-studio-workspace-state") as ReturnType<StudioBridge["backend"]["getStudioWorkspaceState"]>,
+    createNewBickSpecFile: () =>
+      ipcRenderer.invoke("backend:create-new-bickspec-file") as ReturnType<StudioBridge["backend"]["createNewBickSpecFile"]>,
+    chooseAndOpenBickSpecFile: () =>
+      ipcRenderer.invoke("backend:choose-and-open-bickspec-file") as ReturnType<StudioBridge["backend"]["chooseAndOpenBickSpecFile"]>,
+    chooseAndOpenWorkspaceFolder: () =>
+      ipcRenderer.invoke("backend:choose-and-open-workspace-folder") as ReturnType<StudioBridge["backend"]["chooseAndOpenWorkspaceFolder"]>,
+    reopenRecentEntry: (entryPath) =>
+      ipcRenderer.invoke("backend:reopen-recent-entry", entryPath) as ReturnType<StudioBridge["backend"]["reopenRecentEntry"]>,
+    openWorkspaceFile: (filePath) =>
+      ipcRenderer.invoke("backend:open-workspace-file", filePath) as ReturnType<StudioBridge["backend"]["openWorkspaceFile"]>,
+    saveWorkspaceFile: (request) =>
+      ipcRenderer.invoke("backend:save-workspace-file", request) as ReturnType<StudioBridge["backend"]["saveWorkspaceFile"]>,
+    listWorkspaceFiles: (folderPath) =>
+      ipcRenderer.invoke("backend:list-workspace-files", folderPath) as ReturnType<StudioBridge["backend"]["listWorkspaceFiles"]>,
+    getRecentWorkspaceEntries: () =>
+      ipcRenderer.invoke("backend:get-recent-workspace-entries") as ReturnType<StudioBridge["backend"]["getRecentWorkspaceEntries"]>,
+    openDocumentation: () =>
+      ipcRenderer.invoke("backend:open-documentation") as ReturnType<StudioBridge["backend"]["openDocumentation"]>,
+    openOutputFolder: (folderPath) =>
+      ipcRenderer.invoke("backend:open-output-folder", folderPath) as ReturnType<StudioBridge["backend"]["openOutputFolder"]>,
+    exportArtifact: (artifactPath) =>
+      ipcRenderer.invoke("backend:export-artifact", artifactPath) as ReturnType<StudioBridge["backend"]["exportArtifact"]>
   }
 };
 

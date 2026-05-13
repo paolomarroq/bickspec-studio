@@ -1,19 +1,11 @@
 import { FilePlus2, FolderOpen, FileCode2, History } from "lucide-react";
-import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { Panel } from "../components/ui/Panel";
 import { LauncherActionCard } from "../components/launcher/LauncherActionCard";
-import { useServices } from "../services/ServiceProvider";
-import type { StudioProject } from "@shared/contracts/domain";
 import { BrandLogo } from "../components/brand/BrandLogo";
+import { useStudioSession } from "../state/StudioSessionProvider";
 
 export function WelcomePage() {
-  const services = useServices();
-  const [projects, setProjects] = useState<StudioProject[]>([]);
-
-  useEffect(() => {
-    void services.projects.listRecentProjects().then(setProjects);
-  }, [services]);
+  const { recentEntries, newFile, openFilePicker, openFolderPicker, reopenRecent } = useStudioSession();
 
   return (
     <div className="launcher-grid">
@@ -34,9 +26,9 @@ export function WelcomePage() {
         </section>
 
         <section style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginTop: 30 }}>
-          <LauncherActionCard to="/workspace" primary icon={<FilePlus2 />} title="New BickSpec File" description="Create a blank financial logic schema." />
-          <LauncherActionCard to="/workspace" icon={<FileCode2 color="var(--color-teal)" />} title="Open .bks File" description="Open an existing single specification file." />
-          <LauncherActionCard to="/workspace" icon={<FolderOpen color="var(--color-teal)" />} title="Open Project Folder" description="Load a multi-file financial project." />
+          <LauncherActionCard to="/workspace" primary icon={<FilePlus2 />} title="New BickSpec File" description="Create a blank financial logic schema." onClick={() => void newFile()} />
+          <LauncherActionCard to="/workspace" icon={<FileCode2 color="var(--color-teal)" />} title="Open .bks File" description="Open an existing single specification file." onClick={() => void openFilePicker()} />
+          <LauncherActionCard to="/workspace" icon={<FolderOpen color="var(--color-teal)" />} title="Open Project Folder" description="Load a multi-file financial project." onClick={() => void openFolderPicker()} />
         </section>
       </main>
 
@@ -53,14 +45,16 @@ export function WelcomePage() {
           </pre>
         </Panel>
         <Panel title="Recent Projects" action={<History size={16} />}>
-          {projects.map((project) => (
-          <Link key={project.id} to="/workspace" className="recent-project-row">
+          {recentEntries.length === 0 ? (
+            <div style={{ padding: 14, color: "var(--color-text-muted)" }}>No recent BickSpec files or folders yet.</div>
+          ) : recentEntries.map((project) => (
+          <button key={project.id} className="recent-project-row" onClick={() => void reopenRecent(project.path)}>
             <span style={{ minWidth: 0 }}>
               <strong>{project.name}</strong>
               <span className="mono recent-project-path">{project.path}</span>
             </span>
-            <span className="recent-project-time">{project.modifiedAt}</span>
-          </Link>
+            <span className="recent-project-time">{new Date(project.openedAt).toLocaleDateString()}</span>
+          </button>
           ))}
         </Panel>
       </aside>

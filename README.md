@@ -111,6 +111,17 @@ Commit 3/4 turns compiler executions into UI-ready backend domain objects:
 - exposes artifact open, reveal, text read, and preview-data APIs through preload
 - keeps renderer code out of raw compiler-output parsing and filesystem access
 
+Commit 4/4 wires the existing Studio UI to real application behavior:
+
+- launcher actions create real `.bks` files, open real `.bks` files, open project folders, and open documentation
+- recent files/folders are persisted locally and can be reopened from the launcher
+- the workspace explorer is populated from the active filesystem folder
+- editor tabs are created from real files, can be switched, closed, edited, and saved
+- the internal File/Edit/View/Window/About menu triggers real app actions
+- toolbar Run, Compile, Generate Java, Documentation, Open Output Folder, Export Report, Re-run, and Back to Editor actions are connected to backend/session behavior
+- Generated Artifacts / Results uses the last real compiler session for artifacts, diagnostics, build log, timing, target, and previews
+- diagnostics panels read structured backend diagnostics instead of sample warnings
+
 Later backend commits should use this foundation to compile the current file, run BickSpec on a project/folder, retrieve generated artifacts, surface diagnostics/results, and power report/export flows.
 
 ## Project Structure

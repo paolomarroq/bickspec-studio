@@ -1,5 +1,5 @@
 export type ThemeMode = "light" | "dark" | "system";
-export type ArtifactKind = "java" | "json" | "pdf" | "csv" | "excel";
+export type ArtifactKind = "java" | "json" | "pdf" | "csv" | "excel" | "class" | "svg" | "dot" | "log" | "text" | "other";
 export type CompileStatus = "idle" | "ready" | "running" | "succeeded" | "failed";
 
 export interface StudioProject {
@@ -13,7 +13,7 @@ export interface ProjectFile {
   id: string;
   name: string;
   path: string;
-  kind: "folder" | "bks" | "csv" | "java" | "json" | "markdown" | "log";
+  kind: "folder" | "bks" | "csv" | "java" | "json" | "markdown" | "log" | "svg" | "dot" | "text" | "class" | "other";
   depth: number;
   status?: "active" | "generated" | "modified" | "readonly";
 }

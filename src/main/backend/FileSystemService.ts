@@ -1,6 +1,6 @@
-import { access, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
+import { access, copyFile, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { constants } from "node:fs";
-import { dirname } from "node:path";
+import { dirname, join } from "node:path";
 
 export class FileSystemService {
   async exists(path: string): Promise<boolean> {
@@ -37,6 +37,20 @@ export class FileSystemService {
     }
   }
 
+  async listDirectory(path: string): Promise<Array<{ name: string; path: string; isDirectory: boolean; isFile: boolean }>> {
+    try {
+      const entries = await readdir(path, { withFileTypes: true });
+      return entries.map((entry) => ({
+        name: entry.name,
+        path: join(path, entry.name),
+        isDirectory: entry.isDirectory(),
+        isFile: entry.isFile()
+      }));
+    } catch {
+      return [];
+    }
+  }
+
   async readJson<T>(path: string): Promise<T | null> {
     if (!(await this.exists(path))) return null;
     return JSON.parse(await readFile(path, "utf8")) as T;
@@ -61,5 +75,15 @@ export class FileSystemService {
   async writeJson(path: string, value: unknown): Promise<void> {
     await mkdir(dirname(path), { recursive: true });
     await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  }
+
+  async writeText(path: string, value: string): Promise<void> {
+    await mkdir(dirname(path), { recursive: true });
+    await writeFile(path, value, "utf8");
+  }
+
+  async copyFile(source: string, destination: string): Promise<void> {
+    await mkdir(dirname(destination), { recursive: true });
+    await copyFile(source, destination);
   }
 }

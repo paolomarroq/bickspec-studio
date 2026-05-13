@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ToolbarButton } from "../ui/ToolbarButton";
 import { StatusBadge } from "../ui/StatusBadge";
 import { BrandLogo } from "../brand/BrandLogo";
+import { useStudioSession } from "../../state/StudioSessionProvider";
 
 const navItems = [
   { to: "/", label: "Welcome", icon: Home },
@@ -17,13 +18,24 @@ const navItems = [
 
 export function AppShell({ children }: { children: ReactNode }) {
   const { theme, toggleTheme } = useTheme();
-  const [statusMessage, setStatusMessage] = useState("BickSpec language server: Ready");
+  const {
+    activeFile,
+    isRunning,
+    statusMessage,
+    newFile,
+    openFilePicker,
+    openFolderPicker,
+    saveActiveFile,
+    closeTab,
+    runActiveFile,
+    openDocumentation
+  } = useStudioSession();
+  const [menuMessage, setMenuMessage] = useState("");
   const ThemeIcon = theme === "light" ? Moon : Sun;
 
-  function showActionFeedback(action: string) {
-    setStatusMessage(`${action}: processing locally`);
-    window.setTimeout(() => setStatusMessage(`${action}: ready`), 450);
-    window.setTimeout(() => setStatusMessage("BickSpec language server: Ready"), 1400);
+  function showAbout() {
+    setMenuMessage("BickSpec Studio - desktop IDE for BickSpec financial specifications.");
+    window.setTimeout(() => setMenuMessage(""), 3000);
   }
 
   return (
@@ -33,23 +45,41 @@ export function AppShell({ children }: { children: ReactNode }) {
           <BrandLogo variant="icon" className="chrome-logo" />
           <strong style={{ fontSize: 18 }}>BickSpec Studio</strong>
           <nav className="top-menu">
-            <span>File</span>
-            <span>Edit</span>
-            <span>View</span>
-            <span>Window</span>
-            <span>About</span>
+            <span className="top-menu-item">
+              <button>File</button>
+              <span className="top-menu-popover">
+                <button onClick={newFile}>New File</button>
+                <button onClick={openFilePicker}>Open File</button>
+                <button onClick={openFolderPicker}>Open Folder</button>
+                <button onClick={() => void saveActiveFile()} disabled={!activeFile}>Save</button>
+                <button onClick={() => activeFile && closeTab(activeFile.path)} disabled={!activeFile}>Close Tab</button>
+              </span>
+            </span>
+            <span className="top-menu-item">
+              <button>Edit</button>
+              <span className="top-menu-popover">
+                <button onClick={() => document.execCommand("undo")}>Undo</button>
+                <button onClick={() => document.execCommand("redo")}>Redo</button>
+                <button onClick={() => document.execCommand("copy")}>Copy</button>
+                <button onClick={() => document.execCommand("paste")}>Paste</button>
+                <button onClick={() => document.execCommand("selectAll")}>Select All</button>
+              </span>
+            </span>
+            <button onClick={toggleTheme}>View</button>
+            <button onClick={openFolderPicker}>Window</button>
+            <button onClick={showAbout}>About</button>
           </nav>
-          <span className="label-caps">portfolio-analysis.bks</span>
-          <StatusBadge>Ready</StatusBadge>
+          <span className="label-caps">{activeFile?.name ?? "No file open"}</span>
+          <StatusBadge tone={isRunning ? "neutral" : "success"}>{isRunning ? "Running" : "Ready"}</StatusBadge>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <button className="icon-button" aria-label="Search">
             <Search size={16} />
           </button>
-          <ToolbarButton icon={<BookOpen size={16} />} onClick={() => showActionFeedback("Documentation")}>Documentation</ToolbarButton>
-          <ToolbarButton primary icon={<FileCode2 size={16} />} onClick={() => showActionFeedback("Run")}>Run</ToolbarButton>
-          <ToolbarButton onClick={() => showActionFeedback("Compile")}>Compile</ToolbarButton>
-          <ToolbarButton onClick={() => showActionFeedback("Generate Java")}>Generate Java</ToolbarButton>
+          <ToolbarButton icon={<BookOpen size={16} />} onClick={openDocumentation}>Documentation</ToolbarButton>
+          <ToolbarButton primary icon={<FileCode2 size={16} />} onClick={runActiveFile}>Run</ToolbarButton>
+          <ToolbarButton onClick={runActiveFile}>Compile</ToolbarButton>
+          <ToolbarButton onClick={runActiveFile}>Generate Java</ToolbarButton>
           <button className="icon-button" aria-label="Notifications">
             <Bell size={16} />
           </button>
@@ -81,7 +111,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       </div>
       <footer className="status-bar">
         <span>{statusMessage}</span>
-        <span>UTF-8 | LF | Spec Grid UI</span>
+        <span>{menuMessage || "UTF-8 | LF | Spec Grid UI"}</span>
       </footer>
     </div>
   );

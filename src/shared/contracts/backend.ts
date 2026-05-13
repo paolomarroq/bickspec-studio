@@ -201,3 +201,44 @@ export interface ArtifactPreviewData {
   sizeBytes?: number;
   truncated?: boolean;
 }
+
+export interface RecentWorkspaceEntry {
+  id: string;
+  kind: "file" | "folder";
+  name: string;
+  path: string;
+  openedAt: string;
+}
+
+export interface WorkspaceFileNode {
+  id: string;
+  name: string;
+  path: string;
+  kind: "folder" | "bks" | "csv" | "java" | "json" | "markdown" | "log" | "svg" | "dot" | "text" | "class" | "other";
+  depth: number;
+}
+
+export interface OpenWorkspaceFile {
+  path: string;
+  name: string;
+  content: string;
+  savedContent: string;
+  dirty: boolean;
+}
+
+export interface StudioWorkspaceState {
+  workspaceFolderPath?: string;
+  workspaceName?: string;
+  fileTree: WorkspaceFileNode[];
+  recentEntries: RecentWorkspaceEntry[];
+}
+
+export interface OpenFileResult {
+  workspace: StudioWorkspaceState;
+  file: OpenWorkspaceFile;
+}
+
+export interface SaveFileRequest {
+  filePath: string;
+  content: string;
+}
