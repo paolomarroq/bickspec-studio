@@ -22,6 +22,8 @@ import type {
 export interface StudioBridge {
   app: {
     getVersion(): Promise<string>;
+    readClipboardText(): Promise<string>;
+    writeClipboardText(text: string): Promise<void>;
   };
   backend: {
     getBackendStatus(): Promise<BackendStatus>;

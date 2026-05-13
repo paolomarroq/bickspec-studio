@@ -38,6 +38,35 @@ export function AppShell({ children }: { children: ReactNode }) {
     window.setTimeout(() => setMenuMessage(""), 3000);
   }
 
+  async function runEditorCommand(command: "undo" | "redo" | "copy" | "paste" | "selectAll") {
+    const editor = document.querySelector<HTMLTextAreaElement>("[data-studio-editor='active']");
+    if (!editor) return;
+
+    editor.focus({ preventScroll: true });
+
+    if (command === "selectAll") {
+      editor.select();
+      return;
+    }
+
+    if (command === "copy") {
+      const selectedText = editor.value.slice(editor.selectionStart, editor.selectionEnd);
+      if (!selectedText) return;
+      await window.bickspecStudio?.app.writeClipboardText(selectedText);
+      return;
+    }
+
+    if (command === "paste") {
+      const text = (await window.bickspecStudio?.app.readClipboardText()) ?? "";
+      editor.setRangeText(text, editor.selectionStart, editor.selectionEnd, "end");
+      editor.dispatchEvent(new Event("input", { bubbles: true }));
+      return;
+    }
+
+    document.execCommand(command);
+    editor.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+
   return (
     <div className="app-root">
       <header className="top-bar">
@@ -58,11 +87,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             <span className="top-menu-item">
               <button>Edit</button>
               <span className="top-menu-popover">
-                <button onClick={() => document.execCommand("undo")}>Undo</button>
-                <button onClick={() => document.execCommand("redo")}>Redo</button>
-                <button onClick={() => document.execCommand("copy")}>Copy</button>
-                <button onClick={() => document.execCommand("paste")}>Paste</button>
-                <button onClick={() => document.execCommand("selectAll")}>Select All</button>
+                <button onMouseDown={(event) => event.preventDefault()} onClick={() => void runEditorCommand("undo")}>Undo</button>
+                <button onMouseDown={(event) => event.preventDefault()} onClick={() => void runEditorCommand("redo")}>Redo</button>
+                <button onMouseDown={(event) => event.preventDefault()} onClick={() => void runEditorCommand("copy")}>Copy</button>
+                <button onMouseDown={(event) => event.preventDefault()} onClick={() => void runEditorCommand("paste")}>Paste</button>
+                <button onMouseDown={(event) => event.preventDefault()} onClick={() => void runEditorCommand("selectAll")}>Select All</button>
               </span>
             </span>
             <button onClick={toggleTheme}>View</button>

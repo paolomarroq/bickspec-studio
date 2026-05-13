@@ -1,9 +1,14 @@
-import { contextBridge, ipcRenderer } from "electron";
+import { clipboard, contextBridge, ipcRenderer } from "electron";
 import type { StudioBridge } from "@shared/contracts/bridge";
 
 const bridge: StudioBridge = {
   app: {
-    getVersion: () => ipcRenderer.invoke("app:get-version") as Promise<string>
+    getVersion: () => ipcRenderer.invoke("app:get-version") as Promise<string>,
+    readClipboardText: () => Promise.resolve(clipboard.readText()),
+    writeClipboardText: (text) => {
+      clipboard.writeText(text);
+      return Promise.resolve();
+    }
   },
   backend: {
     getBackendStatus: () => ipcRenderer.invoke("backend:get-status") as ReturnType<StudioBridge["backend"]["getBackendStatus"]>,

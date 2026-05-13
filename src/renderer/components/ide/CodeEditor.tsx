@@ -10,6 +10,7 @@ export function CodeEditor({
   return (
     <textarea
       className="code-editor code-textarea"
+      data-studio-editor="active"
       value={content}
       readOnly={readOnly}
       spellCheck={false}
@@ -17,4 +18,3 @@ export function CodeEditor({
     />
   );
 }
-
