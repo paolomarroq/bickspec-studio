@@ -132,6 +132,12 @@ The final filesystem cleanup strengthens the workspace behavior:
 - the explorer reads the active workspace from the filesystem, supports expandable/collapsible folders, and opens real files into tabs
 - recent files/folders are persisted in Electron user data and can be reopened from the launcher
 
+Workspace filesystem behavior can be smoke-tested through the Electron main process with:
+
+```bash
+BICKSPEC_VERIFY_WORKSPACE_FLOWS=1 electron .
+```
+
 Later backend commits should use this foundation to compile the current file, run BickSpec on a project/folder, retrieve generated artifacts, surface diagnostics/results, and power report/export flows.
 
 ## Project Structure

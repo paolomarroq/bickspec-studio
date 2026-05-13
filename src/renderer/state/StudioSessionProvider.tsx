@@ -64,6 +64,18 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
     void bridge.getCompilerConsoleOutput().then(setConsoleOutput);
   }, [bridge]);
 
+  useEffect(() => {
+    function handleSaveShortcut(event: KeyboardEvent) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "s") {
+        event.preventDefault();
+        void saveActiveFile();
+      }
+    }
+
+    window.addEventListener("keydown", handleSaveShortcut);
+    return () => window.removeEventListener("keydown", handleSaveShortcut);
+  }, [activeFile]);
+
   async function refreshWorkspace(nextWorkspace?: StudioWorkspaceState) {
     if (nextWorkspace) {
       setWorkspace(nextWorkspace);
@@ -136,6 +148,7 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
     if (!bridge || !activeFile) return;
     const saved = await bridge.saveWorkspaceFile({ filePath: activeFile.path, content: activeFile.content });
     putTab(saved);
+    await refreshWorkspace();
     setStatusMessage(`Saved ${saved.name}`);
   }
 
@@ -149,6 +162,7 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
       const shouldSave = window.confirm(`Save changes to ${tab.name} before closing? Select Cancel to discard changes.`);
       if (shouldSave && bridge) {
         const saved = await bridge.saveWorkspaceFile({ filePath: tab.path, content: tab.content });
+        await refreshWorkspace();
         setStatusMessage(`Saved ${saved.name}`);
       }
     }

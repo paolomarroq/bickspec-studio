@@ -2,6 +2,7 @@ import { app, BrowserWindow, Menu, ipcMain, nativeTheme } from "electron";
 import { join } from "node:path";
 import { createBackendServices } from "./backend/createBackendServices";
 import { registerBackendIpc } from "./backend/registerBackendIpc";
+import { verifyWorkspaceFlows } from "./backend/verifyWorkspaceFlows";
 
 const isDev = Boolean(process.env.ELECTRON_RENDERER_URL);
 const appIconPath = isDev
@@ -38,6 +39,15 @@ function createWindow(): void {
 app.whenReady().then(() => {
   Menu.setApplicationMenu(null);
   const backendServices = createBackendServices(app, app.getAppPath());
+  if (process.env.BICKSPEC_VERIFY_WORKSPACE_FLOWS === "1") {
+    void verifyWorkspaceFlows(backendServices)
+      .then(() => app.quit())
+      .catch((error: unknown) => {
+        console.error(error);
+        app.exit(1);
+      });
+    return;
+  }
   registerBackendIpc(backendServices);
   ipcMain.handle("app:get-version", () => app.getVersion());
   createWindow();

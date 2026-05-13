@@ -1,5 +1,5 @@
 import { basename, dirname, extname, isAbsolute, join, relative, resolve } from "node:path";
-import { dialog, shell } from "electron";
+import { BrowserWindow, dialog, shell, type OpenDialogOptions, type SaveDialogOptions } from "electron";
 import type {
   OpenFileResult,
   OpenWorkspaceFile,
@@ -30,31 +30,42 @@ export class AppWorkspaceService {
 
   async getWorkspaceState(): Promise<StudioWorkspaceState> {
     const persisted = await this.readPersistedState();
-    const fileTree = persisted.workspaceFolderPath ? await this.listFileNodes(persisted.workspaceFolderPath) : [];
+    const workspaceFolderPath =
+      persisted.workspaceFolderPath && (await this.fileSystem.isDirectory(persisted.workspaceFolderPath))
+        ? persisted.workspaceFolderPath
+        : undefined;
+    const recentEntries = await this.getExistingRecentEntries(persisted.recentEntries);
+    if (workspaceFolderPath !== persisted.workspaceFolderPath || recentEntries.length !== persisted.recentEntries.length) {
+      await this.writePersistedState({ workspaceFolderPath, recentEntries });
+    }
+    const fileTree = workspaceFolderPath ? await this.listFileNodes(workspaceFolderPath) : [];
     return {
-      workspaceFolderPath: persisted.workspaceFolderPath,
-      workspaceName: persisted.workspaceFolderPath ? basename(persisted.workspaceFolderPath) : undefined,
+      workspaceFolderPath,
+      workspaceName: workspaceFolderPath ? basename(workspaceFolderPath) : undefined,
       fileTree,
-      recentEntries: persisted.recentEntries
+      recentEntries
     };
   }
 
   async createNewBickSpecFile(): Promise<OpenFileResult | null> {
-    const result = await dialog.showSaveDialog({
+    const persisted = await this.readPersistedState();
+    const defaultPath =
+      persisted.workspaceFolderPath && (await this.fileSystem.isDirectory(persisted.workspaceFolderPath))
+        ? join(persisted.workspaceFolderPath, "untitled.bks")
+        : "untitled.bks";
+    const result = await this.showSaveDialog({
       title: "New BickSpec File",
-      defaultPath: "untitled.bks",
+      defaultPath,
       filters: [{ name: "BickSpec Files", extensions: ["bks"] }]
     });
     if (result.canceled || !result.filePath) return null;
 
     const filePath = result.filePath.endsWith(".bks") ? result.filePath : `${result.filePath}.bks`;
-    const template = "spec NewSpecification {\n  input assets: Array<Asset>;\n\n  report Summary {\n    export pdf, csv, excel;\n  }\n}\n";
-    await this.fileSystem.writeText(filePath, template);
-    return this.openWorkspaceFile(filePath);
+    return this.createBickSpecFileAt(filePath);
   }
 
   async chooseAndOpenBickSpecFile(): Promise<OpenFileResult | null> {
-    const result = await dialog.showOpenDialog({
+    const result = await this.showOpenDialog({
       title: "Open Studio File",
       properties: ["openFile"],
       filters: [
@@ -68,7 +79,7 @@ export class AppWorkspaceService {
   }
 
   async chooseAndOpenWorkspaceFolder(): Promise<StudioWorkspaceState | null> {
-    const result = await dialog.showOpenDialog({
+    const result = await this.showOpenDialog({
       title: "Open Project Folder",
       properties: ["openDirectory"]
     });
@@ -85,6 +96,9 @@ export class AppWorkspaceService {
   async openWorkspaceFolder(folderPath: string): Promise<StudioWorkspaceState> {
     const persisted = await this.readPersistedState();
     const workspaceFolderPath = resolve(folderPath);
+    if (!(await this.fileSystem.isDirectory(workspaceFolderPath))) {
+      throw new Error(`Workspace folder does not exist: ${workspaceFolderPath}`);
+    }
     const recentEntries = this.addRecent(persisted.recentEntries, {
       kind: "folder",
       path: workspaceFolderPath
@@ -95,6 +109,9 @@ export class AppWorkspaceService {
 
   async openWorkspaceFile(filePath: string): Promise<OpenFileResult> {
     const normalizedPath = resolve(filePath);
+    if (!(await this.fileSystem.isFile(normalizedPath))) {
+      throw new Error(`File does not exist: ${normalizedPath}`);
+    }
     const content = await this.fileSystem.readText(normalizedPath);
     const persisted = await this.readPersistedState();
     const workspaceFolderPath =
@@ -120,10 +137,23 @@ export class AppWorkspaceService {
   }
 
   async saveWorkspaceFile(request: SaveFileRequest): Promise<OpenWorkspaceFile> {
-    await this.fileSystem.writeText(request.filePath, request.content);
+    const normalizedPath = resolve(request.filePath);
+    await this.fileSystem.writeText(normalizedPath, request.content);
+    const persisted = await this.readPersistedState();
+    const workspaceFolderPath =
+      persisted.workspaceFolderPath && this.isPathInside(normalizedPath, persisted.workspaceFolderPath)
+        ? persisted.workspaceFolderPath
+        : dirname(normalizedPath);
+    await this.writePersistedState({
+      workspaceFolderPath,
+      recentEntries: this.addRecent(persisted.recentEntries, {
+        kind: "file",
+        path: normalizedPath
+      })
+    });
     return {
-      path: request.filePath,
-      name: basename(request.filePath),
+      path: normalizedPath,
+      name: basename(normalizedPath),
       content: request.content,
       savedContent: request.content,
       dirty: false
@@ -135,7 +165,12 @@ export class AppWorkspaceService {
   }
 
   async getRecentWorkspaceEntries(): Promise<RecentWorkspaceEntry[]> {
-    return (await this.readPersistedState()).recentEntries;
+    const persisted = await this.readPersistedState();
+    const recentEntries = await this.getExistingRecentEntries(persisted.recentEntries);
+    if (recentEntries.length !== persisted.recentEntries.length) {
+      await this.writePersistedState({ workspaceFolderPath: persisted.workspaceFolderPath, recentEntries });
+    }
+    return recentEntries;
   }
 
   async openDocumentation(): Promise<void> {
@@ -158,7 +193,7 @@ export class AppWorkspaceService {
   }
 
   async exportArtifact(artifactPath: string): Promise<string | null> {
-    const result = await dialog.showSaveDialog({
+    const result = await this.showSaveDialog({
       title: "Export Artifact",
       defaultPath: basename(artifactPath)
     });
@@ -168,7 +203,11 @@ export class AppWorkspaceService {
   }
 
   private async readPersistedState(): Promise<PersistedWorkspaceState> {
-    return (await this.fileSystem.readJson<PersistedWorkspaceState>(this.statePath)) ?? { recentEntries: [] };
+    const state = await this.fileSystem.readJson<Partial<PersistedWorkspaceState>>(this.statePath);
+    return {
+      workspaceFolderPath: state?.workspaceFolderPath,
+      recentEntries: Array.isArray(state?.recentEntries) ? state.recentEntries : []
+    };
   }
 
   private async writePersistedState(state: PersistedWorkspaceState): Promise<void> {
@@ -191,11 +230,11 @@ export class AppWorkspaceService {
 
   private async listFileNodes(folderPath: string): Promise<WorkspaceFileNode[]> {
     const nodes: WorkspaceFileNode[] = [];
-    await this.walk(folderPath, 0, nodes, folderPath);
+    await this.walk(folderPath, 0, nodes);
     return nodes;
   }
 
-  private async walk(folderPath: string, depth: number, nodes: WorkspaceFileNode[], rootPath: string): Promise<void> {
+  private async walk(folderPath: string, depth: number, nodes: WorkspaceFileNode[]): Promise<void> {
     if (depth > 8) return;
     const entries = (await this.fileSystem.listDirectory(folderPath)).sort((a, b) => Number(b.isDirectory) - Number(a.isDirectory) || a.name.localeCompare(b.name));
     for (const entry of entries) {
@@ -209,7 +248,7 @@ export class AppWorkspaceService {
         kind: entry.isDirectory ? "folder" : this.kindFromExtension(extension),
         depth
       });
-      if (entry.isDirectory) await this.walk(entry.path, depth + 1, nodes, rootPath);
+      if (entry.isDirectory) await this.walk(entry.path, depth + 1, nodes);
     }
   }
 
@@ -230,5 +269,34 @@ export class AppWorkspaceService {
   private isPathInside(filePath: string, folderPath: string): boolean {
     const relativePath = relative(resolve(folderPath), resolve(filePath));
     return relativePath === "" || (!relativePath.startsWith("..") && !isAbsolute(relativePath));
+  }
+
+  async createBickSpecFileAt(filePath: string): Promise<OpenFileResult> {
+    const template = "spec NewSpecification {\n  input assets: Array<Asset>;\n\n  report Summary {\n    export pdf, csv, excel;\n  }\n}\n";
+    await this.fileSystem.writeText(filePath, template);
+    return this.openWorkspaceFile(filePath);
+  }
+
+  private async getExistingRecentEntries(entries: RecentWorkspaceEntry[]): Promise<RecentWorkspaceEntry[]> {
+    const existingEntries: RecentWorkspaceEntry[] = [];
+    for (const entry of entries) {
+      const exists = entry.kind === "folder" ? await this.fileSystem.isDirectory(entry.path) : await this.fileSystem.isFile(entry.path);
+      if (exists) existingEntries.push(entry);
+    }
+    return existingEntries;
+  }
+
+  private showOpenDialog(options: OpenDialogOptions) {
+    const window = this.getDialogParentWindow();
+    return window ? dialog.showOpenDialog(window, options) : dialog.showOpenDialog(options);
+  }
+
+  private showSaveDialog(options: SaveDialogOptions) {
+    const window = this.getDialogParentWindow();
+    return window ? dialog.showSaveDialog(window, options) : dialog.showSaveDialog(options);
+  }
+
+  private getDialogParentWindow(): BrowserWindow | undefined {
+    return BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0];
   }
 }
