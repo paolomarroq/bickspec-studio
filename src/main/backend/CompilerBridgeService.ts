@@ -26,9 +26,14 @@ export class CompilerBridgeService {
       this.processExecution.checkTool(settings.execution.javaCommand, ["-version"]),
       this.processExecution.checkTool(settings.execution.mavenCommand, ["-version"])
     ]);
+    const compilerArtifact = await this.repositoryResolver.resolveArtifact(
+      settings.compiler.repositoryPath,
+      settings.compiler.preferredArtifactPath
+    );
 
     return {
       compilerRepository,
+      compilerArtifact,
       java,
       maven,
       settingsPath: this.settingsService.settingsPath,
@@ -36,4 +41,3 @@ export class CompilerBridgeService {
     };
   }
 }
-

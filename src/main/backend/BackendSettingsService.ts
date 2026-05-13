@@ -1,4 +1,5 @@
 import { join, resolve } from "node:path";
+import { existsSync } from "node:fs";
 import type { App } from "electron";
 import type { BackendSettings } from "@shared/contracts/backend";
 import { FileSystemService } from "./FileSystemService";
@@ -15,6 +16,11 @@ export class BackendSettingsService {
   }
 
   getDefaultCompilerRepositoryPath(): string {
+    const projectLocalLinkedRepository = resolve(this.appRootPath, "bickspec-lang");
+    return existsSync(projectLocalLinkedRepository) ? projectLocalLinkedRepository : this.getFallbackSiblingCompilerRepositoryPath();
+  }
+
+  getFallbackSiblingCompilerRepositoryPath(): string {
     return resolve(this.appRootPath, "..", "bickspec-lang");
   }
 
@@ -71,4 +77,3 @@ export class BackendSettingsService {
     return this.saveSettings(nextSettings);
   }
 }
-

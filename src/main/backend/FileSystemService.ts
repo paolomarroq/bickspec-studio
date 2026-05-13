@@ -1,4 +1,4 @@
-import { access, mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { constants } from "node:fs";
 import { dirname } from "node:path";
 
@@ -20,6 +20,23 @@ export class FileSystemService {
     }
   }
 
+  async isFile(path: string): Promise<boolean> {
+    try {
+      return (await stat(path)).isFile();
+    } catch {
+      return false;
+    }
+  }
+
+  async listFiles(path: string): Promise<string[]> {
+    try {
+      const entries = await readdir(path, { withFileTypes: true });
+      return entries.filter((entry) => entry.isFile()).map((entry) => entry.name);
+    } catch {
+      return [];
+    }
+  }
+
   async readJson<T>(path: string): Promise<T | null> {
     if (!(await this.exists(path))) return null;
     return JSON.parse(await readFile(path, "utf8")) as T;
@@ -30,4 +47,3 @@ export class FileSystemService {
     await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, "utf8");
   }
 }
-

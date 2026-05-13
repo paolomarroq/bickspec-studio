@@ -54,10 +54,16 @@ The default linked compiler repository path is:
 ../bickspec-lang
 ```
 
-That path is configurable through the backend settings file stored in Electron `userData`, and can also be seeded for development with:
+If a project-local linked folder exists at `bickspec-studio/bickspec-lang`, Studio will use that linked repository path first. Otherwise, it falls back to the sibling layout above. The path is configurable through the backend settings file stored in Electron `userData`, and can also be seeded for development with:
 
 ```bash
 BICKSPEC_LANG_REPOSITORY=/path/to/bickspec-lang
+```
+
+The compiler source is maintained externally at:
+
+```text
+https://github.com/paolomarroq/bickspec-lang
 ```
 
 The backend validates that the linked repository looks like `bickspec-lang` by checking for signals such as:
@@ -86,6 +92,15 @@ Commit 1/4 of backend integration adds:
 - Java and Maven availability checks
 - typed preload IPC for backend status and linked compiler configuration
 - workspace information for later compile/run flows
+
+Commit 2/4 adds real compiler execution from the linked repository:
+
+- resolves an existing compiler jar from `app/target/`, including `bickspec-compiler-1.0.0.jar` and matching `bickspec-*.jar` artifacts
+- reports when the jar is missing but `app/pom.xml` indicates the linked repository is buildable
+- runs the compiler in the Electron main process with `java -jar <artifact> <file-or-directory>`
+- captures stdout, stderr, exit code, command, working directory, duration, linked repo path, artifact path, and interactive-timeout metadata
+- parses tagged compiler output such as `[ERROR]`, `[SYMBOLS]`, `[TREE]`, `[JAVA]`, `[BUILD]`, `[EXECUTION]`, and `[SUCCESS]`
+- exposes typed preload APIs for file/directory execution, artifact resolution, execution status, last result, and output parsing
 
 Later backend commits should use this foundation to compile the current file, run BickSpec on a project/folder, retrieve generated artifacts, surface diagnostics/results, and power report/export flows.
 
