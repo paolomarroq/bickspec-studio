@@ -114,3 +114,90 @@ export interface CompilerExecutionStatus {
   lastTargetPath?: string;
   lastExitCode?: number | null;
 }
+
+export type CompilerDiagnosticCategory = "LEX" | "SYN" | "SEM" | "GEN" | "BUILD" | "EXECUTION" | "OTHER";
+export type CompilerDiagnosticSeverity = "info" | "warning" | "error";
+export type CompilerStage = "parse" | "semantic" | "java" | "build" | "execution";
+export type CompilerStageState = "pending" | "running" | "completed" | "failed" | "skipped";
+export type GeneratedArtifactType = "java" | "class" | "symbols" | "tree-svg" | "tree-dot" | "summary" | "log" | "report" | "other";
+export type ExecutionOutputStream = "stdout" | "stderr" | "combined";
+
+export interface CompilerDiagnostic {
+  code: string;
+  category: CompilerDiagnosticCategory;
+  severity: CompilerDiagnosticSeverity;
+  message: string;
+  filePath?: string;
+  line?: number;
+  column?: number;
+  rawSourceLine?: string;
+  stage: CompilerStage;
+  blocking: boolean;
+  raw: string;
+}
+
+export interface GeneratedArtifactMetadata {
+  id: string;
+  type: GeneratedArtifactType;
+  absolutePath: string;
+  projectRelativePath: string;
+  displayName: string;
+  exists: boolean;
+  lastModifiedAt?: string;
+  sizeBytes?: number;
+  sourceTag?: CompilerOutputTag;
+}
+
+export interface ArtifactCollection {
+  rootPath: string;
+  artifacts: GeneratedArtifactMetadata[];
+  groups: Array<{
+    type: GeneratedArtifactType;
+    count: number;
+  }>;
+}
+
+export interface CompilerStageStatus {
+  stage: CompilerStage;
+  state: CompilerStageState;
+  message?: string;
+}
+
+export interface ExecutionOutputBlock {
+  stream: ExecutionOutputStream;
+  text: string;
+  lineCount: number;
+}
+
+export interface CompilerSessionSummary {
+  success: boolean;
+  interactive: boolean;
+  outputFullyCaptured: boolean;
+  targetPath: string;
+  targetKind: CompilerExecutionTargetKind;
+  repositoryPath: string;
+  compilerArtifactPath?: string;
+  exitCode: number | null;
+  durationMs: number;
+  startedAt?: string;
+  completedAt?: string;
+}
+
+export interface CompilerSessionResult {
+  id: string;
+  summary: CompilerSessionSummary;
+  stages: CompilerStageStatus[];
+  diagnostics: CompilerDiagnostic[];
+  artifacts: ArtifactCollection;
+  output: ExecutionOutputBlock[];
+  execution: CompilerExecutionResult;
+}
+
+export interface ArtifactPreviewData {
+  artifactPath: string;
+  exists: boolean;
+  previewKind: "text" | "binary" | "missing";
+  text?: string;
+  sizeBytes?: number;
+  truncated?: boolean;
+}

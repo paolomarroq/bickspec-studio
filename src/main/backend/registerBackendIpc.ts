@@ -26,4 +26,21 @@ export function registerBackendIpc(backend: BackendServices): void {
   ipcMain.handle("backend:parse-compiler-output", (_event, rawOutput: string) => {
     return backend.compilerExecution.parseCompilerOutput(rawOutput);
   });
+  ipcMain.handle("backend:get-last-compiler-session", () => backend.compilerExecution.getLastSession());
+  ipcMain.handle("backend:get-last-diagnostics", () => backend.compilerExecution.getLastDiagnostics());
+  ipcMain.handle("backend:get-last-artifacts", () => backend.compilerExecution.getLastArtifacts());
+  ipcMain.handle("backend:open-artifact-path", (_event, artifactPath: string) => {
+    return backend.compilerExecution.openArtifactPath(artifactPath);
+  });
+  ipcMain.handle("backend:reveal-artifact-in-folder", (_event, artifactPath: string) => {
+    return backend.compilerExecution.revealArtifactInFolder(artifactPath);
+  });
+  ipcMain.handle("backend:read-artifact-text", (_event, artifactPath: string) => {
+    return backend.compilerExecution.readArtifactText(artifactPath);
+  });
+  ipcMain.handle("backend:get-artifact-preview-data", (_event, artifactPath: string) => {
+    return backend.compilerExecution.getArtifactPreviewData(artifactPath);
+  });
+  ipcMain.handle("backend:get-compiler-console-output", () => backend.compilerExecution.getCompilerConsoleOutput());
+  ipcMain.handle("backend:clear-last-compiler-session", () => backend.compilerExecution.clearLastSession());
 }

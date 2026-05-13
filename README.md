@@ -102,6 +102,15 @@ Commit 2/4 adds real compiler execution from the linked repository:
 - parses tagged compiler output such as `[ERROR]`, `[SYMBOLS]`, `[TREE]`, `[JAVA]`, `[BUILD]`, `[EXECUTION]`, and `[SUCCESS]`
 - exposes typed preload APIs for file/directory execution, artifact resolution, execution status, last result, and output parsing
 
+Commit 3/4 turns compiler executions into UI-ready backend domain objects:
+
+- maps compiler output into `CompilerSessionResult`
+- parses diagnostics with code, category, severity, stage, file/line/column, and blocking status
+- discovers generated artifacts from compiler output tags and resolves metadata for Java files, classes, symbols CSV, parse tree SVG/DOT, summaries, logs, and report-like outputs
+- stores the latest compiler session in backend state for workspace diagnostics, console output, artifacts/results, and status banners
+- exposes artifact open, reveal, text read, and preview-data APIs through preload
+- keeps renderer code out of raw compiler-output parsing and filesystem access
+
 Later backend commits should use this foundation to compile the current file, run BickSpec on a project/folder, retrieve generated artifacts, surface diagnostics/results, and power report/export flows.
 
 ## Project Structure

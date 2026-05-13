@@ -2,8 +2,12 @@ import type {
   BackendSettings,
   BackendStatus,
   CompilerArtifactResolution,
+  ArtifactPreviewData,
+  CompilerDiagnostic,
   CompilerExecutionResult,
   CompilerExecutionStatus,
+  CompilerSessionResult,
+  GeneratedArtifactMetadata,
   CompilerRepositoryConfig,
   CompilerRepositoryValidation,
   ParsedCompilerOutput,
@@ -27,6 +31,15 @@ export interface StudioBridge {
     getLastExecutionResult(): Promise<CompilerExecutionResult | null>;
     getResolvedCompilerArtifact(): Promise<CompilerArtifactResolution>;
     parseCompilerOutput(rawOutput: string): Promise<ParsedCompilerOutput>;
+    getLastCompilerSession(): Promise<CompilerSessionResult | null>;
+    getLastDiagnostics(): Promise<CompilerDiagnostic[]>;
+    getLastArtifacts(): Promise<GeneratedArtifactMetadata[]>;
+    openArtifactPath(artifactPath: string): Promise<void>;
+    revealArtifactInFolder(artifactPath: string): Promise<void>;
+    readArtifactText(artifactPath: string): Promise<string>;
+    getArtifactPreviewData(artifactPath: string): Promise<ArtifactPreviewData>;
+    getCompilerConsoleOutput(): Promise<string>;
+    clearLastCompilerSession(): Promise<void>;
   };
 }
 

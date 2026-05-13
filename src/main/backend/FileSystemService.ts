@@ -42,6 +42,22 @@ export class FileSystemService {
     return JSON.parse(await readFile(path, "utf8")) as T;
   }
 
+  async readText(path: string): Promise<string> {
+    return readFile(path, "utf8");
+  }
+
+  async getFileMetadata(path: string): Promise<{ sizeBytes: number; lastModifiedAt: string } | null> {
+    try {
+      const metadata = await stat(path);
+      return {
+        sizeBytes: metadata.size,
+        lastModifiedAt: metadata.mtime.toISOString()
+      };
+    } catch {
+      return null;
+    }
+  }
+
   async writeJson(path: string, value: unknown): Promise<void> {
     await mkdir(dirname(path), { recursive: true });
     await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, "utf8");
