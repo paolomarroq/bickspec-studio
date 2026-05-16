@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as monaco from "monaco-editor";
 import { BICKSPEC_LANGUAGE_ID, registerBickSpecLanguage } from "../../editor/bickspecLanguage";
+import { registerBickSpecCompletions } from "../../editor/bickspecCompletions";
 import { BICKSPEC_DARK_THEME, BICKSPEC_LIGHT_THEME, registerBickSpecThemes } from "../../editor/bickspecTheme";
 
 let bickSpecSupportRegistered = false;
@@ -9,6 +10,7 @@ function ensureBickSpecSupport() {
   if (bickSpecSupportRegistered) return;
   registerBickSpecLanguage(monaco);
   registerBickSpecThemes(monaco);
+  registerBickSpecCompletions(monaco);
   bickSpecSupportRegistered = true;
 }
 
