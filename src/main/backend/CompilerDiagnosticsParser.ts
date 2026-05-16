@@ -5,6 +5,8 @@ import type {
   CompilerStage,
   ParsedCompilerOutput
 } from "@shared/contracts/backend";
+import { classifyDiagnostic, extractDiagnosticCode } from "../../shared/diagnostics/classifyDiagnostic";
+import { diagnosticSuggestions } from "../../shared/diagnostics/diagnosticSuggestions";
 
 export class CompilerDiagnosticsParser {
   parse(parsedOutput: ParsedCompilerOutput, stderr: string): CompilerDiagnostic[] {
@@ -23,11 +25,12 @@ export class CompilerDiagnosticsParser {
 
   private fromRaw(raw: string, index: number, severity: CompilerDiagnosticSeverity, message: string): CompilerDiagnostic {
     const location = this.parseLocation(raw);
-    const category = this.getCategory(raw);
+    const originalCode = extractDiagnosticCode(raw);
+    const category = classifyDiagnostic(raw, originalCode);
     const stage = this.getStage(raw, category);
 
     return {
-      code: `BKS-${category}-${String(index + 1).padStart(3, "0")}`,
+      code: originalCode ?? `BKS-${category}-${String(index + 1).padStart(3, "0")}`,
       category,
       severity,
       message: this.stripLocation(message),
@@ -36,7 +39,8 @@ export class CompilerDiagnosticsParser {
       column: location.column,
       stage,
       blocking: severity === "error",
-      raw
+      raw,
+      suggestion: diagnosticSuggestions[category]
     };
   }
 
@@ -61,16 +65,6 @@ export class CompilerDiagnosticsParser {
     return {};
   }
 
-  private getCategory(raw: string): CompilerDiagnosticCategory {
-    if (/lexer|token|lex/i.test(raw)) return "LEX";
-    if (/parser|parse|syntax|mismatched|extraneous|line\s+\d+:\d+/i.test(raw)) return "SYN";
-    if (/semantic|symbol|type|undeclared|duplicate/i.test(raw)) return "SEM";
-    if (/java|generation|transpile/i.test(raw)) return "GEN";
-    if (/build|javac|class/i.test(raw)) return "BUILD";
-    if (/execution|runtime|exception/i.test(raw)) return "EXECUTION";
-    return "OTHER";
-  }
-
   private getStage(raw: string, category: CompilerDiagnosticCategory): CompilerStage {
     if (category === "LEX" || category === "SYN") return "parse";
     if (category === "SEM") return "semantic";
@@ -84,5 +78,5 @@ export class CompilerDiagnosticsParser {
   private stripLocation(message: string): string {
     return message.replace(/^(.+?):\d+:\d+:\s*/, "").replace(/^line\s+\d+:\d+\s*/, "");
   }
-}
 
+}
