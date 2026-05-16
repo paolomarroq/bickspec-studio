@@ -807,6 +807,12 @@ pre,
   white-space: pre;
 }
 
+.monaco-code-editor {
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+}
+
 .code-line {
   display: block;
   padding: 0 16px;

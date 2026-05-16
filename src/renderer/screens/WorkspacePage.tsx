@@ -67,7 +67,7 @@ export function WorkspacePage() {
           </span>
         </div>
         {activeFile ? (
-          <CodeEditor content={activeFile.content} onChange={updateActiveFileContent} />
+          <CodeEditor content={activeFile.content} filePath={activeFile.path} onChange={updateActiveFileContent} />
         ) : (
           <div style={{ padding: 24, color: "var(--color-text-muted)" }}>Open or create a BickSpec file to start editing.</div>
         )}
