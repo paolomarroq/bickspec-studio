@@ -7,12 +7,14 @@ import type {
   CompilerStageStatus,
   ExecutionOutputBlock
 } from "@shared/contracts/backend";
+import type { NormalizedCompilerResult } from "./CompilerResultNormalizer";
 
 export class CompilerSessionMapper {
   toSession(
     execution: CompilerExecutionResult,
     diagnostics: CompilerDiagnostic[],
     artifacts: ArtifactCollection,
+    normalized: NormalizedCompilerResult,
     status: { startedAt?: string; completedAt?: string }
   ): CompilerSessionResult {
     return {
@@ -34,6 +36,7 @@ export class CompilerSessionMapper {
       diagnostics,
       artifacts,
       output: this.toOutputBlocks(execution),
+      normalized,
       execution
     };
   }
@@ -78,4 +81,3 @@ export class CompilerSessionMapper {
     };
   }
 }
-

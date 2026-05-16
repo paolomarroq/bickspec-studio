@@ -13,11 +13,16 @@ import type {
   CompilerRepositoryConfig,
   CompilerRepositoryValidation,
   ParsedCompilerOutput,
+  InteractiveSessionState,
   RecentWorkspaceEntry,
   SaveFileRequest,
   StudioWorkspaceState,
-  WorkspaceInfo
+  WorkspaceInfo,
+  SetupState,
+  SetupValidationResult
 } from "./backend";
+import type { BickSpecReportData, ReportExportFormat } from "./reports";
+import type { SetupCompilationResult, SetupInteractiveResult } from "./setup";
 
 export interface StudioBridge {
   app: {
@@ -46,6 +51,9 @@ export interface StudioBridge {
     readArtifactText(artifactPath: string): Promise<string>;
     getArtifactPreviewData(artifactPath: string): Promise<ArtifactPreviewData>;
     getCompilerConsoleOutput(): Promise<string>;
+    getInteractiveSessionState(): Promise<InteractiveSessionState>;
+    sendInteractiveInput(input: string): Promise<boolean>;
+    resetInteractiveSession(): Promise<InteractiveSessionState>;
     clearLastCompilerSession(): Promise<void>;
     getStudioWorkspaceState(): Promise<StudioWorkspaceState>;
     createNewBickSpecFile(): Promise<OpenFileResult | null>;
@@ -59,6 +67,29 @@ export interface StudioBridge {
     openDocumentation(): Promise<void>;
     openOutputFolder(folderPath: string): Promise<void>;
     exportArtifact(artifactPath: string): Promise<string | null>;
+    exportReport(report: BickSpecReportData, format: ReportExportFormat): Promise<string | null>;
+    getSetupState(): Promise<SetupState>;
+    saveSetupState(patch: Partial<SetupState>): Promise<SetupState>;
+    resetSetup(): Promise<SetupState>;
+    skipSetup(): Promise<SetupState>;
+    finishSetup(): Promise<SetupState>;
+    validateJava(javaPath?: string): Promise<SetupValidationResult>;
+    selectJava(): Promise<string | null>;
+    selectCompilerRepo(): Promise<string | null>;
+    validateCompilerRepo(repositoryPath?: string): Promise<SetupValidationResult>;
+    validateGit(): Promise<SetupValidationResult>;
+    getConfiguredRepoUrl(): Promise<string>;
+    cloneCompilerRepo(): Promise<SetupValidationResult>;
+    updateCompilerRepo(): Promise<SetupValidationResult>;
+    selectCompilerJar(): Promise<string | null>;
+    validateCompilerJar(jarPath?: string): Promise<SetupValidationResult>;
+    buildCompilerFromRepo(): Promise<SetupValidationResult>;
+    selectWorkspace(): Promise<string | null>;
+    validateWorkspace(workspacePath?: string): Promise<SetupValidationResult>;
+    runSetupCompilationTest(): Promise<SetupCompilationResult>;
+    runSetupInteractiveTest(): Promise<SetupInteractiveResult>;
+    validateSetupArtifacts(): Promise<SetupValidationResult>;
+    testSetupReportExport(): Promise<SetupValidationResult>;
   };
 }
 

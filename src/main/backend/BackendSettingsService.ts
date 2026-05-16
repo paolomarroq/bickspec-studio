@@ -27,7 +27,8 @@ export class BackendSettingsService {
   getDefaultSettings(): BackendSettings {
     return {
       compiler: {
-        repositoryPath: process.env.BICKSPEC_LANG_REPOSITORY ?? this.getDefaultCompilerRepositoryPath()
+        repositoryPath: process.env.BICKSPEC_LANG_REPOSITORY ?? this.getDefaultCompilerRepositoryPath(),
+        repositoryUrl: process.env.BICKSPEC_LANG_REPOSITORY_URL ?? "https://github.com/paolomarroq/bickspec-lang"
       },
       execution: {
         javaCommand: process.env.JAVA_COMMAND ?? "java",
@@ -36,6 +37,12 @@ export class BackendSettingsService {
       workspace: {
         defaultOutputDirectory: "generated",
         preserveGeneratedArtifacts: true
+      },
+      setup: {
+        setupCompleted: false,
+        setupSkipped: false,
+        documentationShown: false,
+        lastValidationResults: {}
       }
     };
   }
@@ -56,6 +63,14 @@ export class BackendSettingsService {
       workspace: {
         ...defaults.workspace,
         ...stored?.workspace
+      },
+      setup: {
+        ...defaults.setup,
+        ...stored?.setup,
+        lastValidationResults: {
+          ...defaults.setup.lastValidationResults,
+          ...stored?.setup?.lastValidationResults
+        }
       }
     };
   }
@@ -75,5 +90,20 @@ export class BackendSettingsService {
       }
     };
     return this.saveSettings(nextSettings);
+  }
+
+  async patchSetupState(patch: Partial<BackendSettings["setup"]>): Promise<BackendSettings> {
+    const settings = await this.getSettings();
+    return this.saveSettings({
+      ...settings,
+      setup: {
+        ...settings.setup,
+        ...patch,
+        lastValidationResults: {
+          ...settings.setup.lastValidationResults,
+          ...patch.lastValidationResults
+        }
+      }
+    });
   }
 }

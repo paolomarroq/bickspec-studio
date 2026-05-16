@@ -42,6 +42,9 @@ export function registerBackendIpc(backend: BackendServices): void {
     return backend.compilerExecution.getArtifactPreviewData(artifactPath);
   });
   ipcMain.handle("backend:get-compiler-console-output", () => backend.compilerExecution.getCompilerConsoleOutput());
+  ipcMain.handle("backend:get-interactive-session-state", () => backend.compilerExecution.getInteractiveSessionState());
+  ipcMain.handle("backend:send-interactive-input", (_event, input: string) => backend.compilerExecution.sendInteractiveInput(input));
+  ipcMain.handle("backend:reset-interactive-session", () => backend.compilerExecution.resetInteractiveSession());
   ipcMain.handle("backend:clear-last-compiler-session", () => backend.compilerExecution.clearLastSession());
   ipcMain.handle("backend:get-studio-workspace-state", () => backend.appWorkspace.getWorkspaceState());
   ipcMain.handle("backend:create-new-bickspec-file", () => backend.appWorkspace.createNewBickSpecFile());
@@ -55,4 +58,27 @@ export function registerBackendIpc(backend: BackendServices): void {
   ipcMain.handle("backend:open-documentation", () => backend.appWorkspace.openDocumentation());
   ipcMain.handle("backend:open-output-folder", (_event, folderPath: string) => backend.appWorkspace.openOutputFolder(folderPath));
   ipcMain.handle("backend:export-artifact", (_event, artifactPath: string) => backend.appWorkspace.exportArtifact(artifactPath));
+  ipcMain.handle("backend:export-report", (_event, report, format) => backend.reportExport.export(report, format));
+  ipcMain.handle("setup:get-state", () => backend.setupWizard.getState());
+  ipcMain.handle("setup:save-state", (_event, patch) => backend.setupWizard.saveState(patch));
+  ipcMain.handle("setup:reset", () => backend.setupWizard.reset());
+  ipcMain.handle("setup:skip", () => backend.setupWizard.skip());
+  ipcMain.handle("setup:finish", () => backend.setupWizard.finish());
+  ipcMain.handle("setup:validate-java", (_event, javaPath?: string) => backend.setupWizard.validateJava(javaPath));
+  ipcMain.handle("setup:select-java", () => backend.setupWizard.selectJava());
+  ipcMain.handle("setup:select-compiler-repo", () => backend.setupWizard.selectCompilerRepo());
+  ipcMain.handle("setup:validate-compiler-repo", (_event, repositoryPath?: string) => backend.setupWizard.validateCompilerRepo(repositoryPath));
+  ipcMain.handle("setup:validate-git", () => backend.setupWizard.validateGit());
+  ipcMain.handle("setup:get-configured-repo-url", () => backend.setupWizard.getConfiguredRepoUrl());
+  ipcMain.handle("setup:clone-compiler-repo", () => backend.setupWizard.cloneCompilerRepo());
+  ipcMain.handle("setup:update-compiler-repo", () => backend.setupWizard.updateCompilerRepo());
+  ipcMain.handle("setup:select-compiler-jar", () => backend.setupWizard.selectCompilerJar());
+  ipcMain.handle("setup:validate-compiler-jar", (_event, jarPath?: string) => backend.setupWizard.validateCompilerJar(jarPath));
+  ipcMain.handle("setup:build-compiler-from-repo", () => backend.setupWizard.buildCompilerFromRepo());
+  ipcMain.handle("setup:select-workspace", () => backend.setupWizard.selectWorkspace());
+  ipcMain.handle("setup:validate-workspace", (_event, workspacePath?: string) => backend.setupWizard.validateWorkspace(workspacePath));
+  ipcMain.handle("setup:run-compilation-test", () => backend.setupWizard.runCompilationTest());
+  ipcMain.handle("setup:run-interactive-test", () => backend.setupWizard.runInteractiveTest());
+  ipcMain.handle("setup:validate-artifacts", () => backend.setupWizard.validateArtifacts());
+  ipcMain.handle("setup:test-report-export", () => backend.setupWizard.testReportExport());
 }

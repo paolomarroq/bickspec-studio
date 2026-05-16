@@ -3,6 +3,7 @@ import * as monaco from "monaco-editor";
 import { BICKSPEC_LANGUAGE_ID, registerBickSpecLanguage } from "../../editor/bickspecLanguage";
 import { registerBickSpecCompletions } from "../../editor/bickspecCompletions";
 import { BICKSPEC_DARK_THEME, BICKSPEC_LIGHT_THEME, registerBickSpecThemes } from "../../editor/bickspecTheme";
+import { setActiveEditor } from "../../editor/activeEditor";
 
 let bickSpecSupportRegistered = false;
 
@@ -59,6 +60,7 @@ export function CodeEditor({
     const subscription = editor.onDidChangeModelContent(() => {
       onChangeRef.current?.(editor.getValue());
     });
+    const focusSubscription = editor.onDidFocusEditorText(() => setActiveEditor(editor));
 
     const observer = new MutationObserver(() => {
       monaco.editor.setTheme(document.documentElement.dataset.theme === "dark" ? BICKSPEC_DARK_THEME : BICKSPEC_LIGHT_THEME);
@@ -71,10 +73,12 @@ export function CodeEditor({
     return () => {
       observer.disconnect();
       subscription.dispose();
+      focusSubscription.dispose();
       editor.dispose();
       model.dispose();
       editorRef.current = null;
       modelRef.current = null;
+      setActiveEditor(null);
     };
   }, [filePath]);
 

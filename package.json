@@ -16,14 +16,19 @@
     "package": "npm run build && electron-builder",
     "package:win": "npm run build && electron-builder --win",
     "package:mac": "npm run build && electron-builder --mac",
-    "package:linux": "npm run build && electron-builder --linux"
+    "package:linux": "npm run build && electron-builder --linux",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win",
+    "dist:mac": "npm run build && electron-builder --mac",
+    "release": "npm run build && electron-builder --publish onTag"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
     "monaco-editor": "^0.52.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.0.0"
+    "react-router-dom": "^7.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
@@ -40,7 +45,7 @@
     "appId": "com.bickspec.studio",
     "productName": "BickSpec Studio",
     "directories": {
-      "buildResources": "buildResources",
+      "buildResources": "build",
       "output": "release"
     },
     "files": [
@@ -49,26 +54,53 @@
     ],
     "extraResources": [
       {
-        "from": "buildResources/icon.png",
+        "from": "build/icon.png",
         "to": "icon.png"
+      },
+      {
+        "from": "build/icon.ico",
+        "to": "icon.ico"
+      },
+      {
+        "from": "docs",
+        "to": "docs"
       }
     ],
     "mac": {
-      "icon": "buildResources/icon.png",
-      "category": "public.app-category.developer-tools"
+      "icon": "build/icon.png",
+      "category": "public.app-category.developer-tools",
+      "artifactName": "BickSpec-Studio-${version}-macOS-${arch}.${ext}",
+      "target": [
+        "dmg",
+        "zip"
+      ]
     },
     "win": {
-      "icon": "buildResources/icon.png",
-      "signAndEditExecutable": false,
+      "icon": "build/icon.ico",
+      "artifactName": "BickSpec-Studio-${version}-Windows-${arch}.${ext}",
       "target": [
         "nsis"
       ]
     },
+    "nsis": {
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "shortcutName": "BickSpec Studio",
+      "uninstallDisplayName": "BickSpec Studio",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
     "linux": {
-      "icon": "buildResources/icon.png",
+      "icon": "build/icon.png",
       "target": [
         "AppImage"
       ]
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "paolomarroq",
+      "repo": "bickspec-studio",
+      "releaseType": "draft"
     }
   }
 }

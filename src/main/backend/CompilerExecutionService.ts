@@ -9,7 +9,8 @@ import type {
   CompilerExecutionTargetKind,
   CompilerSessionResult,
   GeneratedArtifactMetadata,
-  ParsedCompilerOutput
+  ParsedCompilerOutput,
+  InteractiveSessionState
 } from "@shared/contracts/backend";
 import { ArtifactAccessService } from "./ArtifactAccessService";
 import { ArtifactDiscoveryService } from "./ArtifactDiscoveryService";
@@ -17,8 +18,10 @@ import { BackendSettingsService } from "./BackendSettingsService";
 import { CompilerDiagnosticsParser } from "./CompilerDiagnosticsParser";
 import { CompilerOutputParser } from "./CompilerOutputParser";
 import { CompilerRepositoryResolver } from "./CompilerRepositoryResolver";
+import { CompilerResultNormalizer } from "./CompilerResultNormalizer";
 import { CompilerSessionMapper } from "./CompilerSessionMapper";
 import { FileSystemService } from "./FileSystemService";
+import { InteractiveSessionManager } from "./InteractiveSessionManager";
 import { ProcessExecutionService } from "./ProcessExecutionService";
 
 export class CompilerExecutionService {
@@ -35,7 +38,9 @@ export class CompilerExecutionService {
     private readonly diagnosticsParser: CompilerDiagnosticsParser,
     private readonly artifactDiscovery: ArtifactDiscoveryService,
     private readonly artifactAccess: ArtifactAccessService,
-    private readonly sessionMapper: CompilerSessionMapper
+    private readonly sessionMapper: CompilerSessionMapper,
+    private readonly resultNormalizer: CompilerResultNormalizer,
+    private readonly interactiveSessions: InteractiveSessionManager
   ) {}
 
   getStatus(): CompilerExecutionStatus {
@@ -63,10 +68,23 @@ export class CompilerExecutionService {
     return `${this.lastResult.stdout}\n${this.lastResult.stderr}`.trim();
   }
 
+  getInteractiveSessionState(): InteractiveSessionState {
+    return this.interactiveSessions.getState();
+  }
+
+  sendInteractiveInput(input: string): boolean {
+    return this.interactiveSessions.sendInput(input);
+  }
+
   clearLastSession(): void {
     this.lastResult = null;
     this.lastSession = null;
     this.status = { state: "idle" };
+  }
+
+  resetInteractiveSession(): InteractiveSessionState {
+    this.interactiveSessions.reset();
+    return this.interactiveSessions.getState();
   }
 
   openArtifactPath(artifactPath: string): Promise<void> {
@@ -107,6 +125,7 @@ export class CompilerExecutionService {
   }
 
   async executeCompilerTarget(request: CompilerExecutionRequest): Promise<CompilerExecutionResult> {
+    this.interactiveSessions.reset();
     const settings = await this.settingsService.getSettings();
     const targetPath = resolve(request.targetPath);
     const repositoryValidation = await this.repositoryResolver.validate(
@@ -162,6 +181,30 @@ export class CompilerExecutionService {
     const args = ["-jar", artifact.artifactPath, targetPath];
     const workingDirectory = dirname(artifact.artifactPath);
 
+    if (request.targetKind === "file" && await this.sourceRequiresInput(targetPath)) {
+      const started = await this.interactiveSessions.start(settings.execution.javaCommand, args, workingDirectory, targetPath);
+      const parsedOutput = this.outputParser.parse(`${started.stdout}\n${started.stderr}`);
+      const result: CompilerExecutionResult = {
+        success: false,
+        command: settings.execution.javaCommand,
+        args,
+        workingDirectory,
+        stdout: started.stdout,
+        stderr: started.stderr,
+        exitCode: null,
+        durationMs: Date.now() - new Date(startedAt).getTime(),
+        repositoryPath: repositoryValidation.repositoryPath,
+        compilerArtifactPath: artifact.artifactPath,
+        interactive: started.started,
+        targetPath,
+        targetKind: request.targetKind,
+        parsedOutput
+      };
+      this.lastResult = result;
+      await this.storeSession(result);
+      return result;
+    }
+
     const result = await this.processExecution.run(settings.execution.javaCommand, args, {
       cwd: workingDirectory,
       timeoutMs: 120_000,
@@ -203,7 +246,8 @@ export class CompilerExecutionService {
   private async storeSession(result: CompilerExecutionResult): Promise<void> {
     const diagnostics = this.diagnosticsParser.parse(result.parsedOutput, result.stderr || result.error || "");
     const artifacts = await this.artifactDiscovery.discover(result);
-    this.lastSession = this.sessionMapper.toSession(result, diagnostics, artifacts, {
+    const normalized = this.resultNormalizer.normalize(result.stdout, result.stderr || result.error || "", result.interactive);
+    this.lastSession = this.sessionMapper.toSession(result, diagnostics, artifacts, normalized, {
       startedAt: this.status.startedAt,
       completedAt: this.status.completedAt
     });
@@ -215,5 +259,13 @@ export class CompilerExecutionService {
     if (!artifact.found) errors.push(artifact.message);
     if (!targetExists) errors.push("Compiler target path does not exist.");
     return errors.join(" ");
+  }
+
+  private async sourceRequiresInput(targetPath: string): Promise<boolean> {
+    try {
+      return /\bREAD\b/.test(await this.fileSystem.readText(targetPath));
+    } catch {
+      return false;
+    }
   }
 }

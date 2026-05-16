@@ -1,6 +1,7 @@
 export interface CompilerRepositoryConfig {
   repositoryPath: string;
   preferredArtifactPath?: string;
+  repositoryUrl?: string;
 }
 
 export interface BackendExecutionPreferences {
@@ -13,10 +14,37 @@ export interface BackendWorkspacePreferences {
   preserveGeneratedArtifacts: boolean;
 }
 
+export type SetupValidationStatus = "idle" | "running" | "success" | "warning" | "error";
+
+export interface SetupValidationResult {
+  status: SetupValidationStatus;
+  message: string;
+  suggestion?: string;
+  rawOutput?: string;
+  details?: Record<string, string | number | boolean | undefined>;
+}
+
+export interface SetupState {
+  setupCompleted: boolean;
+  setupSkipped: boolean;
+  documentationShown?: boolean;
+  javaPath?: string;
+  compilerRepoPath?: string;
+  compilerJarPath?: string;
+  workspacePath?: string;
+  outputDirectory?: string;
+  lastValidationResults: Partial<Record<
+    "java" | "compilerRepo" | "compilerJar" | "workspace" | "compilation" | "interactive" | "artifacts" | "reports",
+    SetupValidationResult
+  >>;
+  lastSetupCompletedAt?: string;
+}
+
 export interface BackendSettings {
   compiler: CompilerRepositoryConfig;
   execution: BackendExecutionPreferences;
   workspace: BackendWorkspacePreferences;
+  setup: SetupState;
 }
 
 export interface RepositorySignalStatus {
@@ -115,7 +143,7 @@ export interface CompilerExecutionStatus {
   lastExitCode?: number | null;
 }
 
-export type CompilerDiagnosticCategory = "LEX" | "SYN" | "SEM" | "GEN" | "BUILD" | "EXECUTION" | "OTHER";
+export type CompilerDiagnosticCategory = "LEX" | "SYN" | "SEM" | "GEN" | "BUILD" | "EXECUTION" | "FS" | "LINK" | "OTHER";
 export type CompilerDiagnosticSeverity = "info" | "warning" | "error";
 export type CompilerStage = "parse" | "semantic" | "java" | "build" | "execution";
 export type CompilerStageState = "pending" | "running" | "completed" | "failed" | "skipped";
@@ -134,6 +162,7 @@ export interface CompilerDiagnostic {
   stage: CompilerStage;
   blocking: boolean;
   raw: string;
+  suggestion?: string;
 }
 
 export interface GeneratedArtifactMetadata {
@@ -190,7 +219,28 @@ export interface CompilerSessionResult {
   diagnostics: CompilerDiagnostic[];
   artifacts: ArtifactCollection;
   output: ExecutionOutputBlock[];
+  normalized: {
+    rawCompilerOutput: string;
+    buildLog: string;
+    programOutput: string;
+    interactiveOutput: string;
+  };
   execution: CompilerExecutionResult;
+}
+
+export interface InteractiveSessionState {
+  active: boolean;
+  transcript: string;
+  entries: InteractiveTranscriptEntry[];
+  status: "idle" | "waiting" | "completed" | "failed";
+  targetPath?: string;
+  startedAt?: string;
+}
+
+export interface InteractiveTranscriptEntry {
+  id: string;
+  speaker: "program" | "input";
+  text: string;
 }
 
 export interface ArtifactPreviewData {

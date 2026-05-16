@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import type {
   CompilerDiagnostic,
   CompilerSessionResult,
+  InteractiveSessionState,
   OpenFileResult,
   GeneratedArtifactMetadata,
   OpenWorkspaceFile,
   RecentWorkspaceEntry,
+  SetupState,
   StudioWorkspaceState
 } from "@shared/contracts/backend";
 
@@ -19,8 +21,11 @@ interface StudioSessionContextValue {
   diagnostics: CompilerDiagnostic[];
   artifacts: GeneratedArtifactMetadata[];
   consoleOutput: string;
+  interactiveSession: InteractiveSessionState;
   isRunning: boolean;
   statusMessage: string;
+  setupState: SetupState | null;
+  setupWizardOpen: boolean;
   setActiveFile(path: string): void;
   newFile(): Promise<void>;
   openFilePicker(): Promise<void>;
@@ -32,12 +37,16 @@ interface StudioSessionContextValue {
   closeTab(path: string): Promise<void>;
   runActiveFile(): Promise<void>;
   rerunLastTarget(): Promise<void>;
+  sendInteractiveInput(input: string): Promise<boolean>;
   openDocumentation(): Promise<void>;
   openOutputFolder(): Promise<void>;
   exportSelectedArtifact(path?: string): Promise<void>;
   openArtifact(path: string): Promise<void>;
   revealArtifact(path: string): Promise<void>;
   readArtifactPreview(path: string): Promise<string>;
+  openSetupWizard(): void;
+  closeSetupWizard(): void;
+  refreshSetupState(): Promise<void>;
 }
 
 const StudioSessionContext = createContext<StudioSessionContextValue | undefined>(undefined);
@@ -49,8 +58,11 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
   const [activePath, setActivePath] = useState<string | null>(null);
   const [lastSession, setLastSession] = useState<CompilerSessionResult | null>(null);
   const [consoleOutput, setConsoleOutput] = useState("");
+  const [interactiveSession, setInteractiveSession] = useState<InteractiveSessionState>({ active: false, transcript: "", entries: [], status: "idle" });
   const [isRunning, setIsRunning] = useState(false);
   const [statusMessage, setStatusMessage] = useState("BickSpec language server: Ready");
+  const [setupState, setSetupState] = useState<SetupState | null>(null);
+  const [setupWizardOpen, setSetupWizardOpen] = useState(false);
 
   const bridge = window.bickspecStudio?.backend;
   const activeFile = openTabs.find((tab) => tab.path === activePath) ?? openTabs[0] ?? null;
@@ -62,7 +74,25 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
     void bridge.getStudioWorkspaceState().then(setWorkspace);
     void bridge.getLastCompilerSession().then(setLastSession);
     void bridge.getCompilerConsoleOutput().then(setConsoleOutput);
+    void bridge.getInteractiveSessionState().then(setInteractiveSession);
+    void bridge.getSetupState().then((state) => {
+      setSetupState(state);
+      const setupRequired = !state.setupCompleted && !state.setupSkipped;
+      setSetupWizardOpen(setupRequired);
+      if (!setupRequired && !state.documentationShown) {
+        void bridge.saveSetupState({ documentationShown: true }).then(setSetupState);
+        void bridge.openDocumentation();
+      }
+    });
   }, [bridge]);
+
+  useEffect(() => {
+    if (!bridge || !interactiveSession.active) return;
+    const interval = window.setInterval(() => {
+      void bridge.getInteractiveSessionState().then(setInteractiveSession);
+    }, 250);
+    return () => window.clearInterval(interval);
+  }, [bridge, interactiveSession.active]);
 
   useEffect(() => {
     function handleSaveShortcut(event: KeyboardEvent) {
@@ -181,12 +211,12 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
   async function runActiveFile() {
     if (!bridge || !activeFile) return;
     if (activeFile.dirty) await saveActiveFile();
+    await resetForNewRun();
     setIsRunning(true);
     setStatusMessage(`Running ${activeFile.name}`);
     try {
       await bridge.runBickSpecFile(activeFile.path);
       await refreshLastSession();
-      navigate("/artifacts");
     } finally {
       setIsRunning(false);
       setStatusMessage("BickSpec language server: Ready");
@@ -197,6 +227,7 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
     if (!bridge) return;
     const targetPath = lastSession?.summary.targetPath ?? activeFile?.path;
     if (!targetPath) return;
+    await resetForNewRun();
     setIsRunning(true);
     try {
       await bridge.executeCompilerTarget(targetPath);
@@ -210,6 +241,19 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
     if (!bridge) return;
     setLastSession(await bridge.getLastCompilerSession());
     setConsoleOutput(await bridge.getCompilerConsoleOutput());
+    setInteractiveSession(await bridge.getInteractiveSessionState());
+  }
+
+  async function resetForNewRun() {
+    if (!bridge) return;
+    setInteractiveSession(await bridge.resetInteractiveSession());
+  }
+
+  async function sendInteractiveInput(input: string) {
+    if (!bridge) return false;
+    const sent = await bridge.sendInteractiveInput(input);
+    setInteractiveSession(await bridge.getInteractiveSessionState());
+    return sent;
   }
 
   async function openDocumentation() {
@@ -239,6 +283,21 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
     return preview?.text ?? (preview?.previewKind === "binary" ? "Binary artifact. Use Open or Reveal to inspect it." : "Artifact not found.");
   }
 
+  function openSetupWizard() {
+    setSetupWizardOpen(true);
+  }
+
+  function closeSetupWizard() {
+    setSetupWizardOpen(false);
+  }
+
+  async function refreshSetupState() {
+    if (!bridge) return;
+    const state = await bridge.getSetupState();
+    setSetupState(state);
+    if (!state.setupCompleted && !state.setupSkipped) setSetupWizardOpen(true);
+  }
+
   const value = useMemo<StudioSessionContextValue>(
     () => ({
       workspace,
@@ -249,8 +308,11 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
       diagnostics,
       artifacts,
       consoleOutput,
+      interactiveSession,
       isRunning,
       statusMessage,
+      setupState,
+      setupWizardOpen,
       setActiveFile: setActivePath,
       newFile,
       openFilePicker,
@@ -262,14 +324,18 @@ export function StudioSessionProvider({ children }: { children: ReactNode }) {
       closeTab,
       runActiveFile,
       rerunLastTarget,
+      sendInteractiveInput,
       openDocumentation,
       openOutputFolder,
       exportSelectedArtifact,
       openArtifact,
       revealArtifact,
-      readArtifactPreview
+      readArtifactPreview,
+      openSetupWizard,
+      closeSetupWizard,
+      refreshSetupState
     }),
-    [activeFile, artifacts, consoleOutput, diagnostics, isRunning, lastSession, openTabs, statusMessage, workspace]
+    [activeFile, artifacts, consoleOutput, diagnostics, interactiveSession, isRunning, lastSession, openTabs, setupState, setupWizardOpen, statusMessage, workspace]
   );
 
   return <StudioSessionContext.Provider value={value}>{children}</StudioSessionContext.Provider>;

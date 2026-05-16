@@ -7,11 +7,26 @@ import { verifyRendererBridge } from "./backend/verifyRendererBridge";
 import { verifyWorkspaceFlows } from "./backend/verifyWorkspaceFlows";
 
 const isDev = Boolean(process.env.ELECTRON_RENDERER_URL);
-const appIconPath = isDev
-  ? join(app.getAppPath(), "src/assets/brand/icon.png")
-  : join(process.resourcesPath, "icon.png");
+
+function resolveAppIconPath(): string {
+  const candidates = app.isPackaged
+    ? [
+        join(process.resourcesPath, "icon.png"),
+        join(process.resourcesPath, "icon.ico")
+      ]
+    : [
+        join(app.getAppPath(), "build/icon.png"),
+        join(app.getAppPath(), "build/icon.ico"),
+        join(app.getAppPath(), "src/assets/brand/icon.png"),
+        join(app.getAppPath(), "buildResources/icon.png"),
+        join(app.getAppPath(), "buildResources/icon.ico")
+      ];
+
+  return candidates.find((candidate) => existsSync(candidate)) ?? candidates[0];
+}
 
 function createWindow(preloadPath: string): void {
+  const appIconPath = resolveAppIconPath();
   const mainWindow = new BrowserWindow({
     width: 1440,
     height: 960,
@@ -44,6 +59,7 @@ function resolvePreloadPath(): string {
 }
 
 app.whenReady().then(() => {
+  if (process.platform === "win32") app.setAppUserModelId("com.bickspec.studio");
   Menu.setApplicationMenu(null);
   const backendServices = createBackendServices(app, app.getAppPath());
   const preloadPath = resolvePreloadPath();

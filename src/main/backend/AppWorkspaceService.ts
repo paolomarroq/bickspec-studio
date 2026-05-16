@@ -23,7 +23,8 @@ export class AppWorkspaceService {
 
   constructor(
     private readonly settingsService: BackendSettingsService,
-    private readonly fileSystem: FileSystemService
+    private readonly fileSystem: FileSystemService,
+    private readonly appRootPath: string
   ) {
     this.statePath = join(dirname(this.settingsService.settingsPath), "workspace-state.json");
   }
@@ -176,6 +177,8 @@ export class AppWorkspaceService {
   async openDocumentation(): Promise<void> {
     const settings = await this.settingsService.getSettings();
     const candidates = [
+      join(process.resourcesPath, "docs", "bickspec_documentation.html"),
+      join(this.appRootPath, "docs", "bickspec_documentation.html"),
       join(settings.compiler.repositoryPath, "docs"),
       join(settings.compiler.repositoryPath, "README.md"),
       join(process.cwd(), "README.md")

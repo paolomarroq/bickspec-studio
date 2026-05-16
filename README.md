@@ -1,188 +1,582 @@
 # BickSpec Studio
 
-BickSpec Studio is a lightweight desktop IDE for writing, compiling, reviewing, and exporting financial specifications built with BickSpec.
+**Desktop IDE for the BickSpec finance and economic engineering DSL.**
 
-BickSpec is the language. BickSpec Studio is the desktop application and IDE.
+BickSpec Studio is the desktop product layer of the BickSpec ecosystem. It provides a professional interface for writing, compiling, running, reviewing, and exporting `.bks` financial specifications using the real BickSpec compiler from the linked `bickspec-lang` repository.
 
-## Current Scope
+Studio does **not** duplicate the compiler. It connects to the existing Java/ANTLR compiler and exposes it through a polished desktop IDE experience.
 
-This repository contains the polished desktop UI layer and backend foundation for linking to the external BickSpec language/compiler repository. File creation, file opening, saving, tab management, workspace loading, recent files/projects, compile/run actions, generated artifact output, report preview/export, and settings persistence are wired through Electron main/preload APIs so the renderer stays separated from filesystem and process execution.
+---
 
-The compiler remains a separate project. BickSpec Studio must reference `bickspec-lang`; it must not duplicate compiler source or vendor the compiler implementation into this repository.
+## Overview
 
-## Approved Brand Direction
+BickSpec Studio is built for working with BickSpec source files in a complete desktop environment.
 
-The approved brand is BickSpec Option 03: Spec Grid.
+It supports:
 
-The UI preserves the approved direction:
+- editing `.bks` files;
+- running the real BickSpec compiler;
+- validating Java and compiler configuration;
+- running interactive programs that use `READ`;
+- viewing compiler output, diagnostics, build logs, and generated artifacts;
+- previewing generated Java, symbol tables, parse trees, and reports;
+- exporting reports to PDF, Excel, and CSV;
+- using an offline documentation page bundled with the app;
+- distributing the app through Windows and macOS installers.
 
-- structure, specification, brackets, grid, and financial clarity
-- navy and teal palette
-- Sora for interface typography
-- IBM Plex Mono for code, console, and technical output
-- desktop-first panel composition
-- approved Spec Grid logo/icon assets only
+BickSpec Studio is designed as a lightweight but complete IDE for the current BickSpec compiler cycle.
 
-The visual source of truth lives in:
+---
 
-- `designs/`
-- `designs/brand/`
+## BickSpec Ecosystem Position
 
-## Implemented UI
-
-- Welcome / Launcher
-- Main IDE Workspace
-- Settings
-- Generated Artifacts / Results
-- Report Preview & Export
-
-The app includes a polished app shell, approved brand assets, light/dark/system theme selection, recent project states, editor tabs, diagnostics, terminal output, generated artifacts, report preview, export actions, and local status feedback.
-
-## Future Backend Integration
-
-BickSpec Studio expects the language/compiler repository to live beside this project by default:
+BickSpec is organized into three main product layers.
 
 ```text
-workspace/
-  bickspec-studio/
-  bickspec-lang/
+bickspec-lang
+  └─ Java/ANTLR compiler
+     ├─ grammar
+     ├─ lexer/parser
+     ├─ semantic validation
+     ├─ symbol table
+     ├─ Java generation
+     ├─ javac build
+     └─ execution/artifacts
+
+bickspec-studio
+  └─ desktop IDE
+     ├─ Monaco editor
+     ├─ setup wizard
+     ├─ compiler integration
+     ├─ interactive mode
+     ├─ artifacts/results
+     └─ report exports
+
+VS Code Extension
+  └─ lightweight editor tooling
+     ├─ syntax highlighting
+     ├─ snippets
+     ├─ commands
+     ├─ diagnostics
+     └─ setup wizard
 ```
 
-The default linked compiler repository path is:
+### `bickspec-lang`
+
+The `bickspec-lang` repository contains the real compiler implementation:
+
+- ANTLR4 grammar;
+- lexer and parser;
+- semantic validation;
+- symbol table;
+- Java generation;
+- build and execution pipeline;
+- generated artifacts;
+- final compiler JAR.
+
+The expected compiler artifact is:
 
 ```text
-../bickspec-lang
+app/target/bickspec-compiler-1.0.0.jar
 ```
 
-If a project-local linked folder exists at `bickspec-studio/bickspec-lang`, Studio will use that linked repository path first. Otherwise, it falls back to the sibling layout above. The path is configurable through the backend settings file stored in Electron `userData`, and can also be seeded for development with:
+### `bickspec-studio`
+
+This repository contains the desktop IDE. It provides the user interface, setup flow, file management, compiler integration, interactive session handling, artifact previews, report exports, offline documentation, and installer packaging.
+
+### VS Code Extension
+
+The VS Code extension is a lightweight companion tool for `.bks` files. It provides syntax highlighting, snippets, commands, diagnostics, artifact access, and a setup wizard. Like Studio, it invokes the real compiler JAR instead of reimplementing compiler logic.
+
+---
+
+## Features
+
+### Editor
+
+- Monaco-based `.bks` editor.
+- BickSpec syntax highlighting.
+- Keyword and currency completions.
+- Snippets for common BickSpec constructs.
+- File tabs.
+- New file, open file, open folder, save, and close tab support.
+- Workspace explorer.
+- Recent projects list.
+- Context inspector and outline panels.
+
+### Compiler Integration
+
+- Linked `bickspec-lang` repository model.
+- Compiler repository validation.
+- Compiler JAR detection and validation.
+- Java runtime validation.
+- Real compiler execution through:
 
 ```bash
-BICKSPEC_LANG_REPOSITORY=/path/to/bickspec-lang
+java -jar <compiler-jar> <target-path>
 ```
 
-The compiler source is maintained externally at:
+- Structured compiler result parsing.
+- Build log extraction.
+- Program output extraction.
+- Diagnostics normalization.
+- Artifact discovery.
+
+### Output Panels
+
+The bottom session panel is divided into four tabs:
+
+| Tab | Purpose |
+|---|---|
+| Interactive | Live stdin/stdout transcript for programs that use `READ`. |
+| Program Output | Runtime output for non-interactive programs. |
+| Errors | Structured diagnostics and suggestions. |
+| Build Log | Compiler/build pipeline messages such as `[STATUS]`, `[JAVA]`, `[BUILD]`, and `[EXECUTION]`. |
+
+### Diagnostics
+
+Studio classifies diagnostics and tooling conditions such as:
+
+- `LEX` — Lexical
+- `SYN` — Syntax
+- `SEM` — Semantic
+- `GEN` — Generation
+- `BUILD` — Build
+- `EXECUTION` — Runtime
+- `FS` — File System
+- `LINK` — Compiler Link
+
+The diagnostics UI includes category-specific labels, icons, colors, and suggested fixes.
+
+### Interactive Mode
+
+BickSpec programs that contain `READ` are executed through a live interactive session.
+
+Studio uses a real child process with stdin/stdout support. The transcript separates program output from user input and keeps the conversation visible after the session finishes.
+
+Example interaction:
 
 ```text
-https://github.com/paolomarroq/bickspec-lang
+BickSpec Program
+Ingrese tasa (0.xx):
+
+You
+0.25
+
+BickSpec Program
+Ingrese CAPEX en GTQ:
+
+You
+156000000
+
+BickSpec Program
+Tasa alta
+CAPEX en USD:
+20,000,000.00
 ```
 
-The backend validates that the linked repository looks like `bickspec-lang` by checking for signals such as:
+### Artifacts
 
-- `app/pom.xml`
-- `app/target/`
-- `docs/BickSpec.g4`
-- known compiler artifact names under `app/target/` when present
+Studio discovers and previews artifacts generated by the compiler, including:
 
-Current backend integration points are intentionally explicit:
+- generated Java files;
+- compiled class files;
+- symbol table CSV files;
+- parse tree DOT files;
+- parse tree SVG files;
+- summaries and logs.
 
-- `src/shared/contracts/services.ts`
-- `src/shared/contracts/domain.ts`
-- `src/shared/contracts/backend.ts`
-- `src/shared/contracts/bridge.ts`
-- `src/main/backend/`
-- `src/preload/index.ts`
-- `src/renderer/services/ServiceProvider.tsx`
-- `src/renderer/services/`
+Typical compiler output structure:
 
-Commit 1/4 of backend integration adds:
+```text
+output/
+  java/
+  classes/
+  symbols/
+  trees/
+  reports/
+```
 
-- main-process backend services
-- persistent backend settings
-- linked compiler repository resolver
-- Java and Maven availability checks
-- typed preload IPC for backend status and linked compiler configuration
-- workspace information for later compile/run flows
+### Reports and Exports
 
-Commit 2/4 adds real compiler execution from the linked repository:
+The report preview is generated from the latest normalized compiler session.
 
-- resolves an existing compiler jar from `app/target/`, including `bickspec-compiler-1.0.0.jar` and matching `bickspec-*.jar` artifacts
-- reports when the jar is missing but `app/pom.xml` indicates the linked repository is buildable
-- runs the compiler in the Electron main process with `java -jar <artifact> <file-or-directory>`
-- captures stdout, stderr, exit code, command, working directory, duration, linked repo path, artifact path, and interactive-timeout metadata
-- parses tagged compiler output such as `[ERROR]`, `[SYMBOLS]`, `[TREE]`, `[JAVA]`, `[BUILD]`, `[EXECUTION]`, and `[SUCCESS]`
-- exposes typed preload APIs for file/directory execution, artifact resolution, execution status, last result, and output parsing
+Reports can include:
 
-Commit 3/4 turns compiler executions into UI-ready backend domain objects:
+- summary;
+- source file path;
+- run status;
+- diagnostics;
+- artifacts;
+- program output;
+- interactive transcript;
+- build log.
 
-- maps compiler output into `CompilerSessionResult`
-- parses diagnostics with code, category, severity, stage, file/line/column, and blocking status
-- discovers generated artifacts from compiler output tags and resolves metadata for Java files, classes, symbols CSV, parse tree SVG/DOT, summaries, logs, and report-like outputs
-- stores the latest compiler session in backend state for workspace diagnostics, console output, artifacts/results, and status banners
-- exposes artifact open, reveal, text read, and preview-data APIs through preload
-- keeps renderer code out of raw compiler-output parsing and filesystem access
+Export formats:
 
-Commit 4/4 wires the existing Studio UI to real application behavior:
+- PDF;
+- Excel;
+- CSV.
 
-- launcher actions create real `.bks` files, open real `.bks` files, open project folders, and open documentation
-- recent files/folders are persisted locally and can be reopened from the launcher
-- the workspace explorer is populated from the active filesystem folder
-- editor tabs are created from real files, can be switched, closed, edited, and saved
-- the internal File/Edit/View/Window/About menu triggers real app actions
-- toolbar Run, Compile, Generate Java, Documentation, Open Output Folder, Export Report, Re-run, and Back to Editor actions are connected to backend/session behavior
-- Generated Artifacts / Results uses the last real compiler session for artifacts, diagnostics, build log, timing, target, and previews
-- diagnostics panels read structured backend diagnostics instead of sample warnings
+Excel and CSV exports use clean runtime output, not decorative UI boxes. Interactive exports flatten transcript entries into role/content rows.
 
-The final filesystem cleanup strengthens the workspace behavior:
+### Settings
 
-- New BickSpec File and File > New File create a real `.bks` file with starter content, open it immediately, and register it in recent files
-- Open File supports `.bks` plus readable Studio artifacts such as Java, CSV, JSON, logs, SVG, DOT, text, and Markdown files
-- Save writes the active editor contents to disk and clears dirty tab state
-- Close Tab prompts for unsaved changes and can save before closing
-- Open Project Folder loads the selected directory as the active workspace and persists it locally
-- the explorer reads the active workspace from the filesystem, supports expandable/collapsible folders, and opens real files into tabs
-- recent files/folders are persisted in Electron user data and can be reopened from the launcher
+Settings include:
 
-Workspace filesystem behavior can be smoke-tested through the Electron main process with:
+- appearance mode: light, dark, or system;
+- compiler/setup information;
+- Java path;
+- compiler repository path;
+- compiler JAR path;
+- setup workspace path;
+- setup wizard controls;
+- documentation access.
+
+The `system` theme follows the operating system color scheme.
+
+### Offline Documentation
+
+BickSpec Studio includes an offline documentation page bundled with the app.
+
+The Documentation button opens the local documentation site, which covers:
+
+- BickSpec language reference;
+- compiler pipeline;
+- diagnostics;
+- generated artifacts;
+- BickSpec Studio usage;
+- VS Code extension usage;
+- setup guide;
+- reports and exports;
+- development phases.
+
+---
+
+## Setup Wizard
+
+BickSpec Studio includes a first-run setup wizard. It opens automatically when the app is launched for the first time and setup has not been completed or skipped.
+
+The wizard can also be reopened from Settings.
+
+The setup wizard validates:
+
+1. Java Runtime
+2. Linked `bickspec-lang` repository
+3. Compiler JAR
+4. Workspace folder
+5. Test compilation
+6. Interactive mode
+7. Artifacts
+8. Report export readiness
+
+### Wizard Steps
+
+```text
+Welcome
+→ Java Runtime
+→ Compiler Repository
+→ Compiler JAR
+→ Workspace
+→ Run Test Compilation
+→ Interactive Mode
+→ Artifacts & Reports
+→ Ready
+```
+
+### Java Validation
+
+The wizard runs:
 
 ```bash
-BICKSPEC_VERIFY_WORKSPACE_FLOWS=1 electron .
+java -version
 ```
 
-Later backend commits should use this foundation to compile the current file, run BickSpec on a project/folder, retrieve generated artifacts, surface diagnostics/results, and power report/export flows.
+Java 21 is recommended. Other valid Java versions may show a warning instead of blocking setup.
 
-## Project Structure
+### Compiler Repository
+
+The wizard can validate an existing local `bickspec-lang` repository or clone the official repository from GitHub.
+
+The repository root should contain files such as:
 
 ```text
-src/
-  main/                 Electron main process and window creation
-    backend/            linked compiler resolver, settings, status, and process services
-  preload/              secure renderer bridge
-  shared/contracts/     domain and service contracts
-  assets/brand/         approved runtime brand assets copied from designs/brand
-  renderer/
-    components/         reusable UI components
-    screens/            route-level screens
-    services/           local service provider and placeholder implementation
-    styles/             global Spec Grid CSS and theme variables
-    theme/              light/dark/system theme provider
-buildResources/         app icon resources for Electron Builder
-.github/workflows/      CI build and packaging scaffold
-designs/                approved HTML and brand references
+app/pom.xml
+app/src/
+docs/BickSpec.g4
 ```
 
-## Run Locally
+The wizard rejects obvious subfolders such as `testing`, `output`, `app`, or `app/target`.
+
+### Compiler JAR
+
+The expected compiler artifact is:
+
+```text
+app/target/bickspec-compiler-1.0.0.jar
+```
+
+If the JAR is missing, Studio can build it from the linked repository using Maven.
+
+### Setup Test
+
+The wizard creates and runs a real setup test file using valid BickSpec syntax:
+
+```bickspec
+PROJECT "Studio Setup Test" {
+  A := 10
+  B := 3
+  RESULTADO := (A + B) * 2 / 5
+
+  DISPLAY "Resultado:"
+  DISPLAY RESULTADO
+}
+```
+
+Expected output:
+
+```text
+Resultado:
+5.2
+```
+
+---
+
+## Installation
+
+Installers are distributed through GitHub Releases.
+
+### Windows
+
+1. Download the Windows `.exe` installer from the Releases page.
+2. Run the installer.
+3. Open BickSpec Studio.
+4. Complete or skip the setup wizard.
+
+### macOS
+
+1. Download the macOS `.dmg` from the Releases page.
+2. Open the DMG.
+3. Move BickSpec Studio to Applications.
+4. Open the app and complete setup.
+
+### Unsigned Build Warning
+
+Current installers may be unsigned.
+
+That means:
+
+- Windows SmartScreen may show a warning.
+- macOS may require right-click → Open for first launch.
+
+Code signing and notarization can be added in a future release.
+
+---
+
+## Development Setup
+
+### Requirements
+
+- Node.js
+- npm
+- Java JDK for compiler execution
+- Maven if building the compiler from source
+- Git if cloning the compiler repository
+- Graphviz optional for SVG parse tree generation through compiler artifacts
+
+### Install Dependencies
 
 ```bash
 npm install
+```
+
+### Run in Development
+
+```bash
 npm run dev
 ```
 
-Typecheck and build:
+### Build App
 
 ```bash
 npm run build
 ```
 
-## Packaging
-
-Packaging is scaffolded with Electron Builder:
+### Build Windows Installer
 
 ```bash
-npm run package:dir
-npm run package
-npm run package:win
-npm run package:mac
-npm run package:linux
+npm run dist:win
 ```
 
-The GitHub Actions workflow installs dependencies, builds the app, runs a Windows directory package, and uploads packaged artifacts from `release/`. Signing, notarization, release publishing, and platform-specific installer hardening can be added when distribution requirements are finalized.
+Generated installers are written to the configured release output folder, usually:
+
+```text
+release/
+```
+
+### Build macOS Installer
+
+```bash
+npm run dist:mac
+```
+
+macOS DMG generation should be run on macOS or through a GitHub Actions macOS runner.
+
+---
+
+## GitHub Actions and Release Builds
+
+The repository includes GitHub Actions workflows for installer generation.
+
+Expected workflows may include:
+
+- Windows build on `windows-latest`;
+- macOS build on `macos-latest`;
+- manual installer build workflow;
+- release workflow triggered by version tags.
+
+A typical release flow is:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+When configured, the workflow builds installers and attaches them to GitHub Releases.
+
+Generated installer output such as `release/` should not be committed.
+
+---
+
+## Project Structure
+
+```text
+bickspec-studio/
+  src/                  Electron main, preload, renderer, services, UI
+  docs/                 Offline documentation site and source materials
+  wizard/               Setup wizard design/source assets
+  designs/brand/        Official Spec Grid brand assets
+  build/                Installer icons and build resources
+  .github/workflows/    Installer and release automation
+  release/              Generated installers, ignored by Git
+```
+
+Key areas:
+
+| Folder | Purpose |
+|---|---|
+| `src/` | Main app source code. |
+| `docs/` | Offline documentation bundled with the app. |
+| `wizard/` | Setup wizard design source. |
+| `designs/brand/` | Official BickSpec Studio brand assets. |
+| `build/` | Packaging icons and installer resources. |
+| `.github/workflows/` | GitHub Actions workflows. |
+| `release/` | Generated installer output. |
+
+---
+
+## Branding
+
+BickSpec Studio uses the approved **Spec Grid** identity.
+
+Brand direction:
+
+- structural and specification-led;
+- navy and teal palette;
+- professional technical look;
+- brackets and grid concepts;
+- documentation and compiler-oriented visual language.
+
+Typography direction:
+
+- UI: Sora-style interface typography;
+- code/output: IBM Plex Mono-style monospace typography.
+
+Official brand assets live in:
+
+```text
+designs/brand/
+```
+
+Runtime brand assets are mirrored into the app source where needed.
+
+The app and installers should use the official BickSpec Studio icon. React, Vite, Electron default icons, placeholders, and old Structured Compiler icons should not be used.
+
+---
+
+## BickSpec Example
+
+A valid `.bks` program:
+
+```bickspec
+PROJECT "P2 - Operacion aritmetica" {
+  A := 10
+  B := 3
+  RESULTADO := (A + B) * 2 / 5
+
+  DISPLAY "Resultado:"
+  DISPLAY RESULTADO
+}
+```
+
+Expected program output:
+
+```text
+Resultado:
+5.2
+```
+
+---
+
+## Relationship to the Compiler
+
+BickSpec Studio depends on the compiler produced by `bickspec-lang`.
+
+The compiler performs:
+
+```text
+.bks file
+→ lexer
+→ parser
+→ parse tree
+→ semantic validation
+→ symbol table
+→ Java generation
+→ javac build
+→ execution
+→ artifacts
+```
+
+Studio provides the desktop experience around that pipeline, but the compiler logic remains in `bickspec-lang`.
+
+---
+
+## Notes and Limitations
+
+- Studio requires a valid compiler JAR or linked `bickspec-lang` repository.
+- The setup wizard should be completed for the best experience.
+- Unsigned installers may show operating system warnings.
+- macOS builds should be generated on macOS or through GitHub Actions.
+- Studio does not implement the compiler internally.
+- Future versions may add deeper language-server features, signed installers, richer report templates, and expanded project management workflows.
+
+---
+
+## Final Project State
+
+BickSpec Studio completes the desktop product layer of the BickSpec ecosystem for the current development cycle.
+
+It brings together:
+
+- the BickSpec language;
+- the Java/ANTLR compiler;
+- a desktop IDE;
+- interactive execution;
+- diagnostics;
+- artifact inspection;
+- report exports;
+- offline documentation;
+- setup automation;
+- installer distribution.
+
+Future versions can build on this foundation with deeper analysis tooling, richer templates, signing/notarization, and expanded IDE workflows.

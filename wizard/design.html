@@ -1,0 +1,1920 @@
+<!-- BickSpec Studio Setup — Welcome -->
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>BickSpec Studio - Setup Wizard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&amp;family=IBM+Plex+Mono:wght@400;450;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            background-color: #07111F;
+            background-image: radial-gradient(#14b8a6 0.5px, transparent 0.5px);
+            background-size: 24px 24px;
+        }
+        .teal-glow {
+            box-shadow: 0 0 40px rgba(20, 184, 166, 0.15);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0b0f11;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3c4947;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#101417",
+                        "inverse-surface": "#e0e2e6",
+                        "secondary-fixed-dim": "#bec5e5",
+                        "surface-container-lowest": "#0b0f11",
+                        "primary-fixed-dim": "#4fdbc8",
+                        "outline-variant": "#3c4947",
+                        "on-surface-variant": "#bbcac6",
+                        "on-background": "#e0e2e6",
+                        "surface-container-highest": "#323538",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed": "#d5e3fc",
+                        "on-tertiary-fixed-variant": "#3a485b",
+                        "surface-lowest": "#0b0f11",
+                        "surface-container": "#1d2023",
+                        "on-secondary-fixed-variant": "#3e4660",
+                        "secondary": "#bec5e5",
+                        "surface-variant": "#323538",
+                        "on-surface": "#e0e2e6",
+                        "on-error": "#690005",
+                        "inverse-on-surface": "#2d3134",
+                        "primary": "#4fdbc8",
+                        "surface-dim": "#101417",
+                        "on-error-container": "#ffdad6",
+                        "terminal-black": "#000000",
+                        "on-primary-fixed-variant": "#005048",
+                        "on-tertiary-fixed": "#0d1c2e",
+                        "outline-muted": "#3c4947",
+                        "tertiary-container": "#97a5bc",
+                        "tertiary-fixed-dim": "#b9c7df",
+                        "secondary-container": "#414863",
+                        "on-primary-fixed": "#00201c",
+                        "surface-tint": "#4fdbc8",
+                        "surface-container-high": "#272a2d",
+                        "surface-container-low": "#191c1f",
+                        "editor-bg": "#07111F",
+                        "on-primary-container": "#00423b",
+                        "inverse-primary": "#006b5f",
+                        "on-primary": "#003731",
+                        "primary-container": "#14b8a6",
+                        "outline": "#859490",
+                        "secondary-fixed": "#dbe1ff",
+                        "on-secondary-container": "#b0b7d7",
+                        "error-container": "#93000a",
+                        "tertiary": "#b9c7df",
+                        "primary-fixed": "#71f8e4",
+                        "on-tertiary": "#233144",
+                        "on-tertiary-container": "#2d3b4e",
+                        "on-secondary": "#282f49",
+                        "surface": "#101417",
+                        "on-secondary-fixed": "#131a33",
+                        "surface-bright": "#363a3d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "activity-bar": "64px",
+                        "top-bar": "48px",
+                        "gutter": "16px",
+                        "panel-width": "640px",
+                        "margin": "24px",
+                        "stack-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Sora"],
+                        "label-caps": ["IBM Plex Mono"],
+                        "body-sm": ["Sora"],
+                        "code-md": ["IBM Plex Mono"],
+                        "code-sm": ["IBM Plex Mono"],
+                        "headline-lg": ["Sora"],
+                        "headline-md": ["Sora"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "code-md": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                        "code-sm": ["11px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="font-body-md text-on-surface flex items-center justify-center min-h-screen p-margin">
+<!-- Activity Bar (SideNavBar) -->
+<aside class="fixed left-0 top-0 h-full w-activity-bar flex flex-col bg-surface-lowest border-r border-outline-variant z-50">
+    <div class="flex flex-col items-center py-4 gap-6">
+        <div class="w-10 h-10 bg-primary-container flex items-center justify-center rounded">
+            <span class="material-symbols-outlined text-on-primary-container" data-icon="settings_input_component">settings_input_component</span>
+        </div>
+        <nav class="flex flex-col gap-2">
+            <div class="w-12 h-12 flex items-center justify-center text-primary border-l-2 border-primary bg-surface-container-high cursor-pointer">
+                <span class="material-symbols-outlined" data-icon="settings_input_component" style="font-variation-settings: 'FILL' 1;">settings_input_component</span>
+            </div>
+            <div class="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer">
+                <span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+            </div>
+            <div class="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer">
+                <span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+            </div>
+            <div class="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer">
+                <span class="material-symbols-outlined" data-icon="lock">lock</span>
+            </div>
+            <div class="w-12 h-12 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer">
+                <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+            </div>
+        </nav>
+    </div>
+    <div class="mt-auto flex flex-col items-center py-4 gap-4">
+        <div class="text-on-surface-variant hover:text-on-surface cursor-pointer">
+            <span class="material-symbols-outlined" data-icon="settings">settings</span>
+        </div>
+        <div class="text-on-surface-variant hover:text-on-surface cursor-pointer">
+            <span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+        </div>
+    </div>
+</aside>
+<!-- Top Bar (TopNavBar) -->
+<header class="fixed top-0 right-0 w-[calc(100%-64px)] h-top-bar flex justify-between items-center px-gutter bg-surface-dim border-b border-outline-variant z-40">
+    <div class="flex items-center gap-4">
+        <span class="font-code-md text-code-md tracking-tighter text-primary">BickSpec Studio</span>
+        <span class="text-outline text-xs px-2 py-0.5 border border-outline-variant rounded bg-surface-container font-label-caps">v1.0.0-STABLE</span>
+    </div>
+    <div class="flex items-center gap-6">
+        <div class="flex items-center gap-4 text-on-surface-variant">
+            <span class="material-symbols-outlined cursor-pointer hover:text-primary transition-opacity" data-icon="notifications">notifications</span>
+            <span class="material-symbols-outlined cursor-pointer hover:text-primary transition-opacity" data-icon="account_circle">account_circle</span>
+        </div>
+        <button class="bg-primary-container text-on-primary-container font-label-caps px-4 py-1.5 rounded hover:opacity-90 active:scale-95 transition-all">
+            DEPLOY
+        </button>
+    </div>
+</header>
+<!-- Wizard Modal Main Container -->
+<main class="w-full max-w-[900px] flex bg-surface-container teal-glow border border-outline-variant rounded overflow-hidden relative z-10">
+    <!-- Left Stepper Column -->
+    <aside class="w-64 bg-surface-lowest border-r border-outline-variant p-6 flex flex-col gap-8">
+        <div class="flex flex-col gap-2">
+            <h3 class="font-label-caps text-outline uppercase tracking-widest text-[10px]">Workflow Progress</h3>
+            <div class="font-headline-md text-primary">Setup Wizard</div>
+        </div>
+        <nav class="flex flex-col gap-0 relative">
+            <!-- Progress Line -->
+            <div class="absolute left-[11.5px] top-4 bottom-4 w-[1px] bg-outline-variant"></div>
+            <!-- Stepper Items -->
+            <div class="flex gap-4 items-start relative pb-8">
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center ring-4 ring-primary/20 z-10">
+                    <span class="material-symbols-outlined text-on-primary text-[14px]" data-icon="check" style="font-variation-settings: 'FILL' 1;">check</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-primary font-bold text-body-md">Welcome</span>
+                    <span class="text-on-surface-variant text-body-sm">Initialization</span>
+                </div>
+            </div>
+            <div class="flex gap-4 items-start relative pb-8">
+                <div class="w-6 h-6 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center z-10">
+                    <div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-on-surface-variant text-body-md">Environment</span>
+                    <span class="text-outline text-body-sm">Pending</span>
+                </div>
+            </div>
+            <div class="flex gap-4 items-start relative pb-8">
+                <div class="w-6 h-6 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center z-10">
+                    <div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-on-surface-variant text-body-md">Dependencies</span>
+                    <span class="text-outline text-body-sm">Pending</span>
+                </div>
+            </div>
+            <div class="flex gap-4 items-start relative">
+                <div class="w-6 h-6 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center z-10">
+                    <div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-on-surface-variant text-body-md">Compile Path</span>
+                    <span class="text-outline text-body-sm">Pending</span>
+                </div>
+            </div>
+        </nav>
+        <div class="mt-auto pt-6 border-t border-outline-variant">
+            <div class="flex items-center gap-3 p-3 bg-surface-container-high border border-outline-variant rounded">
+                <span class="material-symbols-outlined text-primary" data-icon="terminal">terminal</span>
+                <div class="flex flex-col">
+                    <span class="font-label-caps text-on-surface">STATUS</span>
+                    <span class="font-code-sm text-primary text-[10px] animate-pulse">SYSTEM_READY</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+    <!-- Right Content Column -->
+    <section class="flex-1 flex flex-col">
+        <!-- Header Image Area -->
+        <div class="h-48 relative overflow-hidden bg-terminal-black">
+            <img class="w-full h-full object-cover opacity-60" data-alt="A sophisticated digital visualization of a financial engineering environment featuring glowing turquoise data streams and abstract geometric structures on a deep navy background. The atmosphere is professional, technical, and high-precision, with sharp lines and monospaced data indicators reflecting a modern industrial fintech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL8-ser_YkyRXquHZjA15TQURtYUFzxBYF0w_KeEVGFMwT7U2Of4Rx_I6s81tjslR09P0D7w2CqMC5OwNHT1imzZ-dsdvTaI40N_4AejdA3sJPI9oD34ywKpw_iyTPjRC8UFrr38kw0z_ARcCO2QVYCxf5VACRQqexyLXiIK3PRG1WZQJ5bZstrBO8A9_3SPEJK6oULDoVXXuLx-CEVI4DxcxiCyKmSqcJKJ3aq6tdTN1lJavhUizEPg6aRl0-aXaTFyEPpikLgj8"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-surface-container to-transparent"></div>
+            <div class="absolute bottom-6 left-8 flex items-center gap-4">
+                <div class="w-16 h-16 bg-primary-container flex items-center justify-center rounded shadow-xl">
+                    <span class="material-symbols-outlined text-on-primary-container text-4xl" data-icon="token">token</span>
+                </div>
+                <div>
+                    <h1 class="font-headline-lg text-on-surface">Welcome to BickSpec Studio</h1>
+                    <p class="text-on-surface-variant font-body-sm">Professional Financial Specification IDE</p>
+                </div>
+            </div>
+        </div>
+        <!-- Content Area -->
+        <div class="p-8 flex flex-col gap-8 custom-scrollbar overflow-y-auto max-h-[500px]">
+            <div class="flex flex-col gap-3">
+                <p class="text-on-surface-variant font-body-md leading-relaxed">
+                    Configure your compiler, workspace, artifacts, and runtime environment. Set up your desktop IDE to compile, run, inspect, and export BickSpec financial specifications with industrial-grade precision.
+                </p>
+            </div>
+            <!-- Setup Checklist Bento Grid -->
+            <div class="grid grid-cols-2 gap-gutter">
+                <div class="bg-surface-container-high border border-outline-variant p-4 rounded flex flex-col gap-3 group hover:border-primary transition-colors">
+                    <div class="flex justify-between items-start">
+                        <span class="material-symbols-outlined text-primary" data-icon="account_tree">account_tree</span>
+                        <span class="font-label-caps text-outline bg-surface-container px-2 py-0.5 rounded">TODO</span>
+                    </div>
+                    <div>
+                        <div class="font-body-md font-semibold text-on-surface">Workspace Root</div>
+                        <div class="text-body-sm text-outline">Define project hierarchy</div>
+                    </div>
+                </div>
+                <div class="bg-surface-container-high border border-outline-variant p-4 rounded flex flex-col gap-3 group hover:border-primary transition-colors">
+                    <div class="flex justify-between items-start">
+                        <span class="material-symbols-outlined text-primary" data-icon="memory">memory</span>
+                        <span class="font-label-caps text-outline bg-surface-container px-2 py-0.5 rounded">TODO</span>
+                    </div>
+                    <div>
+                        <div class="font-body-md font-semibold text-on-surface">Compiler Config</div>
+                        <div class="text-body-sm text-outline">v8.4 Edge Optimization</div>
+                    </div>
+                </div>
+                <div class="bg-surface-container-high border border-outline-variant p-4 rounded flex flex-col gap-3 group hover:border-primary transition-colors">
+                    <div class="flex justify-between items-start">
+                        <span class="material-symbols-outlined text-primary" data-icon="cloud_done">cloud_done</span>
+                        <span class="font-label-caps text-outline bg-surface-container px-2 py-0.5 rounded">TODO</span>
+                    </div>
+                    <div>
+                        <div class="font-body-md font-semibold text-on-surface">Artifact Export</div>
+                        <div class="text-body-sm text-outline">JSON/XML Schema Mappings</div>
+                    </div>
+                </div>
+                <div class="bg-surface-container-high border border-outline-variant p-4 rounded flex flex-col gap-3 group hover:border-primary transition-colors">
+                    <div class="flex justify-between items-start">
+                        <span class="material-symbols-outlined text-primary" data-icon="verified_user">verified_user</span>
+                        <span class="font-label-caps text-outline bg-surface-container px-2 py-0.5 rounded">TODO</span>
+                    </div>
+                    <div>
+                        <div class="font-body-md font-semibold text-on-surface">Secured Keypair</div>
+                        <div class="text-body-sm text-outline">Sign your artifacts</div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer Actions -->
+            <div class="flex gap-4 pt-4 border-t border-outline-variant">
+                <button class="flex-1 bg-primary-container text-on-primary-container font-headline-md py-4 rounded-none border border-primary shadow-[0_0_15px_rgba(20,184,166,0.3)] hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+                    Start Setup
+                    <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+                </button>
+                <button class="px-8 bg-surface-container-highest text-on-surface-variant font-label-caps border border-outline-variant hover:text-on-surface active:scale-95 transition-all">
+                    Skip for Now
+                </button>
+            </div>
+        </div>
+    </section>
+</main>
+<!-- Bottom Status Bar (BottomNavBar) -->
+<footer class="fixed bottom-0 right-0 w-[calc(100%-64px)] h-8 bg-terminal-black border-t border-outline-variant flex justify-between items-center px-4 z-40">
+    <div class="flex gap-6">
+        <div class="flex items-center gap-2 font-code-sm text-primary font-bold">
+            <span class="material-symbols-outlined text-[14px]" data-icon="done_all">done_all</span>
+            INITIALIZING...
+        </div>
+        <div class="flex items-center gap-2 font-code-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[14px]" data-icon="dns">dns</span>
+            LOCAL_NODE_01
+        </div>
+    </div>
+    <div class="flex gap-4">
+        <span class="text-on-surface-variant font-code-sm hover:bg-surface-container-highest px-2 cursor-pointer transition-all">Next Step</span>
+        <span class="text-on-surface-variant font-code-sm hover:bg-surface-container-highest px-2 cursor-pointer transition-all">Previous</span>
+        <span class="text-primary font-code-sm px-2">UTF-8</span>
+    </div>
+</footer>
+</body></html>
+
+<!-- BickSpec Studio Setup — Compiler Repository -->
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>BickSpec Studio - Setup Wizard</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&amp;family=IBM+Plex+Mono:wght@400;450;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            background-color: #07111F;
+            background-image: radial-gradient(#1e293b 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .teal-glow {
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.15);
+        }
+        .terminal-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #4fdbc8;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "background": "#101417",
+                      "inverse-surface": "#e0e2e6",
+                      "secondary-fixed-dim": "#bec5e5",
+                      "surface-container-lowest": "#0b0f11",
+                      "primary-fixed-dim": "#4fdbc8",
+                      "outline-variant": "#3c4947",
+                      "on-surface-variant": "#bbcac6",
+                      "on-background": "#e0e2e6",
+                      "surface-container-highest": "#323538",
+                      "error": "#ffb4ab",
+                      "tertiary-fixed": "#d5e3fc",
+                      "on-tertiary-fixed-variant": "#3a485b",
+                      "surface-lowest": "#0b0f11",
+                      "surface-container": "#1d2023",
+                      "on-secondary-fixed-variant": "#3e4660",
+                      "secondary": "#bec5e5",
+                      "surface-variant": "#323538",
+                      "on-surface": "#e0e2e6",
+                      "on-error": "#690005",
+                      "inverse-on-surface": "#2d3134",
+                      "primary": "#4fdbc8",
+                      "surface-dim": "#101417",
+                      "on-error-container": "#ffdad6",
+                      "terminal-black": "#000000",
+                      "on-primary-fixed-variant": "#005048",
+                      "on-tertiary-fixed": "#0d1c2e",
+                      "outline-muted": "#3c4947",
+                      "tertiary-container": "#97a5bc",
+                      "tertiary-fixed-dim": "#b9c7df",
+                      "secondary-container": "#414863",
+                      "on-primary-fixed": "#00201c",
+                      "surface-tint": "#4fdbc8",
+                      "surface-container-high": "#272a2d",
+                      "surface-container-low": "#191c1f",
+                      "editor-bg": "#07111F",
+                      "on-primary-container": "#00423b",
+                      "inverse-primary": "#006b5f",
+                      "on-primary": "#003731",
+                      "primary-container": "#14b8a6",
+                      "outline": "#859490",
+                      "secondary-fixed": "#dbe1ff",
+                      "on-secondary-container": "#b0b7d7",
+                      "error-container": "#93000a",
+                      "tertiary": "#b9c7df",
+                      "primary-fixed": "#71f8e4",
+                      "on-tertiary": "#233144",
+                      "on-tertiary-container": "#2d3b4e",
+                      "on-secondary": "#282f49",
+                      "surface": "#101417",
+                      "on-secondary-fixed": "#131a33",
+                      "surface-bright": "#363a3d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "activity-bar": "64px",
+                      "top-bar": "48px",
+                      "gutter": "16px",
+                      "panel-width": "640px",
+                      "margin": "24px",
+                      "stack-gap": "12px"
+              },
+              "fontFamily": {
+                      "body-md": ["Sora"],
+                      "label-caps": ["IBM Plex Mono"],
+                      "body-sm": ["Sora"],
+                      "code-md": ["IBM Plex Mono"],
+                      "code-sm": ["IBM Plex Mono"],
+                      "headline-lg": ["Sora"],
+                      "headline-md": ["Sora"]
+              },
+              "fontSize": {
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "code-md": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                      "code-sm": ["11px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="text-on-surface font-body-md overflow-hidden">
+<!-- Activity Bar (SideNavBar) -->
+<nav class="fixed left-0 top-0 h-full w-activity-bar bg-surface-lowest flex flex-col items-center border-r border-outline-variant z-50">
+    <div class="py-gutter">
+        <span class="material-symbols-outlined text-primary text-headline-md font-bold" data-icon="settings_input_component">settings_input_component</span>
+    </div>
+    <div class="flex-1 flex flex-col gap-unit items-center w-full">
+        <div class="w-full h-12 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer active:scale-95">
+            <span class="material-symbols-outlined" data-icon="settings_input_component">settings_input_component</span>
+        </div>
+        <div class="w-full h-12 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer active:scale-95">
+            <span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+        </div>
+        <div class="w-full h-12 flex items-center justify-center text-primary border-l-2 border-primary bg-surface-container-high transition-colors cursor-pointer active:scale-95">
+            <span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+        </div>
+        <div class="w-full h-12 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer active:scale-95">
+            <span class="material-symbols-outlined" data-icon="lock">lock</span>
+        </div>
+        <div class="w-full h-12 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer active:scale-95">
+            <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+        </div>
+    </div>
+    <div class="pb-4 flex flex-col gap-unit items-center w-full">
+        <div class="w-full h-12 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer">
+            <span class="material-symbols-outlined" data-icon="settings">settings</span>
+        </div>
+        <div class="w-full h-12 flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer">
+            <span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+        </div>
+    </div>
+</nav>
+<!-- Top Bar (TopNavBar) -->
+<header class="fixed top-0 right-0 w-[calc(100%-64px)] h-top-bar bg-surface-dim border-b border-outline-variant flex justify-between items-center px-gutter z-40">
+    <div class="flex items-center gap-4">
+        <h1 class="font-code-md text-code-md tracking-tighter text-primary">BickSpec Studio</h1>
+        <div class="h-4 w-[1px] bg-outline-variant"></div>
+        <span class="font-label-caps text-label-caps text-on-surface-variant">V1.0.0-BETA</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <div class="relative">
+            <input class="bg-surface-container-low border border-outline-variant rounded-none px-3 py-1 text-code-sm focus:ring-0 focus:border-primary w-64" placeholder="Search parameters..." type="text"/>
+        </div>
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer" data-icon="notifications">notifications</span>
+            <span class="material-symbols-outlined text-on-surface-variant hover:text-primary cursor-pointer" data-icon="account_circle">account_circle</span>
+        </div>
+        <button class="bg-primary-container text-on-primary-container px-4 py-1 text-label-caps hover:opacity-90 transition-all font-bold">DEPLOY</button>
+    </div>
+</header>
+<!-- Main Content Stage -->
+<main class="ml-activity-bar pt-top-bar pb-8 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-[900px] grid grid-cols-12 gap-margin px-margin">
+        <!-- Left Stepper (Vertical Track) -->
+        <aside class="col-span-3">
+            <div class="relative flex flex-col gap-8">
+                <!-- Progress Line -->
+                <div class="absolute left-[11px] top-4 bottom-4 w-[1px] bg-outline-variant"></div>
+                <!-- Step 1: Environment (Completed) -->
+                <div class="relative flex items-center gap-4">
+                    <div class="z-10 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-on-primary text-[14px]" data-icon="check">check</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-label-caps text-label-caps text-on-surface-variant">STEP 01</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant">Java JDK 17+</span>
+                    </div>
+                </div>
+                <!-- Step 2: Dependencies (Completed) -->
+                <div class="relative flex items-center gap-4">
+                    <div class="z-10 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-on-primary text-[14px]" data-icon="check">check</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-label-caps text-label-caps text-on-surface-variant">STEP 02</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant">Build Systems</span>
+                    </div>
+                </div>
+                <!-- Step 3: Compiler (Active) -->
+                <div class="relative flex items-center gap-4">
+                    <div class="z-10 w-6 h-6 rounded-full bg-primary-container flex items-center justify-center ring-4 ring-primary-container/20">
+                        <div class="w-2 h-2 rounded-full bg-on-primary-container"></div>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-label-caps text-label-caps text-primary">STEP 03</span>
+                        <span class="font-body-sm text-body-sm text-on-surface font-bold">Compiler Repo</span>
+                    </div>
+                </div>
+                <!-- Step 4: Auth (Future) -->
+                <div class="relative flex items-center gap-4">
+                    <div class="z-10 w-6 h-6 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center">
+                        <div class="w-2 h-2 rounded-full bg-on-surface-variant"></div>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-label-caps text-label-caps text-on-surface-variant">STEP 04</span>
+                        <span class="font-body-sm text-body-sm text-on-surface-variant/50">Security Token</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        <!-- Main Panel -->
+        <div class="col-span-9">
+            <div class="bg-surface-container border border-outline-variant teal-glow p-margin flex flex-col gap-6">
+                <header class="flex justify-between items-start">
+                    <div>
+                        <span class="font-label-caps text-label-caps text-primary border border-primary px-2 py-0.5">READY FOR LINKING</span>
+                        <h2 class="font-headline-lg text-headline-lg mt-2">Connect Compiler Repository</h2>
+                    </div>
+                    <span class="material-symbols-outlined text-on-surface-variant/20 text-[48px]" data-icon="account_tree">account_tree</span>
+                </header>
+                <p class="text-on-surface-variant font-body-md max-w-lg">
+                    Studio does not duplicate the compiler. It links to your local <code class="font-code-sm bg-surface-container-highest px-1 text-primary">bickspec-lang</code> repository for direct binary execution.
+                </p>
+                <!-- Linked Repo Info -->
+                <div class="bg-terminal-black border border-outline-variant p-4 flex items-center gap-4">
+                    <span class="material-symbols-outlined text-on-surface-variant" data-icon="folder_open">folder_open</span>
+                    <div class="flex flex-col">
+                        <span class="font-label-caps text-[9px] text-on-surface-variant uppercase">PATH RESOLVED</span>
+                        <span class="font-code-md text-code-md text-primary">/Users/admin/dev/bickspec-lang-core</span>
+                    </div>
+                    <span class="ml-auto material-symbols-outlined text-primary" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+                </div>
+                <!-- Validation Checklist (Bento Grid Style) -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-surface-container-high border border-outline-variant p-3 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-[20px]" data-icon="check_circle">check_circle</span>
+                        <span class="font-body-sm text-body-sm">Repository found</span>
+                        <span class="ml-auto font-label-caps text-[8px] border border-outline-variant px-1 text-on-surface-variant">DONE</span>
+                    </div>
+                    <div class="bg-surface-container-high border border-outline-variant p-3 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-[20px]" data-icon="check_circle">check_circle</span>
+                        <span class="font-body-sm text-body-sm">app/pom.xml found</span>
+                        <span class="ml-auto font-label-caps text-[8px] border border-outline-variant px-1 text-on-surface-variant">DONE</span>
+                    </div>
+                    <div class="bg-surface-container-high border border-outline-variant p-3 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-[20px]" data-icon="check_circle">check_circle</span>
+                        <span class="font-body-sm text-body-sm">Compiler source found</span>
+                        <span class="ml-auto font-label-caps text-[8px] border border-outline-variant px-1 text-on-surface-variant">DONE</span>
+                    </div>
+                    <div class="bg-surface-container-high border border-outline-variant p-3 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-[20px]" data-icon="check_circle">check_circle</span>
+                        <span class="font-body-sm text-body-sm">Target folder found</span>
+                        <span class="ml-auto font-label-caps text-[8px] border border-outline-variant px-1 text-on-surface-variant">DONE</span>
+                    </div>
+                    <div class="col-span-2 bg-surface-container-high border border-outline-variant p-3 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary text-[20px]" data-icon="check_circle">check_circle</span>
+                        <span class="font-body-sm text-body-sm">Git detected (.git head present)</span>
+                        <span class="ml-auto font-label-caps text-[8px] border border-outline-variant px-1 text-on-surface-variant">DONE</span>
+                    </div>
+                </div>
+                <!-- Actions -->
+                <div class="flex items-center gap-4 pt-4 border-t border-outline-variant mt-2">
+                    <button class="flex items-center gap-2 border border-outline-variant px-4 py-2 hover:bg-surface-variant transition-colors text-label-caps">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="search">search</span>
+                        BROWSE REPOSITORY
+                    </button>
+                    <button class="flex items-center gap-2 border border-outline-variant px-4 py-2 hover:bg-surface-variant transition-colors text-label-caps">
+                        <span class="material-symbols-outlined text-[18px]" data-icon="refresh">refresh</span>
+                        VALIDATE REPOSITORY
+                    </button>
+                    <button class="ml-auto bg-primary-container text-on-primary-container px-8 py-3 font-bold text-label-caps hover:opacity-90 active:scale-95 transition-all flex items-center gap-2">
+                        CONTINUE
+                        <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Footer Console Output Mock -->
+            <div class="mt-margin bg-terminal-black border border-outline-variant p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="font-label-caps text-[9px] text-on-surface-variant">DIAGNOSTIC LOGS</span>
+                    <div class="flex gap-1">
+                        <div class="w-2 h-2 rounded-full bg-primary/40"></div>
+                        <div class="w-2 h-2 rounded-full bg-primary/40"></div>
+                    </div>
+                </div>
+                <div class="font-code-sm text-code-sm text-on-surface-variant opacity-70 flex flex-col gap-1">
+                    <p>[09:12:04] <span class="text-primary">INFO:</span> Scanning directory hierarchy...</p>
+                    <p>[09:12:05] <span class="text-primary">INFO:</span> Mapping source clusters to IDE environment</p>
+                    <p>[09:12:05] <span class="text-primary">SUCCESS:</span> bickspec-lang-core validation complete. <span class="terminal-cursor"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Bottom Status Bar (BottomNavBar) -->
+<footer class="fixed bottom-0 right-0 w-[calc(100%-64px)] h-8 bg-terminal-black border-t border-outline-variant flex justify-between items-center px-4 z-40">
+    <div class="flex items-center gap-6">
+        <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[14px]" data-icon="bolt">bolt</span>
+            <span class="font-code-sm text-code-sm text-primary font-bold">LNKD_STABLE</span>
+        </div>
+        <div class="flex items-center gap-2 text-on-surface-variant">
+            <span class="material-symbols-outlined text-[14px]" data-icon="account_tree">account_tree</span>
+            <span class="font-code-sm text-code-sm">main*</span>
+        </div>
+    </div>
+    <div class="flex items-center gap-4">
+        <span class="font-code-sm text-code-sm text-on-surface-variant hover:bg-surface-container-highest px-2 cursor-pointer transition-all">Previous</span>
+        <div class="h-4 w-[1px] bg-outline-variant"></div>
+        <span class="font-code-sm text-code-sm text-primary font-bold hover:bg-surface-container-highest px-2 cursor-pointer transition-all">Next Step</span>
+    </div>
+</footer>
+</body></html>
+
+<!-- BickSpec Studio Setup — Java Runtime -->
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&amp;family=IBM+Plex+Mono:wght@400;450;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "background": "#101417",
+                      "inverse-surface": "#e0e2e6",
+                      "secondary-fixed-dim": "#bec5e5",
+                      "surface-container-lowest": "#0b0f11",
+                      "primary-fixed-dim": "#4fdbc8",
+                      "outline-variant": "#3c4947",
+                      "on-surface-variant": "#bbcac6",
+                      "on-background": "#e0e2e6",
+                      "surface-container-highest": "#323538",
+                      "error": "#ffb4ab",
+                      "tertiary-fixed": "#d5e3fc",
+                      "on-tertiary-fixed-variant": "#3a485b",
+                      "surface-lowest": "#0b0f11",
+                      "surface-container": "#1d2023",
+                      "on-secondary-fixed-variant": "#3e4660",
+                      "secondary": "#bec5e5",
+                      "surface-variant": "#323538",
+                      "on-surface": "#e0e2e6",
+                      "on-error": "#690005",
+                      "inverse-on-surface": "#2d3134",
+                      "primary": "#4fdbc8",
+                      "surface-dim": "#101417",
+                      "on-error-container": "#ffdad6",
+                      "terminal-black": "#000000",
+                      "on-primary-fixed-variant": "#005048",
+                      "on-tertiary-fixed": "#0d1c2e",
+                      "outline-muted": "#3c4947",
+                      "tertiary-container": "#97a5bc",
+                      "tertiary-fixed-dim": "#b9c7df",
+                      "secondary-container": "#414863",
+                      "on-primary-fixed": "#00201c",
+                      "surface-tint": "#4fdbc8",
+                      "surface-container-high": "#272a2d",
+                      "surface-container-low": "#191c1f",
+                      "editor-bg": "#07111F",
+                      "on-primary-container": "#00423b",
+                      "inverse-primary": "#006b5f",
+                      "on-primary": "#003731",
+                      "primary-container": "#14b8a6",
+                      "outline": "#859490",
+                      "secondary-fixed": "#dbe1ff",
+                      "on-secondary-container": "#b0b7d7",
+                      "error-container": "#93000a",
+                      "tertiary": "#b9c7df",
+                      "primary-fixed": "#71f8e4",
+                      "on-tertiary": "#233144",
+                      "on-tertiary-container": "#2d3b4e",
+                      "on-secondary": "#282f49",
+                      "surface": "#101417",
+                      "on-secondary-fixed": "#131a33",
+                      "surface-bright": "#363a3d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "activity-bar": "64px",
+                      "top-bar": "48px",
+                      "gutter": "16px",
+                      "panel-width": "640px",
+                      "margin": "24px",
+                      "stack-gap": "12px"
+              },
+              "fontFamily": {
+                      "body-md": ["Sora"],
+                      "label-caps": ["IBM Plex Mono"],
+                      "body-sm": ["Sora"],
+                      "code-md": ["IBM Plex Mono"],
+                      "code-sm": ["IBM Plex Mono"],
+                      "headline-lg": ["Sora"],
+                      "headline-md": ["Sora"]
+              },
+              "fontSize": {
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "code-md": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                      "code-sm": ["11px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #07111F;
+            background-image: radial-gradient(#14b8a61a 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glow-shadow {
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.15);
+        }
+        .ring-halo {
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1);
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface select-none overflow-hidden">
+<!-- Activity Bar (SideNavBar) -->
+<aside class="fixed left-0 top-0 h-full w-activity-bar flex flex-col items-center py-gutter bg-surface-lowest border-r border-outline-variant z-50">
+    <div class="mb-8">
+        <span class="material-symbols-outlined text-primary text-headline-md" data-icon="settings_input_component">settings_input_component</span>
+    </div>
+    <nav class="flex flex-col gap-6 flex-grow">
+        <div class="p-2 cursor-pointer transition-colors duration-150 text-primary border-l-2 border-primary bg-surface-container-high" title="Environment">
+            <span class="material-symbols-outlined" data-icon="settings_input_component">settings_input_component</span>
+        </div>
+        <div class="p-2 cursor-pointer transition-colors duration-150 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant" title="Dependencies">
+            <span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+        </div>
+        <div class="p-2 cursor-pointer transition-colors duration-150 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant" title="Compiler">
+            <span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+        </div>
+        <div class="p-2 cursor-pointer transition-colors duration-150 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant" title="Auth">
+            <span class="material-symbols-outlined" data-icon="lock">lock</span>
+        </div>
+        <div class="p-2 cursor-pointer transition-colors duration-150 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant" title="Preview">
+            <span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+        </div>
+    </nav>
+    <div class="mt-auto flex flex-col gap-6">
+        <div class="p-2 cursor-pointer text-on-surface-variant hover:text-on-surface transition-colors" title="Settings">
+            <span class="material-symbols-outlined" data-icon="settings">settings</span>
+        </div>
+        <div class="p-2 cursor-pointer text-on-surface-variant hover:text-on-surface transition-colors" title="Help">
+            <span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+        </div>
+    </div>
+</aside>
+<!-- Top Bar (TopNavBar) -->
+<header class="fixed top-0 right-0 w-[calc(100%-64px)] h-top-bar flex justify-between items-center px-gutter bg-surface-dim border-b border-outline-variant z-40">
+    <div class="flex items-center gap-gutter">
+        <span class="font-code-md text-code-md tracking-tighter text-primary">BickSpec Studio</span>
+        <span class="h-4 w-[1px] bg-outline-variant"></span>
+        <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Setup Wizard v1.0</span>
+    </div>
+    <div class="flex items-center gap-6">
+        <div class="flex items-center gap-4 text-on-surface-variant">
+            <span class="material-symbols-outlined cursor-pointer hover:text-primary transition-opacity" data-icon="notifications">notifications</span>
+            <span class="material-symbols-outlined cursor-pointer hover:text-primary transition-opacity" data-icon="account_circle">account_circle</span>
+        </div>
+        <button class="px-4 py-1 bg-primary text-on-primary font-label-caps text-label-caps rounded-sm hover:opacity-90 active:scale-95 transition-all">
+            DEPLOY
+        </button>
+    </div>
+</header>
+<!-- Main Stage Container -->
+<main class="fixed inset-0 ml-activity-bar mt-top-bar flex justify-center items-center p-margin">
+    <div class="w-full max-w-[900px] flex gap-margin items-start">
+        <!-- Left Vertical Stepper -->
+        <div class="w-48 flex flex-col pt-unit">
+            <!-- Step 1: Completed -->
+            <div class="relative flex gap-4 pb-10">
+                <div class="absolute left-[11px] top-[24px] bottom-0 w-[1px] bg-primary"></div>
+                <div class="relative z-10 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[14px] text-on-primary" data-icon="check">check</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-label-caps text-label-caps text-primary uppercase">Step 01</span>
+                    <span class="font-body-sm text-body-sm text-on-surface font-semibold">Welcome</span>
+                </div>
+            </div>
+            <!-- Step 2: Active -->
+            <div class="relative flex gap-4 pb-10">
+                <div class="absolute left-[11px] top-[24px] bottom-0 w-[1px] bg-outline-variant"></div>
+                <div class="relative z-10 w-6 h-6 rounded-full border-2 border-primary bg-background flex items-center justify-center ring-halo">
+                    <div class="w-2 h-2 rounded-full bg-primary"></div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-label-caps text-label-caps text-primary uppercase">Step 02</span>
+                    <span class="font-body-sm text-body-sm text-primary font-bold">Java Runtime</span>
+                </div>
+            </div>
+            <!-- Step 3: Pending -->
+            <div class="relative flex gap-4 pb-10">
+                <div class="absolute left-[11px] top-[24px] bottom-0 w-[1px] bg-outline-variant"></div>
+                <div class="relative z-10 w-6 h-6 rounded-full border border-outline-variant bg-surface-lowest flex items-center justify-center"></div>
+                <div class="flex flex-col">
+                    <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Step 03</span>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant">Compiler</span>
+                </div>
+            </div>
+            <!-- Step 4: Pending -->
+            <div class="relative flex gap-4">
+                <div class="relative z-10 w-6 h-6 rounded-full border border-outline-variant bg-surface-lowest flex items-center justify-center"></div>
+                <div class="flex flex-col">
+                    <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Step 04</span>
+                    <span class="font-body-sm text-body-sm text-on-surface-variant">Dependencies</span>
+                </div>
+            </div>
+        </div>
+        <!-- Content Canvas -->
+        <div class="flex-grow bg-surface-container border border-outline-variant rounded-lg p-margin glow-shadow">
+            <header class="mb-gutter">
+                <h1 class="font-headline-lg text-headline-lg text-on-surface">Check Java Runtime</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant mt-1">BickSpec Studio uses Java to execute the BickSpec compiler and manage build pipelines.</p>
+            </header>
+            <!-- Bento Grid Status Cards -->
+            <div class="grid grid-cols-2 gap-stack-gap mb-gutter">
+                <!-- Java Status Main Card -->
+                <div class="col-span-2 p-gutter bg-surface-container-high border border-outline-variant rounded relative overflow-hidden">
+                    <div class="absolute top-2 right-2 px-2 py-0.5 border border-primary/40 bg-primary/10 rounded text-[10px] font-label-caps text-primary uppercase">SUCCESS</div>
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-primary/10 rounded flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary text-[32px]" data-icon="coffee">coffee</span>
+                        </div>
+                        <div>
+                            <h3 class="font-headline-md text-headline-md text-on-surface">Java 21 detected</h3>
+                            <p class="font-body-sm text-body-sm text-on-surface-variant">Oracle OpenJDK Runtime Environment</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Version Card -->
+                <div class="p-gutter bg-surface-container-high border border-outline-variant rounded flex flex-col gap-2">
+                    <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">VERSION</span>
+                    <span class="font-code-md text-code-md text-primary">21.0.2 LTS</span>
+                </div>
+                <!-- JAVA_HOME Card -->
+                <div class="p-gutter bg-surface-container-high border border-outline-variant rounded flex flex-col gap-2">
+                    <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">JAVA_HOME</span>
+                    <span class="font-code-sm text-code-sm text-on-surface truncate">/usr/lib/jvm/java-21-openjdk</span>
+                </div>
+            </div>
+            <!-- Terminal Detail View -->
+            <div class="bg-terminal-black border border-outline-variant rounded p-gutter mb-gutter overflow-hidden">
+                <div class="flex items-center gap-2 mb-gutter border-b border-outline-variant pb-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-error/40"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-tertiary-container/40"></div>
+                    <div class="w-2.5 h-2.5 rounded-full bg-primary/40"></div>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant ml-2 uppercase">Diagnostic Output</span>
+                </div>
+                <div class="font-code-sm text-code-sm text-on-surface-variant space-y-1">
+                    <p class="text-primary"><span class="opacity-50">$</span> java --version</p>
+                    <p>openjdk version "21.0.2" 2024-01-16</p>
+                    <p>OpenJDK Runtime Environment (build 21.0.2+13-58)</p>
+                    <p>OpenJDK 64-Bit Server VM (build 21.0.2+13-58, mixed mode, sharing)</p>
+                    <p class="mt-4 text-primary"><span class="opacity-50">$</span> echo $PATH | grep java</p>
+                    <p>.../bin:/usr/lib/jvm/java-21-openjdk/bin:/usr/local/bin...</p>
+                    <div class="flex items-center gap-1">
+                        <span class="text-primary-fixed-dim">READY</span>
+                        <span class="w-2 h-4 bg-primary animate-pulse"></span>
+                    </div>
+                </div>
+            </div>
+            <!-- Action Footer -->
+            <div class="flex justify-between items-center pt-gutter border-t border-outline-variant">
+                <div class="flex gap-stack-gap">
+                    <button class="px-4 py-2 border border-outline-variant bg-surface-container-low text-on-surface font-label-caps text-label-caps rounded-sm hover:bg-surface-container-high active:scale-95 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]" data-icon="refresh">refresh</span>
+                        RE-CHECK JAVA
+                    </button>
+                    <button class="px-4 py-2 border border-outline-variant bg-surface-container-low text-on-surface font-label-caps text-label-caps rounded-sm hover:bg-surface-container-high active:scale-95 transition-all flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]" data-icon="folder_open">folder_open</span>
+                        SELECT JAVA
+                    </button>
+                </div>
+                <button class="px-gutter py-2 bg-primary-container text-on-primary-container font-label-caps text-label-caps rounded-sm hover:opacity-90 active:scale-95 transition-all flex items-center gap-2">
+                    CONTINUE
+                    <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Bottom Bar (BottomNavBar) -->
+<footer class="fixed bottom-0 right-0 w-[calc(100%-64px)] h-8 flex justify-between items-center px-4 bg-terminal-black border-t border-outline-variant z-40">
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-primary"></span>
+            <span class="font-code-sm text-code-sm text-primary-fixed-dim">SYSTEM_OK</span>
+        </div>
+        <span class="font-code-sm text-code-sm text-on-surface-variant">JVM_LOADED: 100%</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <span class="font-code-sm text-code-sm text-on-surface-variant hover:text-primary transition-opacity cursor-pointer">Previous</span>
+        <span class="font-code-sm text-code-sm text-primary font-bold cursor-pointer">Next Step</span>
+    </div>
+</footer>
+</body></html>
+
+<!-- BickSpec Studio Setup — Compiler JAR -->
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600&amp;family=IBM+Plex+Mono:wght@400;450;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "background": "#101417",
+                      "inverse-surface": "#e0e2e6",
+                      "secondary-fixed-dim": "#bec5e5",
+                      "surface-container-lowest": "#0b0f11",
+                      "primary-fixed-dim": "#4fdbc8",
+                      "outline-variant": "#3c4947",
+                      "on-surface-variant": "#bbcac6",
+                      "on-background": "#e0e2e6",
+                      "surface-container-highest": "#323538",
+                      "error": "#ffb4ab",
+                      "tertiary-fixed": "#d5e3fc",
+                      "on-tertiary-fixed-variant": "#3a485b",
+                      "surface-lowest": "#0b0f11",
+                      "surface-container": "#1d2023",
+                      "on-secondary-fixed-variant": "#3e4660",
+                      "secondary": "#bec5e5",
+                      "surface-variant": "#323538",
+                      "on-surface": "#e0e2e6",
+                      "on-error": "#690005",
+                      "inverse-on-surface": "#2d3134",
+                      "primary": "#4fdbc8",
+                      "surface-dim": "#101417",
+                      "on-error-container": "#ffdad6",
+                      "terminal-black": "#000000",
+                      "on-primary-fixed-variant": "#005048",
+                      "on-tertiary-fixed": "#0d1c2e",
+                      "outline-muted": "#3c4947",
+                      "tertiary-container": "#97a5bc",
+                      "tertiary-fixed-dim": "#b9c7df",
+                      "secondary-container": "#414863",
+                      "on-primary-fixed": "#00201c",
+                      "surface-tint": "#4fdbc8",
+                      "surface-container-high": "#272a2d",
+                      "surface-container-low": "#191c1f",
+                      "editor-bg": "#07111F",
+                      "on-primary-container": "#00423b",
+                      "inverse-primary": "#006b5f",
+                      "on-primary": "#003731",
+                      "primary-container": "#14b8a6",
+                      "outline": "#859490",
+                      "secondary-fixed": "#dbe1ff",
+                      "on-secondary-container": "#b0b7d7",
+                      "error-container": "#93000a",
+                      "tertiary": "#b9c7df",
+                      "primary-fixed": "#71f8e4",
+                      "on-tertiary": "#233144",
+                      "on-tertiary-container": "#2d3b4e",
+                      "on-secondary": "#282f49",
+                      "surface": "#101417",
+                      "on-secondary-fixed": "#131a33",
+                      "surface-bright": "#363a3d"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "activity-bar": "64px",
+                      "top-bar": "48px",
+                      "gutter": "16px",
+                      "panel-width": "640px",
+                      "margin": "24px",
+                      "stack-gap": "12px"
+              },
+              "fontFamily": {
+                      "body-md": ["Sora"],
+                      "label-caps": ["IBM Plex Mono"],
+                      "body-sm": ["Sora"],
+                      "code-md": ["IBM Plex Mono"],
+                      "code-sm": ["IBM Plex Mono"],
+                      "headline-lg": ["Sora"],
+                      "headline-md": ["Sora"]
+              },
+              "fontSize": {
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                      "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "code-md": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                      "code-sm": ["11px", {"lineHeight": "16px", "fontWeight": "400"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+    <style>
+        .dot-grid {
+            background-image: radial-gradient(circle, #3c4947 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .teal-glow {
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.15);
+        }
+        .cursor-blink {
+            display: inline-block;
+            width: 8px;
+            height: 14px;
+            background-color: #4fdbc8;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="bg-editor-bg text-on-surface font-body-md selection:bg-primary/30">
+<!-- Activity Bar (SideNavBar) -->
+<aside class="fixed left-0 top-0 h-full w-activity-bar bg-surface-lowest border-r border-outline-variant flex flex-col items-center py-gutter z-50">
+    <div class="mb-8 cursor-pointer active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-primary text-[32px]">settings_input_component</span>
+    </div>
+    <nav class="flex flex-col gap-unit items-center w-full">
+        <div class="w-full flex justify-center py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer" title="Environment">
+            <span class="material-symbols-outlined">settings_input_component</span>
+        </div>
+        <div class="w-full flex justify-center py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer" title="Dependencies">
+            <span class="material-symbols-outlined">account_tree</span>
+        </div>
+        <!-- Active Tab: Compiler -->
+        <div class="w-full flex justify-center py-2 text-primary border-l-2 border-primary bg-surface-container-high cursor-pointer" title="Compiler">
+            <span class="material-symbols-outlined">terminal</span>
+        </div>
+        <div class="w-full flex justify-center py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer" title="Auth">
+            <span class="material-symbols-outlined">lock</span>
+        </div>
+        <div class="w-full flex justify-center py-2 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors cursor-pointer" title="Preview">
+            <span class="material-symbols-outlined">visibility</span>
+        </div>
+    </nav>
+    <div class="mt-auto flex flex-col gap-unit items-center w-full">
+        <div class="w-full flex justify-center py-2 text-on-surface-variant hover:text-on-surface cursor-pointer" title="Settings">
+            <span class="material-symbols-outlined">settings</span>
+        </div>
+        <div class="w-full flex justify-center py-2 text-on-surface-variant hover:text-on-surface cursor-pointer" title="Help">
+            <span class="material-symbols-outlined">help_outline</span>
+        </div>
+    </div>
+</aside>
+<!-- Top Bar (TopNavBar) -->
+<header class="fixed top-0 right-0 w-[calc(100%-64px)] h-top-bar bg-surface-dim border-b border-outline-variant flex justify-between items-center px-gutter z-40">
+    <div class="flex items-center gap-4">
+        <span class="font-code-md text-code-md tracking-tighter text-primary">BickSpec Studio</span>
+        <span class="text-outline-variant">|</span>
+        <span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Compiler Validation</span>
+    </div>
+    <div class="flex items-center gap-gutter">
+        <div class="bg-surface-container px-3 py-1 border border-outline-variant flex items-center gap-2 group cursor-text">
+            <span class="material-symbols-outlined text-body-sm text-on-surface-variant">search</span>
+            <span class="font-code-sm text-code-sm text-on-surface-variant/60">Search modules...</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-opacity">notifications</span>
+            <span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-opacity">account_circle</span>
+            <button class="bg-primary-container text-on-primary-container font-label-caps text-label-caps px-4 py-1.5 rounded-sm hover:opacity-90 active:scale-95 transition-all">
+                Deploy
+            </button>
+        </div>
+    </div>
+</header>
+<!-- Main Content Area -->
+<main class="ml-activity-bar mt-top-bar h-[calc(100vh-48px-32px)] overflow-y-auto dot-grid">
+    <div class="max-w-[1000px] mx-auto py-margin px-margin grid grid-cols-12 gap-margin">
+        <!-- Sidebar Stepper -->
+        <div class="col-span-3">
+            <div class="flex flex-col">
+                <div class="flex items-start gap-4 mb-8">
+                    <div class="relative flex flex-col items-center h-full">
+                        <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center border-2 border-primary">
+                            <span class="material-symbols-outlined text-[16px] text-on-primary">check</span>
+                        </div>
+                        <div class="w-[1px] h-10 bg-primary mt-2"></div>
+                    </div>
+                    <div>
+                        <p class="font-label-caps text-label-caps text-primary">STEP 01</p>
+                        <h4 class="font-headline-md text-body-md text-on-surface">Repository</h4>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant">Connected</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4 mb-8">
+                    <div class="relative flex flex-col items-center h-full">
+                        <div class="w-6 h-6 rounded-full bg-editor-bg border-2 border-primary flex items-center justify-center ring-4 ring-primary/20">
+                            <div class="w-2 h-2 rounded-full bg-primary"></div>
+                        </div>
+                        <div class="w-[1px] h-10 bg-outline-variant mt-2"></div>
+                    </div>
+                    <div>
+                        <p class="font-label-caps text-label-caps text-primary">STEP 02</p>
+                        <h4 class="font-headline-md text-body-md text-primary font-bold">Compiler JAR</h4>
+                        <p class="font-body-sm text-body-sm text-on-surface-variant">Validating artifacts</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4 opacity-40">
+                    <div class="relative flex flex-col items-center h-full">
+                        <div class="w-6 h-6 rounded-full bg-editor-bg border-2 border-outline-variant"></div>
+                    </div>
+                    <div>
+                        <p class="font-label-caps text-label-caps">STEP 03</p>
+                        <h4 class="font-headline-md text-body-md">Environment</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Validation Canvas -->
+        <div class="col-span-9">
+            <div class="bg-surface-container border border-outline-variant p-margin teal-glow relative overflow-hidden">
+                <!-- Status Tag -->
+                <div class="absolute top-0 right-0 bg-outline-variant px-3 py-1">
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">READY_FOR_VALIDATION</span>
+                </div>
+                <div class="mb-gutter">
+                    <h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Validate Compiler JAR</h1>
+                    <p class="text-on-surface-variant font-body-md">Confirm the build artifact is executable and compatible with the target runtime environment.</p>
+                </div>
+                <!-- Main Artifact Display -->
+                <div class="bg-surface-container-high border border-outline-variant p-4 mb-margin flex items-center justify-between group">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-surface-lowest border border-outline-variant flex items-center justify-center">
+                            <span class="material-symbols-outlined text-primary">deployed_code</span>
+                        </div>
+                        <div>
+                            <p class="font-label-caps text-label-caps text-primary">ARTIFACT_NAME</p>
+                            <p class="font-code-md text-code-md text-on-surface">bickspec-compiler-1.0.0.jar</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="px-4 py-2 border border-outline-variant font-label-caps text-label-caps hover:bg-surface-variant transition-colors active:scale-95">Browse JAR</button>
+                        <button class="px-4 py-2 bg-surface-variant border border-outline-variant font-label-caps text-label-caps hover:bg-outline-variant transition-colors active:scale-95">Build from Repository</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-margin mb-margin">
+                    <!-- Terminal Simulation -->
+                    <div class="col-span-1">
+                        <div class="bg-terminal-black p-4 border border-outline-variant h-full min-h-[200px]">
+                            <div class="flex gap-2 mb-3">
+                                <div class="w-2.5 h-2.5 rounded-full bg-red-500/50"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/50"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-green-500/50"></div>
+                            </div>
+                            <div class="font-code-sm text-code-sm text-primary-fixed-dim space-y-1">
+                                <p><span class="text-secondary opacity-70">$</span> java -jar bickspec-compiler-1.0.0.jar --help</p>
+                                <p class="text-on-surface-variant mt-2">Initializing BickSpec Runtime...</p>
+                                <p class="text-on-surface-variant">Core Engine: v1.0.0 (build 4a92bc)</p>
+                                <p class="text-on-surface-variant">Status: <span class="text-primary-container">READY</span></p>
+                                <p class="pt-2">_ <span class="cursor-blink"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Checklist Bento -->
+                    <div class="col-span-1 grid grid-rows-2 gap-unit">
+                        <div class="bg-surface-container-high border border-outline-variant p-3 flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            <div class="flex-1">
+                                <p class="font-code-sm text-code-sm text-on-surface">JAR exists</p>
+                                <div class="w-full bg-surface-lowest h-1 mt-1">
+                                    <div class="bg-primary w-full h-full"></div>
+                                </div>
+                            </div>
+                            <span class="font-label-caps text-[8px] border border-primary/40 px-1 text-primary">DONE</span>
+                        </div>
+                        <div class="bg-surface-container-high border border-outline-variant p-3 flex items-center gap-3">
+                            <span class="material-symbols-outlined text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            <div class="flex-1">
+                                <p class="font-code-sm text-code-sm text-on-surface">Java can execute</p>
+                                <div class="w-full bg-surface-lowest h-1 mt-1">
+                                    <div class="bg-primary w-full h-full"></div>
+                                </div>
+                            </div>
+                            <span class="font-label-caps text-[8px] border border-primary/40 px-1 text-primary">DONE</span>
+                        </div>
+                        <div class="bg-surface-container-high border border-outline-variant p-3 flex items-center gap-3">
+                            <span class="material-symbols-outlined text-on-surface-variant">radio_button_unchecked</span>
+                            <div class="flex-1">
+                                <p class="font-code-sm text-code-sm text-on-surface-variant">Compiler responds</p>
+                                <div class="w-full bg-surface-lowest h-1 mt-1">
+                                    <div class="bg-outline-variant w-1/4 h-full"></div>
+                                </div>
+                            </div>
+                            <span class="font-label-caps text-[8px] border border-outline-variant px-1 text-on-surface-variant">TODO</span>
+                        </div>
+                        <div class="bg-surface-container-high border border-outline-variant p-3 flex items-center gap-3">
+                            <span class="material-symbols-outlined text-on-surface-variant">radio_button_unchecked</span>
+                            <div class="flex-1">
+                                <p class="font-code-sm text-code-sm text-on-surface-variant">Output writable</p>
+                                <div class="w-full bg-surface-lowest h-1 mt-1">
+                                    <div class="bg-outline-variant w-0 h-full"></div>
+                                </div>
+                            </div>
+                            <span class="font-label-caps text-[8px] border border-outline-variant px-1 text-on-surface-variant">TODO</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- CTA Row -->
+                <div class="flex justify-between items-center pt-margin border-t border-outline-variant">
+                    <button class="flex items-center gap-2 text-on-surface-variant hover:text-on-surface transition-colors font-label-caps text-label-caps">
+                        <span class="material-symbols-outlined text-[18px]">history</span>
+                        View logs
+                    </button>
+                    <div class="flex gap-4">
+                        <button class="px-8 py-3 bg-primary-container text-on-primary-container font-headline-md text-body-md font-bold uppercase tracking-wider hover:opacity-90 active:scale-[0.98] transition-all">
+                            Validate Compiler
+                        </button>
+                        <button class="px-8 py-3 bg-surface-variant border border-outline-variant text-on-surface font-headline-md text-body-md font-bold uppercase tracking-wider opacity-50 cursor-not-allowed">
+                            Continue
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Secondary Info Cards -->
+            <div class="mt-margin grid grid-cols-3 gap-gutter">
+                <div class="bg-surface-container/40 border border-outline-variant/40 p-4">
+                    <p class="font-label-caps text-[9px] text-primary mb-1">RUNTIME_HINT</p>
+                    <p class="text-body-sm text-on-surface-variant">JVM version 17+ is required for memory-efficient compilation of financial models.</p>
+                </div>
+                <div class="bg-surface-container/40 border border-outline-variant/40 p-4">
+                    <p class="font-label-caps text-[9px] text-primary mb-1">SECURITY_HASH</p>
+                    <p class="font-code-sm text-[10px] text-on-surface-variant truncate">SHA-256: 4e9a1b...8f2d01</p>
+                </div>
+                <div class="bg-surface-container/40 border border-outline-variant/40 p-4">
+                    <p class="font-label-caps text-[9px] text-primary mb-1">OUTPUT_PATH</p>
+                    <p class="text-body-sm text-on-surface-variant">/build/dist/compiled-models/</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- Bottom Status Bar (BottomNavBar) -->
+<footer class="fixed bottom-0 right-0 w-[calc(100%-64px)] h-8 bg-terminal-black border-t border-outline-variant flex justify-between items-center px-4 z-40">
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            <span class="font-code-sm text-code-sm text-primary">System Ready</span>
+        </div>
+        <span class="text-outline-variant opacity-40">|</span>
+        <span class="font-code-sm text-code-sm text-on-surface-variant">UTF-8</span>
+        <span class="font-code-sm text-code-sm text-on-surface-variant">Java 17.0.2</span>
+    </div>
+    <div class="flex items-center gap-gutter">
+        <div class="flex items-center gap-1 cursor-pointer hover:bg-surface-container-highest px-2 py-0.5 transition-all active:opacity-80">
+            <span class="material-symbols-outlined text-[14px] text-on-surface-variant">undo</span>
+            <span class="font-code-sm text-code-sm text-on-surface-variant">Previous</span>
+        </div>
+        <div class="flex items-center gap-1 cursor-pointer hover:bg-surface-container-highest px-2 py-0.5 transition-all active:opacity-80 opacity-40 grayscale">
+            <span class="font-code-sm text-code-sm text-on-surface-variant">Next Step</span>
+            <span class="material-symbols-outlined text-[14px] text-on-surface-variant">redo</span>
+        </div>
+    </div>
+</footer>
+</body></html>
+
+<!-- BickSpec Studio Setup — Run Test -->
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>BickSpec Studio - Step 6: Run Test Compilation</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&amp;family=IBM+Plex+Mono:wght@400;450;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#101417",
+                        "inverse-surface": "#e0e2e6",
+                        "secondary-fixed-dim": "#bec5e5",
+                        "surface-container-lowest": "#0b0f11",
+                        "primary-fixed-dim": "#4fdbc8",
+                        "outline-variant": "#3c4947",
+                        "on-surface-variant": "#bbcac6",
+                        "on-background": "#e0e2e6",
+                        "surface-container-highest": "#323538",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed": "#d5e3fc",
+                        "on-tertiary-fixed-variant": "#3a485b",
+                        "surface-lowest": "#0b0f11",
+                        "surface-container": "#1d2023",
+                        "on-secondary-fixed-variant": "#3e4660",
+                        "secondary": "#bec5e5",
+                        "surface-variant": "#323538",
+                        "on-surface": "#e0e2e6",
+                        "on-error": "#690005",
+                        "inverse-on-surface": "#2d3134",
+                        "primary": "#4fdbc8",
+                        "surface-dim": "#101417",
+                        "on-error-container": "#ffdad6",
+                        "terminal-black": "#000000",
+                        "on-primary-fixed-variant": "#005048",
+                        "on-tertiary-fixed": "#0d1c2e",
+                        "outline-muted": "#3c4947",
+                        "tertiary-container": "#97a5bc",
+                        "tertiary-fixed-dim": "#b9c7df",
+                        "secondary-container": "#414863",
+                        "on-primary-fixed": "#00201c",
+                        "surface-tint": "#4fdbc8",
+                        "surface-container-high": "#272a2d",
+                        "surface-container-low": "#191c1f",
+                        "editor-bg": "#07111F",
+                        "on-primary-container": "#00423b",
+                        "inverse-primary": "#006b5f",
+                        "on-primary": "#003731",
+                        "primary-container": "#14b8a6",
+                        "outline": "#859490",
+                        "secondary-fixed": "#dbe1ff",
+                        "on-secondary-container": "#b0b7d7",
+                        "error-container": "#93000a",
+                        "tertiary": "#b9c7df",
+                        "primary-fixed": "#71f8e4",
+                        "on-tertiary": "#233144",
+                        "on-tertiary-container": "#2d3b4e",
+                        "on-secondary": "#282f49",
+                        "surface": "#101417",
+                        "on-secondary-fixed": "#131a33",
+                        "surface-bright": "#363a3d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "activity-bar": "64px",
+                        "top-bar": "48px",
+                        "gutter": "16px",
+                        "panel-width": "640px",
+                        "margin": "24px",
+                        "stack-gap": "12px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Sora"],
+                        "label-caps": ["IBM Plex Mono"],
+                        "body-sm": ["Sora"],
+                        "code-md": ["IBM Plex Mono"],
+                        "code-sm": ["IBM Plex Mono"],
+                        "headline-lg": ["Sora"],
+                        "headline-md": ["Sora"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "code-md": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                        "code-sm": ["11px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .dot-grid {
+            background-image: radial-gradient(circle, #1a2333 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .teal-glow {
+            box-shadow: 0 0 20px rgba(20, 184, 166, 0.15);
+        }
+        .cursor-blink {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background-color: #4fdbc8;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="bg-editor-bg text-on-surface font-body-md text-body-md dot-grid min-h-screen">
+<!-- SideNavBar (Activity Bar) -->
+<nav class="fixed left-0 top-0 h-full w-activity-bar bg-surface-lowest border-r border-outline-variant flex flex-col items-center py-4 z-50">
+    <div class="mb-8 cursor-pointer active:scale-95 transition-all">
+        <span class="material-symbols-outlined text-primary font-headline-md text-headline-md font-bold" style="font-variation-settings: 'FILL' 1;">settings_input_component</span>
+    </div>
+    <div class="flex flex-col gap-6 flex-1">
+        <div class="group relative cursor-pointer active:scale-95">
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-on-surface transition-colors">account_tree</span>
+            <div class="absolute left-full ml-2 px-2 py-1 bg-surface-container-high text-label-caps font-label-caps whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity rounded">ENVIRONMENT</div>
+        </div>
+        <div class="group relative cursor-pointer active:scale-95">
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-on-surface transition-colors">terminal</span>
+            <div class="absolute left-full ml-2 px-2 py-1 bg-surface-container-high text-label-caps font-label-caps whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity rounded">COMPILER</div>
+        </div>
+        <div class="group relative cursor-pointer active:scale-95 text-primary border-l-2 border-primary bg-surface-container-high w-activity-bar flex justify-center py-2 -ml-px">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">visibility</span>
+        </div>
+        <div class="group relative cursor-pointer active:scale-95">
+            <span class="material-symbols-outlined text-on-surface-variant group-hover:text-on-surface transition-colors">lock</span>
+        </div>
+    </div>
+    <div class="mt-auto flex flex-col gap-6 pb-4">
+        <span class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer">settings</span>
+        <span class="material-symbols-outlined text-on-surface-variant hover:text-on-surface transition-colors cursor-pointer">help_outline</span>
+    </div>
+</nav>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-64px)] h-top-bar bg-surface-dim border-b border-outline-variant flex justify-between items-center px-gutter z-40">
+    <div class="flex items-center gap-4">
+        <span class="font-code-md text-code-md tracking-tighter text-primary font-bold">BickSpec Studio</span>
+        <div class="h-4 w-px bg-outline-variant"></div>
+        <span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Setup Wizard v1.0</span>
+    </div>
+    <div class="flex items-center gap-6">
+        <div class="flex items-center bg-surface-container-low px-3 py-1 rounded border border-outline-variant">
+            <span class="material-symbols-outlined text-body-sm text-on-surface-variant mr-2">search</span>
+            <input class="bg-transparent border-none text-body-sm focus:ring-0 w-48 text-on-surface placeholder-on-surface-variant p-0" placeholder="Search parameters..." type="text"/>
+        </div>
+        <button class="bg-primary-container text-on-primary-container px-4 py-1 font-label-caps text-label-caps rounded font-bold hover:brightness-110 transition-all uppercase">Deploy</button>
+        <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-opacity">notifications</span>
+            <span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-primary transition-opacity">account_circle</span>
+        </div>
+    </div>
+</header>
+<!-- Main Content Stage -->
+<main class="pt-top-bar pl-activity-bar pb-8 flex justify-center">
+    <div class="w-full max-w-[1000px] px-margin py-8 flex gap-8">
+        <!-- Left Vertical Stepper -->
+        <aside class="w-48 flex-shrink-0">
+            <div class="relative flex flex-col gap-10">
+                <div class="absolute left-[11px] top-2 w-[1px] h-full bg-outline-variant"></div>
+                <div class="relative flex items-center gap-4 z-10">
+                    <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[14px] text-on-primary font-bold">check</span>
+                    </div>
+                    <span class="font-label-caps text-label-caps text-on-surface">WORKSPACE</span>
+                </div>
+                <div class="relative flex items-center gap-4 z-10">
+                    <div class="w-6 h-6 rounded-full bg-surface-container-highest border-2 border-primary flex items-center justify-center ring-4 ring-primary/20">
+                        <div class="w-2 h-2 rounded-full bg-primary"></div>
+                    </div>
+                    <span class="font-label-caps text-label-caps text-primary">RUN TEST</span>
+                </div>
+                <div class="relative flex items-center gap-4 z-10">
+                    <div class="w-6 h-6 rounded-full bg-surface-container-lowest border border-outline-variant flex items-center justify-center"></div>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">OPTIMIZATION</span>
+                </div>
+                <div class="relative flex items-center gap-4 z-10">
+                    <div class="w-6 h-6 rounded-full bg-surface-container-lowest border border-outline-variant flex items-center justify-center"></div>
+                    <span class="font-label-caps text-label-caps text-on-surface-variant">VALIDATION</span>
+                </div>
+            </div>
+        </aside>
+        <!-- Workspace Center -->
+        <div class="flex-1 space-y-gutter">
+            <section class="bg-surface-container border border-outline-variant p-gutter teal-glow rounded shadow-2xl">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h1 class="font-headline-lg text-headline-lg text-on-surface mb-1 uppercase tracking-tight">Run Test Compilation</h1>
+                        <p class="text-body-sm text-on-surface-variant font-code-sm">Executing semantic analysis on current project schema.</p>
+                    </div>
+                    <div class="bg-surface-container-high border border-outline-variant px-2 py-1 rounded">
+                        <span class="font-label-caps text-label-caps text-primary">STEP_06_COMPILE</span>
+                    </div>
+                </div>
+                <!-- Code Preview Panel -->
+                <div class="bg-terminal-black border border-outline-variant p-4 rounded mb-6 font-code-md text-code-md relative overflow-hidden group">
+                    <div class="flex justify-between items-center mb-3 border-b border-outline-variant pb-2">
+<span class="text-on-surface-variant text-[11px] uppercase tracking-widest flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">description</span>
+                                studio_setup_test.bsk
+                            </span>
+                        <span class="text-[10px] text-primary/50">L6:C24</span>
+                    </div>
+                    <div class="text-on-surface space-y-1">
+                        <p><span class="text-tertiary">PROJECT</span> 'Studio Setup Test'</p>
+                        <p><span class="text-primary-fixed-dim">IMPORT</span> core.std.io</p>
+                        <p><span class="text-primary-fixed-dim">IMPORT</span> studio.wizard.v1</p>
+                        <br/>
+                        <p><span class="text-secondary">INIT</span> main() {</p>
+                        <p class="pl-6 text-on-surface-variant"><span class="text-tertiary">VAL</span> base_ratio = <span class="text-primary">5.2</span>;</p>
+                        <p class="pl-6 text-on-surface-variant"><span class="text-primary-fixed-dim">RETURN</span> studio_log(base_ratio);</p>
+                        <p>}</p>
+                        <p class="animate-pulse"><span class="cursor-blink"></span></p>
+                    </div>
+                    <div class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="text-on-surface-variant hover:text-on-surface">
+                            <span class="material-symbols-outlined">content_copy</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Triple Panel Result Bento -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Build Log -->
+                    <div class="bg-surface-container-high border border-outline-variant p-3 rounded flex flex-col gap-2">
+                        <h3 class="font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant pb-2 flex justify-between">
+                            BUILD LOG <span class="text-primary">100%</span>
+                        </h3>
+                        <div class="font-code-sm text-code-sm text-on-surface-variant space-y-1 h-32 overflow-y-auto custom-scrollbar">
+                            <p>[08:42:01] <span class="text-primary">INFO</span> INITIALIZING</p>
+                            <p>[08:42:01] <span class="text-primary">INFO</span> LOADING LIBS</p>
+                            <p>[08:42:02] <span class="text-primary">INFO</span> [STATUS] PARSE OK</p>
+                            <p>[08:42:02] <span class="text-primary">INFO</span> ANALYZING SYMBOLS</p>
+                            <p>[08:42:02] <span class="text-primary">SUCCESS</span> GENERATED BIN</p>
+                        </div>
+                    </div>
+                    <!-- Program Output -->
+                    <div class="bg-surface-container-high border border-outline-variant p-3 rounded flex flex-col gap-2">
+                        <h3 class="font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant pb-2">
+                            PROGRAM OUTPUT
+                        </h3>
+                        <div class="flex-1 flex items-center justify-center font-code-md text-code-md bg-terminal-black/50 rounded">
+                            <p class="text-primary">Resultado: <span class="font-bold">5.2</span></p>
+                        </div>
+                    </div>
+                    <!-- Diagnostics -->
+                    <div class="bg-surface-container-high border border-outline-variant p-3 rounded flex flex-col gap-2">
+                        <h3 class="font-label-caps text-label-caps text-on-surface-variant border-b border-outline-variant pb-2">
+                            DIAGNOSTICS
+                        </h3>
+                        <div class="flex-1 flex flex-col items-center justify-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-[32px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            <p class="font-code-sm text-code-sm text-on-surface-variant">No errors found.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Action Bar -->
+            <div class="flex justify-between items-center bg-surface-container border border-outline-variant p-4 rounded">
+                <div class="flex gap-4">
+                    <button class="bg-surface-variant hover:bg-surface-bright text-on-surface border border-outline-variant px-6 py-2 font-label-caps text-label-caps rounded flex items-center gap-2 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">refresh</span>
+                        RE-RUN
+                    </button>
+                </div>
+                <div class="flex gap-4">
+                    <button class="bg-surface-container-high hover:bg-surface-variant text-on-surface-variant px-6 py-2 font-label-caps text-label-caps rounded transition-all">PREVIOUS</button>
+                    <button class="bg-primary-container text-on-primary-container hover:brightness-110 px-8 py-2 font-label-caps text-label-caps rounded font-bold shadow-lg shadow-primary/20 flex items-center gap-2 transition-all group">
+                        CONTINUE
+                        <span class="material-symbols-outlined text-[18px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<!-- BottomNavBar (Status Bar) -->
+<footer class="fixed bottom-0 right-0 w-[calc(100%-64px)] h-8 bg-terminal-black border-t border-outline-variant flex justify-between items-center px-4 z-50">
+    <div class="flex items-center gap-4 h-full">
+        <div class="flex items-center gap-2 px-2 h-full bg-primary/10 border-r border-outline-variant">
+            <div class="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+            <span class="font-code-sm text-code-sm text-primary">COMPILER READY</span>
+        </div>
+        <span class="font-code-sm text-code-sm text-on-surface-variant">branch: <span class="text-on-surface">main*</span></span>
+        <span class="font-code-sm text-code-sm text-on-surface-variant">UTF-8</span>
+    </div>
+    <div class="flex items-center gap-4 h-full font-code-sm text-code-sm text-on-surface-variant">
+        <div class="flex items-center gap-1 hover:bg-surface-container-highest px-2 h-full transition-all cursor-pointer">
+            <span class="material-symbols-outlined text-[14px]">sync</span>
+            <span>v1.0.4-stable</span>
+        </div>
+        <div class="flex items-center gap-1 hover:bg-surface-container-highest px-2 h-full transition-all cursor-pointer">
+            <span class="material-symbols-outlined text-[14px]">warning</span>
+            <span>0</span>
+            <span class="material-symbols-outlined text-[14px]">error</span>
+            <span>0</span>
+        </div>
+    </div>
+</footer>
+</body></html>
+
+<!-- BickSpec Setup — Ready -->
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&amp;family=IBM+Plex+Mono:wght@400;450;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-error": "#690005",
+                        "on-surface-variant": "#bbcac6",
+                        "surface": "#101417",
+                        "tertiary-fixed": "#d5e3fc",
+                        "on-secondary-container": "#b0b7d7",
+                        "tertiary": "#b9c7df",
+                        "on-tertiary-fixed-variant": "#3a485b",
+                        "surface-tint": "#4fdbc8",
+                        "on-secondary-fixed": "#131a33",
+                        "secondary-container": "#414863",
+                        "surface-bright": "#363a3d",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#e0e2e6",
+                        "surface-container-low": "#191c1f",
+                        "surface-container-lowest": "#0b0f11",
+                        "outline": "#859490",
+                        "on-primary": "#003731",
+                        "secondary-fixed": "#dbe1ff",
+                        "primary-fixed-dim": "#4fdbc8",
+                        "on-tertiary-fixed": "#0d1c2e",
+                        "error-container": "#93000a",
+                        "background": "#101417",
+                        "inverse-primary": "#006b5f",
+                        "secondary-fixed-dim": "#bec5e5",
+                        "on-surface": "#e0e2e6",
+                        "primary-container": "#14b8a6",
+                        "outline-variant": "#3c4947",
+                        "tertiary-container": "#97a5bc",
+                        "tertiary-fixed-dim": "#b9c7df",
+                        "surface-variant": "#323538",
+                        "surface-container-high": "#272a2d",
+                        "secondary": "#bec5e5",
+                        "primary-fixed": "#71f8e4",
+                        "on-background": "#e0e2e6",
+                        "inverse-on-surface": "#2d3134",
+                        "on-tertiary": "#233144",
+                        "primary": "#4fdbc8",
+                        "on-secondary": "#282f49",
+                        "on-secondary-fixed-variant": "#3e4660",
+                        "surface-dim": "#101417",
+                        "on-tertiary-container": "#2d3b4e",
+                        "on-primary-fixed-variant": "#005048",
+                        "on-primary-container": "#00423b",
+                        "error": "#ffb4ab",
+                        "on-primary-fixed": "#00201c",
+                        "surface-container-highest": "#323538",
+                        "surface-container": "#1d2023"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin": "24px",
+                        "stack-gap": "12px",
+                        "gutter": "16px",
+                        "unit": "4px",
+                        "panel-width": "640px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Sora"],
+                        "code-md": ["IBM Plex Mono"],
+                        "code-sm": ["IBM Plex Mono"],
+                        "headline-lg": ["Sora"],
+                        "body-md": ["Sora"],
+                        "label-caps": ["IBM Plex Mono"],
+                        "body-sm": ["Sora"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "code-md": ["13px", {"lineHeight": "20px", "fontWeight": "450"}],
+                        "code-sm": ["11px", {"lineHeight": "16px", "fontWeight": "400"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "label-caps": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .dot-grid {
+            background-image: radial-gradient(#475569 1px, transparent 1px);
+            background-size: 24px 24px;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md overflow-hidden">
+<!-- Activity Bar (SideNavBar) -->
+<nav class="fixed left-0 top-0 h-full w-16 flex flex-col items-center py-4 bg-surface-container-lowest border-r border-outline-variant z-50">
+    <div class="mb-8">
+        <span class="material-symbols-outlined text-primary text-headline-md" data-icon="terminal">terminal</span>
+    </div>
+    <div class="flex flex-col gap-6 items-center flex-1">
+        <div class="p-2 transition-colors duration-200 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant cursor-pointer">
+            <span class="material-symbols-outlined" data-icon="description">description</span>
+        </div>
+        <div class="p-2 transition-colors duration-200 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant cursor-pointer">
+            <span class="material-symbols-outlined" data-icon="search">search</span>
+        </div>
+        <div class="p-2 transition-colors duration-200 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant cursor-pointer">
+            <span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+        </div>
+        <div class="p-2 transition-colors duration-200 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant cursor-pointer">
+            <span class="material-symbols-outlined" data-icon="play_arrow">play_arrow</span>
+        </div>
+        <div class="p-2 transition-colors duration-200 text-primary border-l-2 border-primary">
+            <span class="material-symbols-outlined" data-icon="extension">extension</span>
+        </div>
+    </div>
+    <div class="mt-auto">
+        <div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center overflow-hidden">
+            <img alt="User Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwMvRzhLtzQf2Bg5-CDIltAG8melKmm5vLzmcBdFxRa1mHoTh3m86GYuTZSoM0xbg6W0vaY2Ckunsf0BDZ6oIzXUAmtSx40AyTYGJuBiK60f8bM1K0uu5_1n1RGP0aknQ3ti2a3QmyVjL6u4zpLEzkkDuK1CpVc4zZubOOpN4B_q_NMg5-sMPJx7EqD8Yb5Lp4eeKiTfwvDctCzw9ZHI-iigaVieUQvqxQtBBfe5qmraUB6JVAZ4shH3hfkJzqdRhvD2o2btXD9To"/>
+        </div>
+    </div>
+</nav>
+<!-- Header (TopAppBar) -->
+<header class="fixed top-0 left-16 right-0 h-12 flex justify-between items-center px-margin bg-surface-container border-b border-outline-variant z-40">
+    <div class="flex items-center gap-2">
+        <span class="font-headline-md text-headline-md text-on-surface">Extension Setup Wizard</span>
+    </div>
+    <div class="flex items-center gap-4">
+        <span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-variant p-1" data-icon="settings">settings</span>
+        <span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:bg-surface-variant p-1" data-icon="close">close</span>
+    </div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 ml-16 mt-12 mb-8 relative flex items-center justify-center">
+    <!-- Background Grid -->
+    <div class="absolute inset-0 dot-grid pointer-events-none"></div>
+    <!-- Wizard Panel -->
+    <div class="w-[640px] bg-[#0B132B] border border-outline-variant rounded-lg flex shadow-2xl overflow-hidden relative z-10">
+        <!-- Left Stepper Column -->
+        <aside class="w-48 border-r border-outline-variant p-6 flex flex-col gap-6 bg-surface-container-low/50">
+            <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[16px] text-on-primary font-bold" data-icon="check">check</span>
+                </div>
+                <span class="font-code-sm text-code-sm text-on-surface">Initialize</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[16px] text-on-primary font-bold" data-icon="check">check</span>
+                </div>
+                <span class="font-code-sm text-code-sm text-on-surface">Environment</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[16px] text-on-primary font-bold" data-icon="check">check</span>
+                </div>
+                <span class="font-code-sm text-code-sm text-on-surface">Compiler</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[16px] text-on-primary font-bold" data-icon="check">check</span>
+                </div>
+                <span class="font-code-sm text-code-sm text-on-surface">Language Server</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[16px] text-on-primary font-bold" data-icon="check">check</span>
+                </div>
+                <span class="font-code-sm text-code-sm text-on-surface">Java Bridge</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[16px] text-on-primary font-bold" data-icon="check">check</span>
+                </div>
+                <span class="font-code-sm text-code-sm text-on-surface">Verification</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center ring-2 ring-primary ring-offset-2 ring-offset-[#0B132B]">
+                    <span class="material-symbols-outlined text-[16px] text-on-primary font-bold" data-icon="done_all">done_all</span>
+                </div>
+                <span class="font-code-sm text-code-sm text-primary font-bold">Ready</span>
+            </div>
+        </aside>
+        <!-- Content Container -->
+        <section class="flex-1 p-8 flex flex-col">
+            <div class="mb-8">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 bg-primary-container/20 rounded-full flex items-center justify-center">
+                        <span class="material-symbols-outlined text-primary text-[32px]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+                    </div>
+                    <h1 class="font-headline-lg text-headline-lg text-on-surface">BickSpec is ready</h1>
+                </div>
+                <p class="text-on-surface-variant font-body-md leading-relaxed">
+                    The installation and configuration process is complete. You can now open, edit, compile, and run .bks files directly in VS Code.
+                </p>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mb-8">
+                <div class="flex items-center gap-2 p-3 bg-surface-container rounded-sm border border-outline-variant/30">
+                    <span class="material-symbols-outlined text-primary text-[18px]" data-icon="check_circle">check_circle</span>
+                    <span class="font-code-sm text-code-sm text-on-surface">Syntax highlighting</span>
+                </div>
+                <div class="flex items-center gap-2 p-3 bg-surface-container rounded-sm border border-outline-variant/30">
+                    <span class="material-symbols-outlined text-primary text-[18px]" data-icon="check_circle">check_circle</span>
+                    <span class="font-code-sm text-code-sm text-on-surface">Snippets</span>
+                </div>
+                <div class="flex items-center gap-2 p-3 bg-surface-container rounded-sm border border-outline-variant/30">
+                    <span class="material-symbols-outlined text-primary text-[18px]" data-icon="check_circle">check_circle</span>
+                    <span class="font-code-sm text-code-sm text-on-surface">Diagnostics</span>
+                </div>
+                <div class="flex items-center gap-2 p-3 bg-surface-container rounded-sm border border-outline-variant/30">
+                    <span class="material-symbols-outlined text-primary text-[18px]" data-icon="check_circle">check_circle</span>
+                    <span class="font-code-sm text-code-sm text-on-surface">Compile file</span>
+                </div>
+                <div class="flex items-center gap-2 p-3 bg-surface-container rounded-sm border border-outline-variant/30">
+                    <span class="material-symbols-outlined text-primary text-[18px]" data-icon="check_circle">check_circle</span>
+                    <span class="font-code-sm text-code-sm text-on-surface">Run file</span>
+                </div>
+                <div class="flex items-center gap-2 p-3 bg-surface-container rounded-sm border border-outline-variant/30">
+                    <span class="material-symbols-outlined text-primary text-[18px]" data-icon="check_circle">check_circle</span>
+                    <span class="font-code-sm text-code-sm text-on-surface">Generate Java</span>
+                </div>
+            </div>
+            <!-- Feature Image/Mockup -->
+            <div class="mt-auto rounded-lg overflow-hidden border border-outline-variant h-32 relative">
+                <img class="w-full h-full object-cover grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-500" data-alt="A professional screen capture of the BickSpec extension interface within VS Code. The screen shows a code editor with vibrant teal and slate syntax highlighting on a dark black background. To the right, a terminal panel displays successful build logs in monospaced typography, and a sidebar shows a clean file tree structure. The overall mood is high-tech, productive, and engineered." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACB80fmmkK0KiXyy3WR3b-Y-n1LH6-w5wXRyzw4QlMYi86mWI52UoABKDVhwwyQF9e-OmbiRYBbrPBlaoZtrWfGhWqsFgdMKofJCAfahKd8xnpbB8qR4uFinB3ZNADMWMHNhaVZlGWrMyEIr3ERVSzR0vx-f7hbPuPM4S51CVFV0VWGSLYmD83PhF5q7u96FMQkXJRx_7CMMQ3pfGXdZAR7rpVIyUuYg_P6Dbuq-6a_I3NfE-AYvYeOPcle_CMGJcU35gF5DqdLoA"/>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0B132B] to-transparent"></div>
+            </div>
+        </section>
+    </div>
+</main>
+<!-- Terminal/Status Bar (Footer) -->
+<footer class="fixed bottom-0 w-full h-8 flex justify-between items-center px-4 bg-surface-container-low border-t border-outline-variant z-50">
+    <div class="flex items-center gap-4">
+        <div class="flex items-center gap-1.5 font-code-sm text-code-sm text-on-surface-variant">
+            <span class="w-2 h-2 rounded-full bg-primary"></span>
+            <span>System Status: Ready</span>
+        </div>
+        <div class="flex items-center gap-3 ml-4">
+            <span class="font-code-sm text-code-sm text-on-surface-variant hover:text-on-surface cursor-pointer">Back</span>
+            <span class="font-code-sm text-code-sm text-on-surface-variant hover:text-on-surface cursor-pointer">Next</span>
+        </div>
+    </div>
+    <div class="flex items-center gap-2">
+        <button class="bg-surface-container border border-outline-variant text-on-surface-variant font-code-sm text-code-sm px-4 py-1 rounded-sm hover:bg-surface-variant active:scale-95 transition-all">
+            Create New .bks File
+        </button>
+        <button class="bg-primary text-on-primary font-bold font-code-sm text-code-sm px-4 py-1 rounded-sm hover:brightness-110 active:scale-95 transition-all shadow-[0_0_10px_rgba(20,184,166,0.3)]">
+            Finish
+        </button>
+    </div>
+</footer>
+</body></html>

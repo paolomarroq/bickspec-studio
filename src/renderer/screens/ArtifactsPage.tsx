@@ -9,7 +9,7 @@ import { Panel } from "../components/ui/Panel";
 import { StatusBadge } from "../components/ui/StatusBadge";
 import { ToolbarButton } from "../components/ui/ToolbarButton";
 import { useStudioSession } from "../state/StudioSessionProvider";
-import type { CompileDiagnostic, TerminalEntry } from "@shared/contracts/domain";
+import type { TerminalEntry } from "@shared/contracts/domain";
 
 export function ArtifactsPage() {
   const navigate = useNavigate();
@@ -17,7 +17,6 @@ export function ArtifactsPage() {
     artifacts,
     diagnostics,
     lastSession,
-    consoleOutput,
     isRunning,
     rerunLastTarget,
     openOutputFolder,
@@ -41,7 +40,7 @@ export function ArtifactsPage() {
   }, [readArtifactPreview, selected]);
 
   return (
-    <div className="screen-grid" style={{ gridTemplateColumns: "280px minmax(0, 1fr)", gridTemplateRows: "56px 1fr 230px" }}>
+    <div className="screen-grid artifacts-page" style={{ gridTemplateColumns: "280px minmax(0, 1fr)", gridTemplateRows: "56px minmax(0, 1fr) 230px" }}>
       <header style={{ gridColumn: "1 / 3", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 16px", borderBottom: "1px solid var(--color-outline-variant)", background: "var(--color-surface-low)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <strong>BickSpec</strong>
@@ -61,28 +60,30 @@ export function ArtifactsPage() {
         <ArtifactNavigator artifacts={artifacts} selectedId={selected?.id ?? ""} onSelect={(artifact) => setSelectedId(artifact.id)} />
       </aside>
 
-      <main style={{ minWidth: 0, minHeight: 0, display: "grid", gridTemplateRows: "auto 1fr" }}>
+      <main className="artifacts-main">
         <section className="metric-grid" style={{ padding: 16 }}>
           <MetricCard label="Generated Files" value={String(artifacts.length)} tone="accent" />
           <MetricCard label="Diagnostics" value={String(diagnostics.length)} tone={diagnostics.length ? "warn" : "default"} />
           <MetricCard label="Compile Time" value={lastSession ? `${lastSession.summary.durationMs}ms` : "-"} />
           <MetricCard label="Target" value={lastSession?.summary.targetKind ?? "-"} />
         </section>
-        <Panel title={selected?.displayName ?? "Artifact Preview"} action={<StatusBadge tone="neutral">{selected?.type ?? "preview"}</StatusBadge>}>
+        <Panel title={selected?.displayName ?? "Artifact Preview"} action={<StatusBadge tone="neutral">{selected?.type ?? "preview"}</StatusBadge>} className="artifact-preview-panel">
           <div style={{ display: "flex", gap: 8, padding: 12, borderBottom: "1px solid var(--color-outline-variant)" }}>
             <ToolbarButton icon={<Eye size={14} />} onClick={() => selected && void openArtifact(selected.absolutePath)}>Open</ToolbarButton>
             <ToolbarButton icon={<FolderOpen size={14} />} onClick={() => selected && void revealArtifact(selected.absolutePath)}>Reveal</ToolbarButton>
           </div>
-          <pre className="artifact-preview">{preview}</pre>
+          <div className="artifact-preview-scroll">
+            <pre className="artifact-preview">{preview}</pre>
+          </div>
         </Panel>
       </main>
 
       <section className="split-bottom" style={{ gridColumn: "1 / 3" }}>
-        <Panel title="Build Log">
-          <TerminalPanel entries={toTerminalEntries(consoleOutput)} />
+        <Panel title="Build Log" className="bottom-results-panel">
+          <TerminalPanel entries={toTerminalEntries(lastSession?.normalized.buildLog ?? "")} />
         </Panel>
-        <Panel title="Diagnostics">
-          <DiagnosticsList diagnostics={diagnostics.map(toCompileDiagnostic)} />
+        <Panel title="Diagnostics" className="bottom-results-panel">
+          <DiagnosticsList diagnostics={diagnostics} />
         </Panel>
       </section>
     </div>
@@ -96,12 +97,3 @@ function toTerminalEntries(output: string): TerminalEntry[] {
     text
   }));
 }
-
-function toCompileDiagnostic(diagnostic: { severity: "info" | "warning" | "error"; message: string; filePath?: string; line?: number; column?: number }): CompileDiagnostic {
-  return {
-    severity: diagnostic.severity,
-    message: diagnostic.message,
-    location: [diagnostic.filePath, diagnostic.line, diagnostic.column].filter(Boolean).join(":") || "compiler"
-  };
-}
-

@@ -15,7 +15,7 @@ export function WorkspacePage() {
     activeFile,
     lastSession,
     diagnostics,
-    consoleOutput,
+    interactiveSession,
     artifacts,
     isRunning,
     setActiveFile,
@@ -23,7 +23,8 @@ export function WorkspacePage() {
     updateActiveFileContent,
     saveActiveFile,
     closeTab,
-    runActiveFile
+    runActiveFile,
+    sendInteractiveInput
   } = useStudioSession();
 
   const files = (workspace?.fileTree ?? []) as ProjectFile[];
@@ -105,7 +106,13 @@ export function WorkspacePage() {
 
       <section className="split-bottom session-output-bottom" style={{ gridColumn: "1 / 4" }}>
         <Panel title="Session Output" action={<Search size={15} />} className="session-output-wrapper">
-          <SessionOutputTabs session={lastSession} consoleOutput={consoleOutput} diagnostics={diagnostics} isRunning={isRunning} />
+          <SessionOutputTabs
+            session={lastSession}
+            diagnostics={diagnostics}
+            isRunning={isRunning}
+            interactiveSession={interactiveSession}
+            onSendInteractiveInput={sendInteractiveInput}
+          />
         </Panel>
       </section>
     </div>

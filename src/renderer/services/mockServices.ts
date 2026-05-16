@@ -55,9 +55,11 @@ export const mockServices: StudioServices = {
   },
   settings: {
     async getSettings() {
-      return { theme: "light", compilerChannel: "stable", autoSave: true, telemetry: false };
+      const raw = window.localStorage.getItem("bickspec-studio-settings");
+      return raw ? JSON.parse(raw) : { theme: "light", compilerChannel: "stable", autoSave: true, telemetry: false };
     },
     async saveSettings(settings) {
+      window.localStorage.setItem("bickspec-studio-settings", JSON.stringify(settings));
       return settings;
     }
   }

@@ -1,34 +1,39 @@
-import { useMemo, useState } from "react";
-import type { CompilerDiagnostic, CompilerSessionResult } from "@shared/contracts/backend";
-import type { CompileDiagnostic, TerminalEntry } from "@shared/contracts/domain";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import type { CompilerDiagnostic, CompilerSessionResult, InteractiveSessionState } from "@shared/contracts/backend";
+import type { TerminalEntry } from "@shared/contracts/domain";
 import { DiagnosticsList } from "./DiagnosticsList";
 import { TerminalPanel } from "./TerminalPanel";
+import { formatRuntimeOutputText } from "../../utils/formatRuntimeOutput";
 
 type SessionOutputTab = "interactive" | "program" | "errors" | "build";
 
 export function SessionOutputTabs({
   session,
-  consoleOutput,
   diagnostics,
-  isRunning
+  isRunning,
+  interactiveSession,
+  onSendInteractiveInput
 }: {
   session: CompilerSessionResult | null;
-  consoleOutput: string;
   diagnostics: CompilerDiagnostic[];
   isRunning: boolean;
+  interactiveSession: InteractiveSessionState;
+  onSendInteractiveInput(input: string): Promise<boolean>;
 }) {
   const [activeTab, setActiveTab] = useState<SessionOutputTab>("program");
-  const programOutput = useMemo(() => getProgramOutput(session), [session]);
-  const interactiveOutput = useMemo(() => getInteractiveOutput(session, consoleOutput), [consoleOutput, session]);
-  const buildEntries = useMemo(() => toTerminalEntries(consoleOutput || session?.output.find((block) => block.stream === "combined")?.text || ""), [consoleOutput, session]);
-  const diagnosticItems = diagnostics.map(toCompileDiagnostic);
+  const programOutput = formatRuntimeOutputText(session?.normalized.programOutput ?? "");
+  const buildEntries = useMemo(() => toTerminalEntries(session?.normalized.buildLog ?? ""), [session]);
 
   const tabs: Array<{ id: SessionOutputTab; label: string; count?: number; relevant?: boolean }> = [
-    { id: "interactive", label: "Interactive", relevant: Boolean(session?.summary.interactive) || isRunning },
+    { id: "interactive", label: "Interactive", relevant: interactiveSession.active || Boolean(session?.summary.interactive) || isRunning },
     { id: "program", label: "Program Output", count: programOutput ? programOutput.split(/\r?\n/).length : 0, relevant: Boolean(programOutput) },
     { id: "errors", label: "Errors", count: diagnostics.length, relevant: diagnostics.length > 0 },
     { id: "build", label: "Build Log", count: buildEntries.length, relevant: buildEntries.length > 0 && buildEntries[0]?.text !== "No compiler output yet." }
   ];
+
+  useEffect(() => {
+    if (interactiveSession.active) setActiveTab("interactive");
+  }, [interactiveSession.active]);
 
   return (
     <section className="session-output-panel">
@@ -49,11 +54,11 @@ export function SessionOutputTabs({
 
       <div className="session-output-content" role="tabpanel">
         {activeTab === "interactive" ? (
-          <InteractivePane session={session} output={interactiveOutput} isRunning={isRunning} />
+          <InteractivePane isRunning={isRunning} interactiveSession={interactiveSession} onSend={onSendInteractiveInput} />
         ) : activeTab === "program" ? (
-          programOutput ? <pre className="session-output-pre">{programOutput}</pre> : <EmptyPane message="No runtime output has been produced yet." />
+          programOutput ? <pre className="session-output-pre">{programOutput}</pre> : <EmptyPane message="No program output." />
         ) : activeTab === "errors" ? (
-          diagnosticItems.length > 0 ? <DiagnosticsList diagnostics={diagnosticItems} /> : <EmptyPane message="No compiler diagnostics or runtime errors for the latest session." />
+          diagnostics.length > 0 ? <DiagnosticsList diagnostics={diagnostics} /> : <EmptyPane message="No errors detected." />
         ) : (
           <TerminalPanel entries={buildEntries} />
         )}
@@ -62,21 +67,75 @@ export function SessionOutputTabs({
   );
 }
 
-function InteractivePane({ session, output, isRunning }: { session: CompilerSessionResult | null; output: string; isRunning: boolean }) {
-  const isInteractive = Boolean(session?.summary.interactive);
+function InteractivePane({
+  isRunning,
+  interactiveSession,
+  onSend
+}: {
+  isRunning: boolean;
+  interactiveSession: InteractiveSessionState;
+  onSend(input: string): Promise<boolean>;
+}) {
+  const [input, setInput] = useState("");
+  const transcriptRef = useRef<HTMLDivElement>(null);
+  const endRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+      if (transcriptRef.current) {
+        transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
+      }
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [interactiveSession.entries.length, interactiveSession.status]);
 
   return (
     <div className="interactive-pane">
-      <div className="interactive-transcript">
-        {output ? <pre className="session-output-pre">{output}</pre> : <EmptyPane message={isRunning ? "Waiting for interactive runtime output..." : "No interactive session is active."} />}
+      <div className="interactive-transcript" ref={transcriptRef}>
+        {interactiveSession.entries.length > 0 ? (
+          <div className="interactive-messages">
+            {interactiveSession.entries.map((entry) => (
+              <div className={`interactive-message ${entry.speaker}`} key={entry.id}>
+                <span className="interactive-speaker">{entry.speaker === "program" ? "BickSpec Program" : "You"}</span>
+                <pre>{entry.speaker === "program" ? formatRuntimeOutputText(entry.text) : entry.text}</pre>
+              </div>
+            ))}
+            <div className="interactive-status">
+              {interactiveSession.status === "waiting"
+                ? "Waiting for input..."
+                : interactiveSession.status === "completed"
+                  ? "Interactive session completed."
+                  : null}
+            </div>
+            <div ref={endRef} />
+          </div>
+        ) : (
+          <EmptyPane message={isRunning ? "Waiting for interactive runtime output..." : "No interactive session is active. Run a BickSpec program with READ to start one."} />
+        )}
       </div>
-      <form className="interactive-input-row" onSubmit={(event) => event.preventDefault()}>
-        <input
+      <form className="interactive-input-row" onSubmit={(event) => {
+        event.preventDefault();
+        if (!interactiveSession.active || !input.trim()) return;
+        void onSend(input).then((sent) => {
+          if (sent) setInput("");
+        });
+      }}>
+        <textarea
           className="interactive-input"
-          disabled={!isInteractive || !isRunning}
-          placeholder={isInteractive && !isRunning ? "Interactive process ended before a live input channel was available." : "Type input for the active interactive session"}
+          disabled={!interactiveSession.active}
+          value={input}
+          onChange={(event) => setInput(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !event.shiftKey) {
+              event.preventDefault();
+              event.currentTarget.form?.requestSubmit();
+            }
+          }}
+          placeholder={interactiveSession.active ? "Type input for the running program..." : "No active interactive session"}
+          rows={1}
         />
-        <button className="button" disabled={!isInteractive || !isRunning}>Send</button>
+        <button className="button" disabled={!interactiveSession.active || !input.trim()}>Send</button>
       </form>
     </div>
   );
@@ -86,43 +145,10 @@ function EmptyPane({ message }: { message: string }) {
   return <div className="session-output-empty">{message}</div>;
 }
 
-function getProgramOutput(session: CompilerSessionResult | null): string {
-  if (!session) return "";
-  const stdout = session.execution.stdout;
-  const executionTaggedLines = session.execution.parsedOutput.lines
-    .filter((line) => line.tag === "EXECUTION" || line.tag === "SUCCESS")
-    .map((line) => line.message)
-    .filter(Boolean);
-
-  if (executionTaggedLines.length > 0) return executionTaggedLines.join("\n");
-
-  return stdout
-    .split(/\r?\n/)
-    .filter((line) => !/^\[(STATUS|ERROR|SYMBOLS|TREE|JAVA|BUILD|SUCCESS)\]/.test(line.trim()))
-    .join("\n")
-    .trim();
-}
-
-function getInteractiveOutput(session: CompilerSessionResult | null, consoleOutput: string): string {
-  if (!session?.summary.interactive) return "";
-  return [session.execution.stdout, session.execution.stderr || session.execution.error, consoleOutput]
-    .filter(Boolean)
-    .join("\n")
-    .trim();
-}
-
 function toTerminalEntries(output: string): TerminalEntry[] {
   if (!output) return [{ level: "info", text: "No compiler output yet." }];
   return output.split(/\r?\n/).filter(Boolean).map((text) => ({
     level: text.includes("[ERROR]") ? "error" : text.includes("[SUCCESS]") ? "success" : text.includes("warning") ? "warning" : "info",
     text
   }));
-}
-
-function toCompileDiagnostic(diagnostic: CompilerDiagnostic): CompileDiagnostic {
-  return {
-    severity: diagnostic.severity,
-    message: diagnostic.message,
-    location: [diagnostic.filePath, diagnostic.line, diagnostic.column].filter(Boolean).join(":") || diagnostic.stage || "compiler"
-  };
 }

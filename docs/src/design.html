@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>BickSpec Ecosystem | Technical Documentation</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Sora:wght@300;400;600;700&amp;display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                'midnight': '#0B132B',
+                'teal-brand': '#14B8A6',
+                'slate-brand': '#475569',
+                'paper': '#F8FAFC'
+              },
+              fontFamily: {
+                sans: ['Sora', 'sans-serif'],
+                mono: ['IBM Plex Mono', 'monospace'],
+              },
+            }
+          }
+        }
+    </script>
+    <style data-purpose="custom-scrollbars">
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0B132B; }
+        ::-webkit-scrollbar-thumb { background: #14B8A6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0d9488; }
+    </style>
+    <style data-purpose="layout-tweaks">
+        .sticky-nav { top: 2rem; max-height: calc(100vh - 4rem); }
+        code { font-family: 'IBM Plex Mono', monospace; }
+    </style>
+</head>
+<body class="bg-paper text-slate-brand font-sans antialiased">
+<!-- BEGIN: MainHeader -->
+<header class="bg-midnight py-12 px-6 border-b-4 border-teal-brand">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
+        <div class="flex flex-col items-center md:items-start">
+            <img alt="BickSpec Logo" class="h-24 mb-6" data-purpose="main-logo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaEi264cravAmtf2xMJHAmc1ZZOXylP3Bzvqhb2xMrsjZFlVY4iw3RJgpMRzZig97PI0LQpNEzt1iNy-W80Zh6fQgifTwO6amklj-TSWsY_OlWImbRBXJvouheJkJEjboR2lGSnhG84ZXPXXzZ5q9K69yUayO7-_82HNepi7f-Oma9UzzlPQEXPvxI0p-UyC0yAsc8cC5Jol2Zqq7dXpOsY60OGIaWKJKl6mttmoGoOZpLTLYrYqz4uMVdSINkHex3TDRAoCAsZCw"/>
+            <p class="text-white text-xl font-light tracking-wide max-w-2xl text-center md:text-left">
+                A domain-specific specification language designed to formalize financial logic with clarity, consistency, and machine readability.
+            </p>
+            <div class="flex flex-wrap gap-3 mt-8">
+                <span class="px-3 py-1 bg-teal-brand/20 text-teal-brand border border-teal-brand/40 rounded text-xs font-mono">.bks</span>
+                <span class="px-3 py-1 bg-white/10 text-white/80 border border-white/20 rounded text-xs font-mono">ANTLR4</span>
+                <span class="px-3 py-1 bg-white/10 text-white/80 border border-white/20 rounded text-xs font-mono">Java 17+</span>
+                <span class="px-3 py-1 bg-white/10 text-white/80 border border-white/20 rounded text-xs font-mono">Electron</span>
+                <span class="px-3 py-1 bg-white/10 text-white/80 border border-white/20 rounded text-xs font-mono">VS Code</span>
+            </div>
+        </div>
+        <div class="hidden lg:block">
+            <img alt="BickSpec Icon" class="w-48 h-48 opacity-90" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdTUz9IdlbzPWck2FMEXV15JL4bZrkSuiq3K1pViCAmiKrmObGhwWAmA4gQGG4cTBXCRxip_VjOQZa9GpNFWPXnyBWfGQyvSZYY4gUDqeEP_KdiY7U6KLgpNgESLXDudQ0-hqpxBC9vjPAQ76Ybi9Z8RwfBb0HIYzYKopk71uF1Ok_1pMm41V6ESmzxrb7pzkLU9hN-JE0MFolrM7Exx6c6V2Sg8_j2w5Pm1jPGZsmt2nec9DDdALHTKqQeV6XZk8Z8XRu197Vezo"/>
+        </div>
+    </div>
+</header>
+<!-- END: MainHeader -->
+<main class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-12">
+    <!-- BEGIN: SidebarNavigation -->
+    <aside class="lg:col-span-3">
+        <nav class="sticky sticky-nav overflow-y-auto pr-4 space-y-2 text-sm">
+            <p class="font-bold text-midnight uppercase tracking-widest text-xs mb-4">Documentation</p>
+            <a class="block py-1 hover:text-teal-brand transition-colors" href="#overview">Ecosystem Overview</a>
+            <a class="block py-1 hover:text-teal-brand transition-colors" href="#lang-ref">Language Reference</a>
+            <a class="block py-1 hover:text-teal-brand transition-colors" href="#tokens">Lexer &amp; Tokens</a>
+            <a class="block py-1 hover:text-teal-brand transition-colors" href="#semantics">Semantic Model</a>
+            <a class="block py-1 hover:text-teal-brand transition-colors" href="#pipeline">Compiler Pipeline</a>
+            <a class="block py-1 hover:text-teal-brand transition-colors" href="#diagnostics">Diagnostics &amp; Errors</a>
+            <a class="block py-1 hover:text-teal-brand transition-colors" href="#examples">Examples Gallery</a>
+            <a class="block py-1 hover:text-teal-brand transition-colors" href="#studio">BickSpec Studio</a>
+            <a class="block py-1 hover:text-teal-brand transition-colors" href="#vscode">VS Code Extension</a>
+            <a class="block py-1 hover:text-teal-brand transition-colors" href="#setup">Unified Setup</a>
+            <a class="block py-1 hover:text-teal-brand transition-colors" href="#architecture">System Architecture</a>
+        </nav>
+    </aside>
+    <!-- END: SidebarNavigation -->
+    <!-- BEGIN: ContentArea -->
+    <div class="lg:col-span-9 space-y-24">
+        <!-- BEGIN: Section_Overview -->
+        <section data-purpose="documentation-section" id="overview">
+            <h2 class="text-3xl font-bold text-midnight mb-6">Ecosystem Overview</h2>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="p-6 bg-white border-l-4 border-teal-brand shadow-sm">
+                    <h3 class="font-bold text-midnight mb-2">bickspec-lang</h3>
+                    <p class="text-sm">The core compiler. Written in Java with ANTLR4. Handles parsing, semantic analysis, and code generation into executable artifacts.</p>
+                </div>
+                <div class="p-6 bg-white border-l-4 border-teal-brand shadow-sm">
+                    <h3 class="font-bold text-midnight mb-2">BickSpec Studio</h3>
+                    <p class="text-sm">A full Desktop IDE built on Electron and React. Features real-time validation, interactive terminal, and report generation.</p>
+                </div>
+                <div class="p-6 bg-white border-l-4 border-teal-brand shadow-sm">
+                    <h3 class="font-bold text-midnight mb-2">VS Code Extension</h3>
+                    <p class="text-sm">Lightweight developer tool providing syntax highlighting, snippets, and integrated language server capabilities.</p>
+                </div>
+            </div>
+        </section>
+        <!-- END: Section_Overview -->
+        <!-- BEGIN: Section_LanguageReference -->
+        <section class="space-y-8" id="lang-ref">
+            <h2 class="text-3xl font-bold text-midnight">Language Reference</h2>
+            <div class="space-y-6">
+                <div data-purpose="sub-section">
+                    <h3 class="text-xl font-semibold text-midnight mb-4">Program Structure</h3>
+                    <p class="mb-4">Every `.bks` file follows a strict modular structure to ensure maintainability.</p>
+                    <div class="bg-midnight rounded-lg p-4 relative">
+                        <button class="absolute top-4 right-4 text-xs bg-teal-brand text-white px-2 py-1 rounded opacity-50 hover:opacity-100 transition-opacity">Copy</button>
+                        <pre class="text-teal-brand text-sm overflow-x-auto"><code>IMPORT common_math;
+
+FX MyFinancialModule {
+  PROJECT MyProject {
+    money budget = 1000.00;
+
+    main {
+      IF (budget &gt; 500) {
+        PRINT("High liquidity");
+      }
+    }
+  }
+}</code></pre>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8 mt-8">
+                    <div>
+                        <h4 class="font-bold text-midnight mb-2">Money &amp; Units</h4>
+                        <p class="text-sm mb-2">BickSpec uses a 2-decimal precision fixed-point internal model for USD.</p>
+                        <ul class="list-disc list-inside text-sm space-y-1">
+                            <li>Internal precision: 0.01</li>
+                            <li>Time units: D, M, Y (Days, Months, Years)</li>
+                            <li>Rates: Percentage based (0.05 = 5%)</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-midnight mb-2">Control Flow</h4>
+                        <p class="text-sm mb-2">Standard logic gates with financial focus:</p>
+                        <code class="text-xs bg-slate-100 p-1 block rounded mb-1">IF (condition) { ... } ELSE { ... }</code>
+                        <code class="text-xs bg-slate-100 p-1 block rounded mb-1">WHILE (condition) { ... }</code>
+                        <code class="text-xs bg-slate-100 p-1 block rounded">REPEAT (times) { ... }</code>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- END: Section_LanguageReference -->
+        <!-- BEGIN: Section_Tokens -->
+        <section id="tokens">
+            <h2 class="text-3xl font-bold text-midnight mb-6">Lexer &amp; Tokens</h2>
+            <div class="overflow-hidden border border-slate-200 rounded-lg">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-midnight uppercase tracking-wider">Token</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-midnight uppercase tracking-wider">Pattern</th>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-midnight uppercase tracking-wider">Example</th>
+                    </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-slate-200 text-sm">
+                    <tr>
+                        <td class="px-6 py-4 font-mono text-teal-brand">MONEY_LIT</td>
+                        <td class="px-6 py-4 font-mono">[0-9]+ '.' [0-9]{2}</td>
+                        <td class="px-6 py-4">150.50</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 font-mono text-teal-brand">PERCENT_LIT</td>
+                        <td class="px-6 py-4 font-mono">[0-9]+ '%'</td>
+                        <td class="px-6 py-4">12%</td>
+                    </tr>
+                    <tr>
+                        <td class="px-6 py-4 font-mono text-teal-brand">ID</td>
+                        <td class="px-6 py-4 font-mono">[a-z][a-zA-Z0-9_]*</td>
+                        <td class="px-6 py-4">annual_return</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <!-- END: Section_Tokens -->
+        <!-- BEGIN: Section_Pipeline -->
+        <section id="pipeline">
+            <h2 class="text-3xl font-bold text-midnight mb-6">Compiler Pipeline</h2>
+            <div class="flex flex-wrap justify-center items-center gap-4 bg-midnight p-8 rounded-xl text-white">
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 rounded bg-teal-brand flex items-center justify-center font-bold">.BKS</div>
+                    <span class="text-[10px] mt-2">Source</span>
+                </div>
+                <div class="text-teal-brand">→</div>
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 rounded border border-white/20 flex items-center justify-center font-bold text-xs text-center">LEXER/ PARSER</div>
+                    <span class="text-[10px] mt-2">ANTLR4</span>
+                </div>
+                <div class="text-teal-brand">→</div>
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 rounded border border-white/20 flex items-center justify-center font-bold text-xs text-center">SEMANTIC</div>
+                    <span class="text-[10px] mt-2">Validation</span>
+                </div>
+                <div class="text-teal-brand">→</div>
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 rounded border border-white/20 flex items-center justify-center font-bold text-xs text-center">GEN</div>
+                    <span class="text-[10px] mt-2">Java Src</span>
+                </div>
+                <div class="text-teal-brand">→</div>
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 rounded bg-teal-brand flex items-center justify-center font-bold">JAR</div>
+                    <span class="text-[10px] mt-2">Execution</span>
+                </div>
+            </div>
+        </section>
+        <!-- END: Section_Pipeline -->
+        <!-- BEGIN: Section_Diagnostics -->
+        <section id="diagnostics">
+            <h2 class="text-3xl font-bold text-midnight mb-6">Diagnostics &amp; Error Codes</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="p-4 border border-red-100 bg-red-50/50 rounded-lg">
+                    <span class="text-[10px] font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded">SEM01</span>
+                    <h4 class="font-bold text-midnight mt-2">Undefined Symbol</h4>
+                    <p class="text-xs mt-1">Variable or function used without prior declaration in the current scope.</p>
+                </div>
+                <div class="p-4 border border-amber-100 bg-amber-50/50 rounded-lg">
+                    <span class="text-[10px] font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded">SEM03</span>
+                    <h4 class="font-bold text-midnight mt-2">Type Mismatch</h4>
+                    <p class="text-xs mt-1">Attempting to assign 'money' to a 'boolean' or 'string' variable.</p>
+                </div>
+                <div class="p-4 border border-blue-100 bg-blue-50/50 rounded-lg">
+                    <span class="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded">GEN01</span>
+                    <h4 class="font-bold text-midnight mt-2">Code Generation Failure</h4>
+                    <p class="text-xs mt-1">Internal error during Java target source creation. Check file permissions.</p>
+                </div>
+                <div class="p-4 border border-slate-200 bg-slate-100/50 rounded-lg">
+                    <span class="text-[10px] font-bold text-slate-600 bg-slate-200 px-2 py-0.5 rounded">EXEC04</span>
+                    <h4 class="font-bold text-midnight mt-2">Arithmetic Overflow</h4>
+                    <p class="text-xs mt-1">Financial calculation exceeded internal 64-bit precision limits.</p>
+                </div>
+            </div>
+        </section>
+        <!-- END: Section_Diagnostics -->
+        <!-- BEGIN: Section_Examples -->
+        <section id="examples">
+            <h2 class="text-3xl font-bold text-midnight mb-6">Examples Gallery</h2>
+            <div class="space-y-12">
+                <div data-purpose="example-block">
+                    <h3 class="text-lg font-bold text-midnight border-b-2 border-teal-brand inline-block mb-4">Investment Payback</h3>
+                    <div class="bg-midnight rounded-lg p-6 font-mono text-sm">
+<pre class="text-white"><span class="text-teal-brand">FX</span> InvestmentAnalysis {
+  <span class="text-teal-brand">PROJECT</span> ROI_Tool {
+    <span class="text-teal-brand">money</span> initial_cost = 50000.00;
+    <span class="text-teal-brand">money</span> annual_benefit = 12000.00;
+
+    <span class="text-teal-brand">main</span> {
+      <span class="text-teal-brand">money</span> result = PAYBACK(initial_cost, annual_benefit);
+      <span class="text-teal-brand">PRINT</span>(<span class="text-teal-brand">"Payback Period: "</span> + result + <span class="text-teal-brand">" Years"</span>);
+    }
+  }
+}</pre>
+                    </div>
+                </div>
+                <div data-purpose="example-block">
+                    <h3 class="text-lg font-bold text-midnight border-b-2 border-teal-brand inline-block mb-4">NPV Calculation</h3>
+                    <div class="bg-midnight rounded-lg p-6 font-mono text-sm">
+<pre class="text-white"><span class="text-teal-brand">FX</span> Valuation {
+  <span class="text-teal-brand">PROJECT</span> NPV_Calc {
+    <span class="text-teal-brand">rate</span> discount = 8%;
+    <span class="text-teal-brand">money</span> cfs = [100.00, 200.00, 300.00];
+
+    <span class="text-teal-brand">main</span> {
+      <span class="text-teal-brand">money</span> npv = NPV(discount, cfs);
+      <span class="text-teal-brand">PRINT</span>(<span class="text-teal-brand">"Net Present Value: "</span> + npv);
+    }
+  }
+}</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- END: Section_Examples -->
+        <!-- BEGIN: Section_Studio -->
+        <section id="studio">
+            <div class="bg-midnight text-white rounded-3xl p-12 overflow-hidden relative">
+                <div class="relative z-10">
+                    <h2 class="text-4xl font-bold mb-6">BickSpec Studio</h2>
+                    <p class="text-lg text-slate-300 max-w-2xl mb-8">
+                        A comprehensive desktop environment for financial engineers. Manage complex project workspaces with integrated visualization tools.
+                    </p>
+                    <ul class="grid md:grid-cols-2 gap-4 text-sm mb-8">
+                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-brand"></div> Live Semantic Validation</li>
+                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-brand"></div> Interactive Console / REPL</li>
+                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-brand"></div> PDF Report Generation</li>
+                        <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-teal-brand"></div> Tree Visualization (GraphViz)</li>
+                    </ul>
+                    <div class="flex gap-4">
+                        <button class="bg-teal-brand text-midnight font-bold px-8 py-3 rounded-lg hover:bg-white transition-all">Download for macOS</button>
+                        <button class="bg-white/10 text-white font-bold px-8 py-3 rounded-lg hover:bg-white/20 transition-all">Download for Windows</button>
+                    </div>
+                </div>
+                <div class="absolute -right-20 -bottom-20 opacity-10">
+                    <img alt="Studio Icon" class="w-96" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQkRVSoaMtEYzGpPZsUgag1C4-pCg2mo3uvo-g7h1ZbTNbfzilSkOR7tKqapzpQZDBE55YNRRX1M7DjS2IrBgqOSJfgKdlM_FG-0OjixlxwNGnlE-DAzny5KPdJWJE1Zrt5uFaubp5m9-r7oRPD6dZ87lA_uKfjl8yd-qJWn5D7Qnj-P0pnFtTTMHu8z4i0IbBa0YBf9n51VeeImQb7BehW7fB9sGDCoZ_dkewfRh09l3Pk_sQyKqeNJUgrjipUNguEz1qRNLEp88"/>
+                </div>
+            </div>
+        </section>
+        <!-- END: Section_Studio -->
+        <!-- BEGIN: Section_Architecture -->
+        <section id="architecture">
+            <h2 class="text-3xl font-bold text-midnight mb-6">System Architecture</h2>
+            <div class="p-8 border-2 border-dashed border-slate-200 rounded-2xl">
+                <div class="flex flex-col items-center gap-8">
+                    <!-- Studio Layer -->
+                    <div class="w-full max-w-lg p-4 bg-teal-brand/10 border border-teal-brand text-teal-brand font-bold text-center rounded">
+                        BickSpec Studio (Electron UI)
+                        <div class="text-[10px] font-normal text-slate-500 mt-1">Frontend: React | State: IPC-Bridge</div>
+                    </div>
+                    <div class="text-teal-brand">↕</div>
+                    <!-- Language Layer -->
+                    <div class="w-full max-w-xl p-6 bg-midnight text-white rounded shadow-xl relative">
+                        <div class="absolute -top-3 left-4 bg-teal-brand text-midnight text-[10px] px-2 py-0.5 font-bold uppercase">Core Compiler</div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-2 border border-white/20 text-xs text-center">ANTLR4 Engine</div>
+                            <div class="p-2 border border-white/20 text-xs text-center">Semantic Analyser</div>
+                            <div class="p-2 border border-white/20 text-xs text-center">Java Transpiler</div>
+                            <div class="p-2 border border-white/20 text-xs text-center">Artifact Generator</div>
+                        </div>
+                    </div>
+                    <div class="text-teal-brand">↓</div>
+                    <!-- OS Layer -->
+                    <div class="w-full max-w-lg p-4 bg-slate-100 border border-slate-300 text-slate-600 font-bold text-center rounded">
+                        File System / JVM / External Libraries
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- END: Section_Architecture -->
+    </div>
+    <!-- END: ContentArea -->
+</main>
+<!-- BEGIN: Footer -->
+<footer class="bg-midnight py-20 mt-24 border-t-8 border-teal-brand">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-12">
+        <div class="flex flex-col items-center md:items-start">
+            <img alt="BickSpec Dark Logo" class="h-12 mb-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0BmgUCgi_7LUtf-ZNFtjQgKuuU8wAXgrukC6as1EA4Yu6mRmna_8QkjWeUBqzERN3SOCbqayao_LMc668nULFGJbaCLIqCr9jjI_Uehzsx-l6ma4VwM56qj9VFP5SMDTa0dqr3ZVJk5_0LSIEGfhlwLdVKUG19DgGwz1I3FB6h39l1ND9l80AAJIlu8-Y7QRuLZbL1u627fOJHLUF36ok3BbRRTxvgoNkGqlKFkgrnHJ9rUKGD21tgJwiFffyeT0NhWIMki3Da0Y"/>
+            <p class="text-slate-400 text-sm">© 2024 BickSpec Language Foundation. All rights reserved.</p>
+        </div>
+        <div class="flex flex-col items-center md:items-end">
+            <div class="flex gap-8 mb-4">
+                <a class="text-white hover:text-teal-brand" href="#">GitHub</a>
+                <a class="text-white hover:text-teal-brand" href="#">Discord</a>
+                <a class="text-white hover:text-teal-brand" href="#">NPM</a>
+            </div>
+            <p class="text-teal-brand font-bold tracking-tighter italic">BUILT FOR FINANCE.</p>
+        </div>
+    </div>
+</footer>
+<!-- END: Footer -->
+<!-- BEGIN: Logic_Scripts -->
+<script data-purpose="copy-functionality">
+    // Simplified placeholder for interactive documentation logic
+    document.querySelectorAll('button').forEach(btn => {
+      if(btn.innerText === 'Copy') {
+        btn.addEventListener('click', () => {
+          const code = btn.nextElementSibling.innerText;
+          navigator.clipboard.writeText(code);
+          const original = btn.innerText;
+          btn.innerText = 'Copied!';
+          btn.classList.add('bg-green-600');
+          setTimeout(() => {
+            btn.innerText = original;
+            btn.classList.remove('bg-green-600');
+          }, 2000);
+        });
+      }
+    });
+</script>
+<!-- END: Logic_Scripts -->
+</body></html>

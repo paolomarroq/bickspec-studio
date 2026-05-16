@@ -48,6 +48,12 @@ const bridge: StudioBridge = {
       ipcRenderer.invoke("backend:get-artifact-preview-data", artifactPath) as ReturnType<StudioBridge["backend"]["getArtifactPreviewData"]>,
     getCompilerConsoleOutput: () =>
       ipcRenderer.invoke("backend:get-compiler-console-output") as ReturnType<StudioBridge["backend"]["getCompilerConsoleOutput"]>,
+    getInteractiveSessionState: () =>
+      ipcRenderer.invoke("backend:get-interactive-session-state") as ReturnType<StudioBridge["backend"]["getInteractiveSessionState"]>,
+    sendInteractiveInput: (input) =>
+      ipcRenderer.invoke("backend:send-interactive-input", input) as ReturnType<StudioBridge["backend"]["sendInteractiveInput"]>,
+    resetInteractiveSession: () =>
+      ipcRenderer.invoke("backend:reset-interactive-session") as ReturnType<StudioBridge["backend"]["resetInteractiveSession"]>,
     clearLastCompilerSession: () =>
       ipcRenderer.invoke("backend:clear-last-compiler-session") as ReturnType<StudioBridge["backend"]["clearLastCompilerSession"]>,
     getStudioWorkspaceState: () =>
@@ -73,7 +79,42 @@ const bridge: StudioBridge = {
     openOutputFolder: (folderPath) =>
       ipcRenderer.invoke("backend:open-output-folder", folderPath) as ReturnType<StudioBridge["backend"]["openOutputFolder"]>,
     exportArtifact: (artifactPath) =>
-      ipcRenderer.invoke("backend:export-artifact", artifactPath) as ReturnType<StudioBridge["backend"]["exportArtifact"]>
+      ipcRenderer.invoke("backend:export-artifact", artifactPath) as ReturnType<StudioBridge["backend"]["exportArtifact"]>,
+    exportReport: (report, format) =>
+      ipcRenderer.invoke("backend:export-report", report, format) as ReturnType<StudioBridge["backend"]["exportReport"]>,
+    getSetupState: () => ipcRenderer.invoke("setup:get-state") as ReturnType<StudioBridge["backend"]["getSetupState"]>,
+    saveSetupState: (patch) => ipcRenderer.invoke("setup:save-state", patch) as ReturnType<StudioBridge["backend"]["saveSetupState"]>,
+    resetSetup: () => ipcRenderer.invoke("setup:reset") as ReturnType<StudioBridge["backend"]["resetSetup"]>,
+    skipSetup: () => ipcRenderer.invoke("setup:skip") as ReturnType<StudioBridge["backend"]["skipSetup"]>,
+    finishSetup: () => ipcRenderer.invoke("setup:finish") as ReturnType<StudioBridge["backend"]["finishSetup"]>,
+    validateJava: (javaPath) => ipcRenderer.invoke("setup:validate-java", javaPath) as ReturnType<StudioBridge["backend"]["validateJava"]>,
+    selectJava: () => ipcRenderer.invoke("setup:select-java") as ReturnType<StudioBridge["backend"]["selectJava"]>,
+    selectCompilerRepo: () => ipcRenderer.invoke("setup:select-compiler-repo") as ReturnType<StudioBridge["backend"]["selectCompilerRepo"]>,
+    validateCompilerRepo: (repositoryPath) =>
+      ipcRenderer.invoke("setup:validate-compiler-repo", repositoryPath) as ReturnType<StudioBridge["backend"]["validateCompilerRepo"]>,
+    validateGit: () => ipcRenderer.invoke("setup:validate-git") as ReturnType<StudioBridge["backend"]["validateGit"]>,
+    getConfiguredRepoUrl: () =>
+      ipcRenderer.invoke("setup:get-configured-repo-url") as ReturnType<StudioBridge["backend"]["getConfiguredRepoUrl"]>,
+    cloneCompilerRepo: () =>
+      ipcRenderer.invoke("setup:clone-compiler-repo") as ReturnType<StudioBridge["backend"]["cloneCompilerRepo"]>,
+    updateCompilerRepo: () =>
+      ipcRenderer.invoke("setup:update-compiler-repo") as ReturnType<StudioBridge["backend"]["updateCompilerRepo"]>,
+    selectCompilerJar: () => ipcRenderer.invoke("setup:select-compiler-jar") as ReturnType<StudioBridge["backend"]["selectCompilerJar"]>,
+    validateCompilerJar: (jarPath) =>
+      ipcRenderer.invoke("setup:validate-compiler-jar", jarPath) as ReturnType<StudioBridge["backend"]["validateCompilerJar"]>,
+    buildCompilerFromRepo: () =>
+      ipcRenderer.invoke("setup:build-compiler-from-repo") as ReturnType<StudioBridge["backend"]["buildCompilerFromRepo"]>,
+    selectWorkspace: () => ipcRenderer.invoke("setup:select-workspace") as ReturnType<StudioBridge["backend"]["selectWorkspace"]>,
+    validateWorkspace: (workspacePath) =>
+      ipcRenderer.invoke("setup:validate-workspace", workspacePath) as ReturnType<StudioBridge["backend"]["validateWorkspace"]>,
+    runSetupCompilationTest: () =>
+      ipcRenderer.invoke("setup:run-compilation-test") as ReturnType<StudioBridge["backend"]["runSetupCompilationTest"]>,
+    runSetupInteractiveTest: () =>
+      ipcRenderer.invoke("setup:run-interactive-test") as ReturnType<StudioBridge["backend"]["runSetupInteractiveTest"]>,
+    validateSetupArtifacts: () =>
+      ipcRenderer.invoke("setup:validate-artifacts") as ReturnType<StudioBridge["backend"]["validateSetupArtifacts"]>,
+    testSetupReportExport: () =>
+      ipcRenderer.invoke("setup:test-report-export") as ReturnType<StudioBridge["backend"]["testSetupReportExport"]>
   }
 };
 
