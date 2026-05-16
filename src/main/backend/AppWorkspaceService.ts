@@ -272,7 +272,7 @@ export class AppWorkspaceService {
   }
 
   async createBickSpecFileAt(filePath: string): Promise<OpenFileResult> {
-    const template = "spec NewSpecification {\n  input assets: Array<Asset>;\n\n  report Summary {\n    export pdf, csv, excel;\n  }\n}\n";
+    const template = 'PROJECT "New Specification" {\n  DISPLAY "Ready"\n}\n';
     await this.fileSystem.writeText(filePath, template);
     return this.openWorkspaceFile(filePath);
   }

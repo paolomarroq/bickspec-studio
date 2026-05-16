@@ -21,7 +21,7 @@ export async function verifyWorkspaceFlows(backend: BackendServices): Promise<vo
 
     const created = await workspaceService.createBickSpecFileAt(bickspecPath);
     assertEqual(created.file.path, bickspecPath, "created file path");
-    assertIncludes(await readFile(bickspecPath, "utf8"), "spec NewSpecification", "new file starter content");
+    assertIncludes(await readFile(bickspecPath, "utf8"), 'PROJECT "New Specification"', "new file starter content");
 
     const saved = await backend.appWorkspace.saveWorkspaceFile({
       filePath: bickspecPath,
@@ -31,7 +31,7 @@ export async function verifyWorkspaceFlows(backend: BackendServices): Promise<vo
     assertIncludes(await readFile(bickspecPath, "utf8"), "verified save", "saved file content");
 
     await mkdir(nestedPath, { recursive: true });
-    await writeFile(openedPath, "spec OpenedFromDisk {}\n", "utf8");
+    await writeFile(openedPath, 'PROJECT "OpenedFromDisk" {}\n', "utf8");
     await writeFile(notesPath, "# Workspace note\n", "utf8");
 
     const workspace = await backend.appWorkspace.openWorkspaceFolder(workspacePath);
