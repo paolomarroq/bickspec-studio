@@ -1,41 +1,52 @@
-name: Desktop Build
+name: Build Installers
 
 on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
   workflow_dispatch:
 
 jobs:
   build:
-    name: Build and package scaffold
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            script: npm run dist:win
+            artifact: bickspec-studio-windows-installers
+          - os: macos-latest
+            script: npm run dist:mac
+            artifact: bickspec-studio-macos-installers
+
+    runs-on: ${{ matrix.os }}
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: false
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
 
-      - name: Install
+      - name: Install dependencies
         run: npm ci
 
-      - name: Typecheck and build
-        run: npm run build
+      - name: Run typecheck
+        run: npm run typecheck
 
-      - name: Package directory
-        run: npm run package:dir
+      - name: Build installers
+        run: ${{ matrix.script }} -- --publish never
 
-      - name: Upload packaged app directory
+      - name: Upload installers
         uses: actions/upload-artifact@v4
         with:
-          name: bickspec-studio-windows-dir
-          path: release/
+          name: ${{ matrix.artifact }}
+          path: |
+            release/*.exe
+            release/*.dmg
+            release/*.zip
+            release/*.blockmap
+            release/latest*.yml
           if-no-files-found: error
