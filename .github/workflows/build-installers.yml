@@ -19,10 +19,20 @@ jobs:
               release/*.blockmap
               release/latest*.yml
 
+          - os: macos-15-intel
+            name: macos-intel-x64
+            script: npm run build && npx electron-builder --mac dmg --x64 --publish never
+            artifact: bickspec-studio-macos-intel-x64-installer
+            paths: |
+              release/*.dmg
+              release/*.zip
+              release/*.blockmap
+              release/latest*.yml
+
           - os: macos-latest
-            name: macos-universal
-            script: npm run build && npx electron-builder --mac dmg --universal --publish never
-            artifact: bickspec-studio-macos-universal-installer
+            name: macos-apple-silicon-arm64
+            script: npm run build && npx electron-builder --mac dmg --arm64 --publish never
+            artifact: bickspec-studio-macos-apple-silicon-arm64-installer
             paths: |
               release/*.dmg
               release/*.zip
