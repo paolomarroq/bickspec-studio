@@ -124,12 +124,18 @@ interface SourceHints {
 }
 
 function parseOutputMetrics(programOutput: string, sourceHints: SourceHints): FinancialMetric[] {
-  const lines = extractPlainProgramOutput(programOutput);
+  const lines = extractPlainProgramOutput(programOutput).filter((line) => !isDecorativeSectionLine(line));
   const metrics: FinancialMetric[] = [];
   for (let index = 0; index < lines.length; index += 1) {
     const label = normalizeLabel(lines[index]);
     const value = parseNumber(lines[index + 1]);
-    if (!label || value === undefined) continue;
+    if (!label) continue;
+    const inlineMetric = parseInlineMetric(label, sourceHints, metrics.length);
+    if (inlineMetric) {
+      metrics.push(inlineMetric);
+      continue;
+    }
+    if (value === undefined || isDecorativeSectionLine(lines[index + 1])) continue;
     const displayedVariable = sourceHints.displayVariables[metrics.length];
     const currency = inferCurrency(label) ?? (displayedVariable ? sourceHints.variableCurrencies.get(displayedVariable) : undefined);
     const metric = metricFromText(label, value, currency);
@@ -166,7 +172,7 @@ function mergeMetrics(sourceMetrics: FinancialMetric[], outputMetrics: Financial
 }
 
 function parseDecisions(programOutput: string): string[] {
-  return extractPlainProgramOutput(programOutput).filter((line) => /\bdecision\b/i.test(line));
+  return extractPlainProgramOutput(programOutput).filter((line) => /\bdecision\b/i.test(line) && !isDecorativeSectionLine(line));
 }
 
 function detectBuiltIns(sourceText: string, metrics: FinancialMetric[]): Array<"NPV" | "PAYBACK"> {
@@ -293,6 +299,26 @@ function parseNumber(raw: string | undefined): number | undefined {
   if (!match) return undefined;
   const value = Number(match[0].replace(/,/g, ""));
   return Number.isFinite(value) ? value : undefined;
+}
+
+function parseInlineMetric(line: string, sourceHints: SourceHints, metricIndex: number): FinancialMetric | undefined {
+  const match = line.match(/^(.+?)\s*:\s*([+-]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?|[+-]?\.\d+)\s*$/);
+  if (!match) return undefined;
+  const displayedVariable = sourceHints.displayVariables[metricIndex];
+  const currency = inferCurrency(match[1]) ?? (displayedVariable ? sourceHints.variableCurrencies.get(displayedVariable) : undefined);
+  return metricFromText(match[1], Number(match[2].replace(/,/g, "")), currency);
+}
+
+export function isDecorativeSectionLine(line: string | undefined): boolean {
+  if (!line) return false;
+  const trimmed = line.trim();
+  if (/\d/.test(trimmed)) return false;
+  const match = trimmed.match(/^([=\-_*~#]{3,})\s*([A-ZÁÉÍÓÚÜÑ][A-ZÁÉÍÓÚÜÑ\s/&]{1,48}?)\s*([=\-_*~#]{3,})$/u);
+  if (!match) return false;
+  const title = match[2].trim();
+  if (!title || title.length > 48) return false;
+  const separatorCharacters = `${match[1]}${match[3]}`.length;
+  return separatorCharacters >= Math.ceil(trimmed.length * 0.35);
 }
 
 function parseLiteralNumber(raw: string | undefined): number | undefined {
