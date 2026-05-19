@@ -33,17 +33,6 @@ export function WelcomePage() {
       </main>
 
       <aside style={{ padding: 18, background: "var(--color-surface)", borderLeft: "1px solid var(--color-outline-variant)", overflow: "auto" }}>
-        <Panel title="Code Preview">
-          <pre className="code-editor" style={{ minHeight: 240 }}>
-            <code>
-              <span className="code-line" data-line="1"><span className="kw">spec</span> PortfolioAnalysis {"{"}</span>
-              <span className="code-line" data-line="2">  <span className="kw">input</span> assets: Array&lt;Asset&gt;;</span>
-              <span className="code-line" data-line="3">  <span className="kw">calculate</span> expected_return = assets.sum(a =&gt; a.weight * a.cagr);</span>
-              <span className="code-line" data-line="4">  <span className="kw">export</span> pdf, csv, excel;</span>
-              <span className="code-line" data-line="5">{"}"}</span>
-            </code>
-          </pre>
-        </Panel>
         <Panel title="Recent Projects" action={<History size={16} />}>
           {recentEntries.length === 0 ? (
             <div style={{ padding: 14, color: "var(--color-text-muted)" }}>No recent BickSpec files or folders yet.</div>

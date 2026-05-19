@@ -8,7 +8,7 @@ export function DiagnosticsList({ diagnostics }: { diagnostics: CompilerDiagnost
   }
 
   return (
-    <div>
+    <div className="session-output-scroll">
       {diagnostics.map((diagnostic) => (
         <div className={`diagnostic-item diagnostic-${diagnostic.category.toLowerCase()}`} key={`${diagnostic.code}-${diagnostic.message}`}>
           <div className="diagnostic-kind">

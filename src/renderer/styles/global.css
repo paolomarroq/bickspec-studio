@@ -512,13 +512,16 @@ pre,
 .session-output-content {
   min-height: 0;
   flex: 1;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--color-surface-lowest);
 }
 
 .session-output-pre {
+  flex: 1;
   margin: 0;
-  min-height: 100%;
+  min-height: 0;
   padding: 14px;
   overflow: auto;
   color: var(--color-text);
@@ -528,20 +531,30 @@ pre,
   white-space: pre-wrap;
 }
 
+.session-output-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
 .session-output-empty {
   padding: 16px;
   color: var(--color-text-muted);
 }
 
 .interactive-pane {
-  min-height: 100%;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+  height: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .interactive-transcript {
+  flex: 1;
   min-height: 0;
-  overflow: auto;
+  overflow-y: auto;
 }
 
 .interactive-messages {
@@ -582,6 +595,7 @@ pre,
 }
 
 .interactive-input-row {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 8px;
