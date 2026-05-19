@@ -11,7 +11,7 @@ jobs:
         include:
           - os: windows-latest
             name: windows
-            script: npm run dist:win -- --publish never
+            script: npm run dist:win -- --publish=never
             artifact: bickspec-studio-windows-installers
             paths: |
               release/*.exe
@@ -21,7 +21,7 @@ jobs:
 
           - os: macos-15-intel
             name: macos-intel-x64
-            script: npm run build && npx electron-builder --mac dmg --x64 --publish never
+            script: npm run prepare:compiler && npm run build && npx electron-builder --mac dmg --x64 --publish never
             artifact: bickspec-studio-macos-intel-x64-installer
             paths: |
               release/*.dmg
@@ -31,7 +31,7 @@ jobs:
 
           - os: macos-latest
             name: macos-apple-silicon-arm64
-            script: npm run build && npx electron-builder --mac dmg --arm64 --publish never
+            script: npm run prepare:compiler && npm run build && npx electron-builder --mac dmg --arm64 --publish never
             artifact: bickspec-studio-macos-apple-silicon-arm64-installer
             paths: |
               release/*.dmg

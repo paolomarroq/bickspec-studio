@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { BarChart3, Download, Eye, FileSpreadsheet, FileText, RefreshCw, ScrollText, PackageCheck, TerminalSquare, TriangleAlert } from "lucide-react";
-import type { BickSpecReportData, FinancialCashFlow, FinancialReportModel, ReportExportFormat } from "@shared/contracts/reports";
+import type { BickSpecReportData, FinancialCashFlow, FinancialMetric, FinancialReportModel, ReportExportFormat } from "@shared/contracts/reports";
 import { diagnosticLabels } from "@shared/diagnostics/diagnosticTypes";
 import { Panel } from "../components/ui/Panel";
 import { StatusBadge } from "../components/ui/StatusBadge";
@@ -8,6 +8,7 @@ import { ToolbarButton } from "../components/ui/ToolbarButton";
 import { useStudioSession } from "../state/StudioSessionProvider";
 import { cleanInteractiveEntries, extractPlainProgramOutput } from "@shared/reports/runtimeOutput";
 import { extractFinancialReport } from "@shared/reports/financialReportExtractor";
+import { currencyLabel, formatFinancialValue, formatMetricValue } from "@shared/reports/currencyFormat";
 
 const sections = [
   { id: "summary", label: "Summary", icon: FileText },
@@ -171,43 +172,42 @@ function SummarySection({ report }: { report: BickSpecReportData }) {
 function FinanceSection({ report }: { report: BickSpecReportData }) {
   const financial = report.financialReport;
   if (!financial?.detected) return <section className="report-section"><h2>Financial Analysis</h2><FinancialEmptyState financial={financial} /></section>;
+  const cashFlowGroups = groupCashFlows(financial.cashFlows);
+  const sensitivityGroups = groupSensitivityMetrics(financial.metrics);
   return (
     <section className="report-section">
       <h2>Financial Analysis</h2>
       <FinancialSummaryCards financial={financial} />
       <BuiltInAnalysis financial={financial} />
-      {financial.cashFlows.length ? (
-        <>
-          <h3>Cash Flow Table</h3>
+      {cashFlowGroups.map(({ key, label, flows }) => (
+        <div key={key}>
+          <h3>Cash Flow {label}</h3>
           <table className="content-table"><thead><tr><th>Period</th><th>Cash Flow</th><th>Cumulative Cash Flow</th></tr></thead><tbody>
-            {financial.cashFlows.map((flow) => <tr key={flow.period}><td>{flow.period}</td><td>{formatCurrency(flow.value)}</td><td>{formatCurrency(flow.cumulative)}</td></tr>)}
+            {flows.map((flow) => <tr key={`${key}-${flow.period}`}><td>{flow.period}</td><td>{formatFinancialValue(flow.value, flow.currency, flow.currency ? "money" : "number")}</td><td>{formatFinancialValue(flow.cumulative, flow.currency, flow.currency ? "money" : "number")}</td></tr>)}
           </tbody></table>
-          <h3>Cash Flow Chart</h3>
-          <CashFlowChart cashFlows={financial.cashFlows} />
-          <h3>Cumulative Payback</h3>
-          <CumulativeChart cashFlows={financial.cashFlows} payback={financial.payback} />
-        </>
-      ) : null}
-      {hasSensitivity(financial) ? (
-        <>
-          <h3>NPV Sensitivity</h3>
-          <NpvSensitivityChart financial={financial} />
-        </>
-      ) : null}
+          <h3>Cash Flow Chart {label}</h3>
+          <CashFlowChart cashFlows={flows} />
+          <h3>Cumulative Payback {label}</h3>
+          <CumulativeChart cashFlows={flows} payback={paybackForCurrency(financial.metrics, flows[0]?.currency) ?? financial.payback} />
+        </div>
+      ))}
+      {sensitivityGroups.map(({ key, label, rows }) => (
+        <div key={key}>
+          <h3>NPV Sensitivity {label}</h3>
+          <NpvSensitivityChart rows={rows} />
+        </div>
+      ))}
       {financial.diagnostics.length ? <ul className="report-financial-diagnostics">{financial.diagnostics.map((diagnostic) => <li key={diagnostic}>{diagnostic}</li>)}</ul> : null}
     </section>
   );
 }
 
 function FinancialSummaryCards({ financial }: { financial: FinancialReportModel }) {
-  const cards = [
-    financial.npv.base !== undefined ? ["NPV Base", formatCurrency(financial.npv.base)] : undefined,
-    financial.payback !== undefined ? ["Payback Years", formatNumber(financial.payback)] : undefined,
-    financial.roi !== undefined ? ["ROI", formatPercentLike(financial.roi)] : undefined,
-    financial.totalReturn !== undefined ? ["Total Return", formatCurrency(financial.totalReturn)] : undefined,
-    financial.investment !== undefined ? ["Investment", formatCurrency(financial.investment)] : undefined,
-    financial.decisions[0] ? ["Decision", financial.decisions[0].replace(/^.*Decision:\s*/i, "")] : undefined
-  ].filter(Boolean) as string[][];
+  const preferredKeys = new Set(["NPV_BASE", "NPV_LOW", "NPV_HIGH", "PAYBACK_YEARS", "ROI", "TOTAL_RETURN", "INVESTMENT", "PROFITABILITY_INDEX"]);
+  const cards = financial.metrics
+    .filter((metric) => preferredKeys.has(baseMetricKey(metric.key)))
+    .map((metric) => [metric.label, formatMetricValue(metric)]);
+  if (financial.decisions[0]) cards.push(["Decision", financial.decisions[0].replace(/^.*Decision:\s*/i, "")]);
   if (!cards.length) return null;
   return <div className="report-financial-cards">{cards.map(([label, value]) => <article className="report-financial-card" key={label}><span className="label-caps">{label}</span><strong>{value}</strong></article>)}</div>;
 }
@@ -260,26 +260,8 @@ function CumulativeChart({ cashFlows, payback }: { cashFlows: FinancialCashFlow[
   </svg>;
 }
 
-function NpvSensitivityChart({ financial }: { financial: FinancialReportModel }) {
-  const rows = [
-    { label: rateLabel(financial, "RATE_LOW", "Low Rate"), value: financial.npv.low ?? 0 },
-    { label: rateLabel(financial, "RATE", "Base Rate"), value: financial.npv.base ?? 0 },
-    { label: rateLabel(financial, "RATE_HIGH", "High Rate"), value: financial.npv.high ?? 0 }
-  ];
-  return <CashFlowChart cashFlows={rows.map((row, index) => ({ period: index, label: row.label, value: row.value, cumulative: row.value }))} />;
-}
-
-function hasSensitivity(financial: FinancialReportModel): boolean {
-  return financial.npv.low !== undefined && financial.npv.base !== undefined && financial.npv.high !== undefined;
-}
-
-function rateLabel(financial: FinancialReportModel, key: string, fallback: string): string {
-  const rate = financial.rates.find((metric) => metric.key === key);
-  return rate ? `${fallback} (${formatPercentLike(rate.value)})` : fallback;
-}
-
-function formatCurrency(value: number): string {
-  return value.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
+function NpvSensitivityChart({ rows }: { rows: Array<{ label: string; value: number; currency?: FinancialMetric["currency"] }> }) {
+  return <CashFlowChart cashFlows={rows.map((row, index) => ({ period: index, label: row.label, value: row.value, cumulative: row.value, currency: row.currency }))} />;
 }
 
 function formatNumber(value: number): string {
@@ -288,6 +270,54 @@ function formatNumber(value: number): string {
 
 function formatPercentLike(value: number): string {
   return `${(value * 100).toLocaleString("en-US", { maximumFractionDigits: 2 })}%`;
+}
+
+function groupCashFlows(cashFlows: FinancialCashFlow[]): Array<{ key: string; label: string; flows: FinancialCashFlow[] }> {
+  const groups = new Map<string, FinancialCashFlow[]>();
+  cashFlows.forEach((flow) => {
+    const key = flow.currency ?? "number";
+    groups.set(key, [...(groups.get(key) ?? []), flow]);
+  });
+  return Array.from(groups.entries()).map(([key, flows]) => ({ key, label: currencyLabel(flows[0]?.currency), flows }));
+}
+
+function groupSensitivityMetrics(metrics: FinancialMetric[]): Array<{ key: string; label: string; rows: Array<{ label: string; value: number; currency?: FinancialMetric["currency"] }> }> {
+  const npvMetrics = metrics.filter((metric) => ["NPV_LOW", "NPV_BASE", "NPV_HIGH"].includes(baseMetricKey(metric.key)));
+  const currencies = Array.from(new Set(npvMetrics.map((metric) => metric.currency ?? "number")));
+  return currencies.map((currencyKey) => {
+    const currency = currencyKey === "number" ? undefined : currencyKey as FinancialMetric["currency"];
+    const matching = npvMetrics.filter((metric) => (metric.currency ?? "number") === currencyKey);
+    const low = matching.find((metric) => baseMetricKey(metric.key) === "NPV_LOW");
+    const base = matching.find((metric) => baseMetricKey(metric.key) === "NPV_BASE");
+    const high = matching.find((metric) => baseMetricKey(metric.key) === "NPV_HIGH");
+    if (!low || !base || !high) return undefined;
+    return {
+      key: currencyKey,
+      label: currencyLabel(currency),
+      rows: [
+        { label: rateLabel(metrics, "RATE_LOW", "Low Rate"), value: low.value, currency },
+        { label: rateLabel(metrics, "RATE", "Base Rate"), value: base.value, currency },
+        { label: rateLabel(metrics, "RATE_HIGH", "High Rate"), value: high.value, currency }
+      ]
+    };
+  }).filter(Boolean) as Array<{ key: string; label: string; rows: Array<{ label: string; value: number; currency?: FinancialMetric["currency"] }> }>;
+}
+
+function rateLabel(metrics: FinancialMetric[], key: string, fallback: string): string {
+  const rate = metrics.find((metric) => metric.key === key);
+  return rate ? `${fallback} (${formatPercentLike(rate.value)})` : fallback;
+}
+
+function paybackForCurrency(metrics: FinancialMetric[], currency?: FinancialMetric["currency"]): number | undefined {
+  return metrics.find((metric) => baseMetricKey(metric.key) === "PAYBACK_YEARS" && metric.currency === currency)?.value;
+}
+
+function baseMetricKey(key: string): string {
+  return key
+    .replace(/_(USD|GTQ|EUR)(?=_|$)/g, "")
+    .replace(/^(USD|GTQ|EUR)_/g, "")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "");
 }
 
 function OutputSection({ report }: { report: BickSpecReportData }) {

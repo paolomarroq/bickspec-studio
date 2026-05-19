@@ -22,11 +22,15 @@ export interface BickSpecReportData {
 }
 
 export type ReportExportFormat = "pdf" | "csv" | "excel";
+export type FinancialCurrency = "USD" | "GTQ" | "EUR";
+export type FinancialMetricKind = "money" | "ratio" | "years" | "rate" | "number";
 
 export interface FinancialMetric {
   key: string;
   label: string;
   value: number;
+  currency?: FinancialCurrency;
+  kind?: FinancialMetricKind;
 }
 
 export interface FinancialCashFlow {
@@ -34,6 +38,7 @@ export interface FinancialCashFlow {
   label: string;
   value: number;
   cumulative: number;
+  currency?: FinancialCurrency;
 }
 
 export interface FinancialReportModel {
@@ -53,5 +58,6 @@ export interface FinancialReportModel {
   decisions: string[];
   builtIns: Array<"NPV" | "PAYBACK">;
   metrics: FinancialMetric[];
+  currencies: FinancialCurrency[];
   diagnostics: string[];
 }

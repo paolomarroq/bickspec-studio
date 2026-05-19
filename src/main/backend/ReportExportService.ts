@@ -4,6 +4,7 @@ import { writeFile } from "node:fs/promises";
 import * as XLSX from "xlsx";
 import type { BickSpecReportData, FinancialReportModel, ReportExportFormat } from "@shared/contracts/reports";
 import { extractFinancialReport } from "@shared/reports/financialReportExtractor";
+import { formatFinancialValue, formatMetricValue } from "@shared/reports/currencyFormat";
 import { cleanInteractiveEntries, extractPlainProgramOutput } from "@shared/reports/runtimeOutput";
 
 export class ReportExportService {
@@ -97,30 +98,25 @@ export class ReportExportService {
     }))), "Artifacts");
     if (financial.detected) {
       XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
-        ["Metric", "Value"],
-        ["Investment", financial.investment ?? ""],
-        ["NPV Base", financial.npv.base ?? ""],
-        ["NPV Low", financial.npv.low ?? ""],
-        ["NPV High", financial.npv.high ?? ""],
-        ["Payback Years", financial.payback ?? ""],
-        ["ROI", financial.roi ?? ""],
-        ["Total Return", financial.totalReturn ?? ""],
-        ["Profitability Index", financial.profitabilityIndex ?? ""],
-        ...financial.decisions.map((decision) => ["Decision", decision])
+        ["Metric", "Currency", "Value", "Formatted Value"],
+        ...this.summaryMetrics(financial).map((metric) => [metric.label, metric.currency ?? "", metric.value, formatMetricValue(metric)]),
+        ...financial.decisions.map((decision) => ["Decision", "", "", decision])
       ]), "Financial Summary");
       if (financial.cashFlows.length) {
         XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(financial.cashFlows.map((flow) => ({
           period: flow.period,
+          currency: flow.currency ?? "",
           cashFlow: flow.value,
-          cumulativeCashFlow: flow.cumulative
+          formattedCashFlow: formatFinancialValue(flow.value, flow.currency, flow.currency ? "money" : "number"),
+          cumulativeCashFlow: flow.cumulative,
+          formattedCumulativeCashFlow: formatFinancialValue(flow.cumulative, flow.currency, flow.currency ? "money" : "number")
         }))), "Cash Flows");
       }
-      if (financial.npv.low !== undefined || financial.npv.base !== undefined || financial.npv.high !== undefined) {
+      const sensitivityGroups = this.sensitivityGroups(financial);
+      if (sensitivityGroups.length) {
         XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
-          ["Scenario", "Rate", "NPV"],
-          ["Low Rate", financial.rates.find((rate) => rate.key === "RATE_LOW")?.value ?? "", financial.npv.low ?? ""],
-          ["Base Rate", financial.rates.find((rate) => rate.key === "RATE")?.value ?? "", financial.npv.base ?? ""],
-          ["High Rate", financial.rates.find((rate) => rate.key === "RATE_HIGH")?.value ?? "", financial.npv.high ?? ""]
+          ["Currency", "Scenario", "Rate", "NPV", "Formatted NPV"],
+          ...sensitivityGroups.flatMap((group) => group.rows.map((row) => [group.currency ?? "", row.label, row.rate ?? "", row.value, formatFinancialValue(row.value, group.currency, group.currency ? "money" : "number")]))
         ]), "NPV Analysis");
       }
     }
@@ -180,33 +176,52 @@ export class ReportExportService {
 
   private financialCsvRows(financial: FinancialReportModel): string[][] {
     return [
-      ["Financial Summary", "Investment", "", String(financial.investment ?? "")],
-      ["Financial Summary", "NPV Base", "", String(financial.npv.base ?? "")],
-      ["Financial Summary", "NPV Low", "", String(financial.npv.low ?? "")],
-      ["Financial Summary", "NPV High", "", String(financial.npv.high ?? "")],
-      ["Financial Summary", "Payback Years", "", String(financial.payback ?? "")],
-      ["Financial Summary", "ROI", "", String(financial.roi ?? "")],
-      ["Financial Summary", "Total Return", "", String(financial.totalReturn ?? "")],
-      ...financial.cashFlows.map((flow) => ["Cash Flows", `CF${flow.period}`, "Cumulative", `${flow.value}; ${flow.cumulative}`]),
-      ...financial.rates.map((rate) => ["NPV Analysis", rate.key, rate.label, String(rate.value)]),
+      ...this.summaryMetrics(financial).map((metric) => ["Financial Summary", metric.key, metric.currency ?? metric.kind ?? "", formatMetricValue(metric)]),
+      ...financial.cashFlows.map((flow) => ["Cash Flows", `CF${flow.period}`, flow.currency ?? "Cumulative", `${formatFinancialValue(flow.value, flow.currency, flow.currency ? "money" : "number")}; ${formatFinancialValue(flow.cumulative, flow.currency, flow.currency ? "money" : "number")}`]),
+      ...financial.rates.map((rate) => ["NPV Analysis", rate.key, rate.label, formatMetricValue(rate)]),
       ...financial.decisions.map((decision, index) => ["Financial Decisions", String(index + 1), "", decision])
     ];
   }
 
   private financialHtml(financial: FinancialReportModel): string {
-    const metrics = [
-      ["Investment", financial.investment],
-      ["NPV Base", financial.npv.base],
-      ["NPV Low", financial.npv.low],
-      ["NPV High", financial.npv.high],
-      ["Payback Years", financial.payback],
-      ["ROI", financial.roi],
-      ["Total Return", financial.totalReturn]
-    ].filter((metric): metric is [string, number] => metric[1] !== undefined);
+    const metrics = this.summaryMetrics(financial);
     const cashFlows = financial.cashFlows.length
-      ? `<table><thead><tr><th>Period</th><th>Cash Flow</th><th>Cumulative Cash Flow</th></tr></thead><tbody>${financial.cashFlows.map((flow) => `<tr><td>${flow.period}</td><td>${flow.value}</td><td>${flow.cumulative}</td></tr>`).join("")}</tbody></table>`
+      ? `<table><thead><tr><th>Period</th><th>Currency</th><th>Cash Flow</th><th>Cumulative Cash Flow</th></tr></thead><tbody>${financial.cashFlows.map((flow) => `<tr><td>${flow.period}</td><td>${this.escapeHtml(flow.currency ?? "")}</td><td>${this.escapeHtml(formatFinancialValue(flow.value, flow.currency, flow.currency ? "money" : "number"))}</td><td>${this.escapeHtml(formatFinancialValue(flow.cumulative, flow.currency, flow.currency ? "money" : "number"))}</td></tr>`).join("")}</tbody></table>`
       : "<p>Cash flow variables were not detected.</p>";
-    return `<div>${metrics.map(([label, value]) => `<span class="metric"><strong>${this.escapeHtml(label)}</strong><br>${value}</span>`).join("")}</div>${cashFlows}`;
+    return `<div>${metrics.map((metric) => `<span class="metric"><strong>${this.escapeHtml(metric.label)}</strong><br>${this.escapeHtml(formatMetricValue(metric))}</span>`).join("")}</div>${cashFlows}`;
+  }
+
+  private summaryMetrics(financial: FinancialReportModel) {
+    const keys = new Set(["INVESTMENT", "NPV_BASE", "NPV_LOW", "NPV_HIGH", "PAYBACK_YEARS", "ROI", "TOTAL_RETURN", "PROFITABILITY_INDEX"]);
+    return financial.metrics.filter((metric) => keys.has(this.baseMetricKey(metric.key)));
+  }
+
+  private sensitivityGroups(financial: FinancialReportModel): Array<{ currency?: "USD" | "GTQ" | "EUR"; rows: Array<{ label: string; rate?: number; value: number }> }> {
+    const npvMetrics = financial.metrics.filter((metric) => ["NPV_LOW", "NPV_BASE", "NPV_HIGH"].includes(this.baseMetricKey(metric.key)));
+    return Array.from(new Set(npvMetrics.map((metric) => metric.currency ?? "number"))).map((group) => {
+      const currency = group === "number" ? undefined : group as "USD" | "GTQ" | "EUR";
+      const matching = npvMetrics.filter((metric) => (metric.currency ?? "number") === group);
+      const low = matching.find((metric) => this.baseMetricKey(metric.key) === "NPV_LOW");
+      const base = matching.find((metric) => this.baseMetricKey(metric.key) === "NPV_BASE");
+      const high = matching.find((metric) => this.baseMetricKey(metric.key) === "NPV_HIGH");
+      if (!low || !base || !high) return undefined;
+      return {
+        currency,
+        rows: [
+          { label: "Low Rate", rate: financial.rates.find((rate) => rate.key === "RATE_LOW")?.value, value: low.value },
+          { label: "Base Rate", rate: financial.rates.find((rate) => rate.key === "RATE")?.value, value: base.value },
+          { label: "High Rate", rate: financial.rates.find((rate) => rate.key === "RATE_HIGH")?.value, value: high.value }
+        ]
+      };
+    }).filter(Boolean) as Array<{ currency?: "USD" | "GTQ" | "EUR"; rows: Array<{ label: string; rate?: number; value: number }> }>;
+  }
+
+  private baseMetricKey(key: string): string {
+    return key
+      .replace(/_(USD|GTQ|EUR)(?=_|$)/g, "")
+      .replace(/^(USD|GTQ|EUR)_/g, "")
+      .replace(/_+/g, "_")
+      .replace(/^_|_$/g, "");
   }
 
   private escapeCsv(value: string): string {
