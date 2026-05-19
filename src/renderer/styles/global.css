@@ -786,6 +786,100 @@ pre,
   color: var(--color-text-muted);
 }
 
+.report-financial-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.report-financial-card {
+  display: grid;
+  gap: 8px;
+  min-height: 84px;
+  padding: 13px;
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-low);
+}
+
+.report-financial-card strong {
+  color: var(--color-teal);
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.report-financial-empty,
+.report-builtins,
+.report-financial-diagnostics {
+  margin-top: 16px;
+  padding: 13px;
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-low);
+  color: var(--color-text-muted);
+}
+
+.report-builtins {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.report-builtins strong {
+  padding: 5px 8px;
+  border: 1px solid var(--color-outline-variant);
+  color: var(--color-text-muted);
+}
+
+.report-builtins strong.detected {
+  border-color: var(--color-teal);
+  color: var(--color-teal);
+}
+
+.report-chart {
+  width: 100%;
+  min-height: 240px;
+  margin-top: 8px;
+  border: 1px solid var(--color-outline-variant);
+  background: var(--color-surface-low);
+}
+
+.report-chart text {
+  fill: var(--color-text-muted);
+  font-family: "IBM Plex Mono", Consolas, monospace;
+  font-size: 12px;
+}
+
+.chart-zero {
+  stroke: var(--color-outline);
+  stroke-dasharray: 4 4;
+}
+
+.chart-bar {
+  fill: var(--color-teal);
+}
+
+.chart-bar.negative {
+  fill: var(--color-red);
+}
+
+.chart-line {
+  fill: none;
+  stroke: var(--color-teal);
+  stroke-width: 3;
+}
+
+.chart-point {
+  fill: var(--color-surface-lowest);
+  stroke: var(--color-teal);
+  stroke-width: 2;
+}
+
+.chart-callout {
+  fill: var(--color-teal);
+  font-weight: 700;
+}
+
 .report-pre {
   margin: 0;
   padding: 14px;

@@ -1,15 +1,17 @@
 import { useMemo, useState } from "react";
-import { Download, Eye, FileSpreadsheet, FileText, RefreshCw, ScrollText, PackageCheck, TerminalSquare, TriangleAlert } from "lucide-react";
-import type { BickSpecReportData, ReportExportFormat } from "@shared/contracts/reports";
+import { BarChart3, Download, Eye, FileSpreadsheet, FileText, RefreshCw, ScrollText, PackageCheck, TerminalSquare, TriangleAlert } from "lucide-react";
+import type { BickSpecReportData, FinancialCashFlow, FinancialReportModel, ReportExportFormat } from "@shared/contracts/reports";
 import { diagnosticLabels } from "@shared/diagnostics/diagnosticTypes";
 import { Panel } from "../components/ui/Panel";
 import { StatusBadge } from "../components/ui/StatusBadge";
 import { ToolbarButton } from "../components/ui/ToolbarButton";
 import { useStudioSession } from "../state/StudioSessionProvider";
 import { cleanInteractiveEntries, extractPlainProgramOutput } from "@shared/reports/runtimeOutput";
+import { extractFinancialReport } from "@shared/reports/financialReportExtractor";
 
 const sections = [
   { id: "summary", label: "Summary", icon: FileText },
+  { id: "finance", label: "Finance", icon: BarChart3 },
   { id: "output", label: "Program Output", icon: TerminalSquare },
   { id: "diagnostics", label: "Diagnostics", icon: TriangleAlert },
   { id: "artifacts", label: "Artifacts", icon: PackageCheck },
@@ -31,6 +33,12 @@ export function ReportPreviewPage() {
     const title = `${stripExtension(sourceName)} Report`;
     const generatedAt = lastSession.summary.completedAt ?? new Date().toISOString();
     const status = getReportStatus(lastSession.summary.interactive, interactiveSession.status, lastSession.diagnostics, lastSession.normalized.buildLog);
+    const sourceText = activeFile?.path === sourcePath ? activeFile.content : undefined;
+    const financialReport = extractFinancialReport({
+      sourceText,
+      programOutput: lastSession.normalized.programOutput,
+      interactiveComplete: !lastSession.summary.interactive || interactiveSession.status === "completed"
+    });
     return {
       reportId: `${stripExtension(sourceName)}-${generatedAt.replace(/[:.]/g, "-")}`,
       title,
@@ -45,9 +53,11 @@ export function ReportPreviewPage() {
       programOutput: lastSession.normalized.programOutput,
       interactiveTranscript: interactiveSession.transcript || lastSession.normalized.interactiveOutput,
       interactiveEntries: cleanInteractiveEntries(interactiveSession.entries),
-      buildLog: lastSession.normalized.buildLog
+      buildLog: lastSession.normalized.buildLog,
+      sourceText,
+      financialReport
     };
-  }, [activeFile, interactiveSession.transcript, lastSession]);
+  }, [activeFile, interactiveSession.status, interactiveSession.transcript, lastSession]);
 
   async function exportReport(format: ReportExportFormat) {
     if (!report) return;
@@ -109,6 +119,7 @@ export function ReportPreviewPage() {
           <h1 style={{ margin: "8px 0 8px", fontSize: 32 }}>{report.title}</h1>
           <p style={{ color: "var(--color-text-muted)" }}>Generated from {report.sourcePath} at {new Date(report.generatedAt).toLocaleString()}.</p>
           {selectedSection === "summary" ? <SummarySection report={report} /> : null}
+          {selectedSection === "finance" ? <FinanceSection report={report} /> : null}
           {selectedSection === "output" ? <OutputSection report={report} /> : null}
           {selectedSection === "diagnostics" ? <DiagnosticsSection report={report} /> : null}
           {selectedSection === "artifacts" ? <ArtifactsSection report={report} /> : null}
@@ -144,14 +155,139 @@ export function ReportPreviewPage() {
 }
 
 function SummarySection({ report }: { report: BickSpecReportData }) {
-  return <section className="report-section"><h2>Summary</h2><div className="report-summary-grid">
-    <span>Source</span><strong>{report.sourcePath}</strong>
-    <span>Status</span><strong>{statusLabel(report.status)}</strong>
-    <span>Mode</span><strong>{report.interactive ? "Interactive" : "Non-interactive"}</strong>
-    <span>Target</span><strong>{report.targetKind}</strong>
-    <span>Diagnostics</span><strong>{report.diagnostics.length}</strong>
-    <span>Artifacts</span><strong>{report.artifacts.length}</strong>
-  </div></section>;
+  return <section className="report-section"><h2>Summary</h2>
+    <div className="report-summary-grid">
+      <span>Source</span><strong>{report.sourcePath}</strong>
+      <span>Status</span><strong>{statusLabel(report.status)}</strong>
+      <span>Mode</span><strong>{report.interactive ? "Interactive" : "Non-interactive"}</strong>
+      <span>Target</span><strong>{report.targetKind}</strong>
+      <span>Diagnostics</span><strong>{report.diagnostics.length}</strong>
+      <span>Artifacts</span><strong>{report.artifacts.length}</strong>
+    </div>
+    {report.financialReport?.detected ? <FinancialSummaryCards financial={report.financialReport} /> : <FinancialEmptyState financial={report.financialReport} />}
+  </section>;
+}
+
+function FinanceSection({ report }: { report: BickSpecReportData }) {
+  const financial = report.financialReport;
+  if (!financial?.detected) return <section className="report-section"><h2>Financial Analysis</h2><FinancialEmptyState financial={financial} /></section>;
+  return (
+    <section className="report-section">
+      <h2>Financial Analysis</h2>
+      <FinancialSummaryCards financial={financial} />
+      <BuiltInAnalysis financial={financial} />
+      {financial.cashFlows.length ? (
+        <>
+          <h3>Cash Flow Table</h3>
+          <table className="content-table"><thead><tr><th>Period</th><th>Cash Flow</th><th>Cumulative Cash Flow</th></tr></thead><tbody>
+            {financial.cashFlows.map((flow) => <tr key={flow.period}><td>{flow.period}</td><td>{formatCurrency(flow.value)}</td><td>{formatCurrency(flow.cumulative)}</td></tr>)}
+          </tbody></table>
+          <h3>Cash Flow Chart</h3>
+          <CashFlowChart cashFlows={financial.cashFlows} />
+          <h3>Cumulative Payback</h3>
+          <CumulativeChart cashFlows={financial.cashFlows} payback={financial.payback} />
+        </>
+      ) : null}
+      {hasSensitivity(financial) ? (
+        <>
+          <h3>NPV Sensitivity</h3>
+          <NpvSensitivityChart financial={financial} />
+        </>
+      ) : null}
+      {financial.diagnostics.length ? <ul className="report-financial-diagnostics">{financial.diagnostics.map((diagnostic) => <li key={diagnostic}>{diagnostic}</li>)}</ul> : null}
+    </section>
+  );
+}
+
+function FinancialSummaryCards({ financial }: { financial: FinancialReportModel }) {
+  const cards = [
+    financial.npv.base !== undefined ? ["NPV Base", formatCurrency(financial.npv.base)] : undefined,
+    financial.payback !== undefined ? ["Payback Years", formatNumber(financial.payback)] : undefined,
+    financial.roi !== undefined ? ["ROI", formatPercentLike(financial.roi)] : undefined,
+    financial.totalReturn !== undefined ? ["Total Return", formatCurrency(financial.totalReturn)] : undefined,
+    financial.investment !== undefined ? ["Investment", formatCurrency(financial.investment)] : undefined,
+    financial.decisions[0] ? ["Decision", financial.decisions[0].replace(/^.*Decision:\s*/i, "")] : undefined
+  ].filter(Boolean) as string[][];
+  if (!cards.length) return null;
+  return <div className="report-financial-cards">{cards.map(([label, value]) => <article className="report-financial-card" key={label}><span className="label-caps">{label}</span><strong>{value}</strong></article>)}</div>;
+}
+
+function FinancialEmptyState({ financial }: { financial?: FinancialReportModel }) {
+  return <div className="report-financial-empty">{financial?.diagnostics[0] ?? "No financial chart data detected. Use CF0..CFN, NPV(...), PAYBACK(...), ROI, or related variables to enable financial charts."}</div>;
+}
+
+function BuiltInAnalysis({ financial }: { financial: FinancialReportModel }) {
+  return <div className="report-builtins"><span className="label-caps">Built-in Function Analysis</span>{["NPV", "PAYBACK"].map((name) => <strong className={financial.builtIns.includes(name as "NPV" | "PAYBACK") ? "detected" : ""} key={name}>{name} {financial.builtIns.includes(name as "NPV" | "PAYBACK") ? "detected" : "not detected"}</strong>)}</div>;
+}
+
+function CashFlowChart({ cashFlows }: { cashFlows: FinancialCashFlow[] }) {
+  const width = 720;
+  const height = 260;
+  const padding = 38;
+  const values = cashFlows.map((flow) => flow.value);
+  const min = Math.min(0, ...values);
+  const max = Math.max(0, ...values);
+  const scale = (value: number) => height - padding - ((value - min) / (max - min || 1)) * (height - padding * 2);
+  const zeroY = scale(0);
+  const barWidth = (width - padding * 2) / cashFlows.length * 0.62;
+  return <svg className="report-chart" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Cash flow bar chart">
+    <line x1={padding} x2={width - padding} y1={zeroY} y2={zeroY} className="chart-zero" />
+    {cashFlows.map((flow, index) => {
+      const slot = (width - padding * 2) / cashFlows.length;
+      const x = padding + index * slot + (slot - barWidth) / 2;
+      const y = Math.min(scale(flow.value), zeroY);
+      const h = Math.abs(zeroY - scale(flow.value));
+      return <g key={`${flow.label}-${flow.period}`}><rect x={x} y={y} width={barWidth} height={Math.max(2, h)} className={flow.value < 0 ? "chart-bar negative" : "chart-bar"} /><text x={x + barWidth / 2} y={height - 10} textAnchor="middle">{flow.label.startsWith("Cash Flow") ? `CF${flow.period}` : flow.label}</text></g>;
+    })}
+  </svg>;
+}
+
+function CumulativeChart({ cashFlows, payback }: { cashFlows: FinancialCashFlow[]; payback?: number }) {
+  const width = 720;
+  const height = 260;
+  const padding = 38;
+  const values = cashFlows.map((flow) => flow.cumulative);
+  const min = Math.min(0, ...values);
+  const max = Math.max(0, ...values);
+  const x = (index: number) => padding + (index / Math.max(1, cashFlows.length - 1)) * (width - padding * 2);
+  const y = (value: number) => height - padding - ((value - min) / (max - min || 1)) * (height - padding * 2);
+  const points = cashFlows.map((flow, index) => `${x(index)},${y(flow.cumulative)}`).join(" ");
+  return <svg className="report-chart" viewBox={`0 0 ${width} ${height}`} role="img" aria-label="Cumulative cash flow chart">
+    <line x1={padding} x2={width - padding} y1={y(0)} y2={y(0)} className="chart-zero" />
+    <polyline points={points} className="chart-line" />
+    {cashFlows.map((flow, index) => <circle key={flow.period} cx={x(index)} cy={y(flow.cumulative)} r="4" className="chart-point" />)}
+    {payback !== undefined ? <text x={width - padding} y={padding} textAnchor="end" className="chart-callout">Payback: {formatNumber(payback)} years</text> : null}
+  </svg>;
+}
+
+function NpvSensitivityChart({ financial }: { financial: FinancialReportModel }) {
+  const rows = [
+    { label: rateLabel(financial, "RATE_LOW", "Low Rate"), value: financial.npv.low ?? 0 },
+    { label: rateLabel(financial, "RATE", "Base Rate"), value: financial.npv.base ?? 0 },
+    { label: rateLabel(financial, "RATE_HIGH", "High Rate"), value: financial.npv.high ?? 0 }
+  ];
+  return <CashFlowChart cashFlows={rows.map((row, index) => ({ period: index, label: row.label, value: row.value, cumulative: row.value }))} />;
+}
+
+function hasSensitivity(financial: FinancialReportModel): boolean {
+  return financial.npv.low !== undefined && financial.npv.base !== undefined && financial.npv.high !== undefined;
+}
+
+function rateLabel(financial: FinancialReportModel, key: string, fallback: string): string {
+  const rate = financial.rates.find((metric) => metric.key === key);
+  return rate ? `${fallback} (${formatPercentLike(rate.value)})` : fallback;
+}
+
+function formatCurrency(value: number): string {
+  return value.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 });
+}
+
+function formatNumber(value: number): string {
+  return value.toLocaleString("en-US", { maximumFractionDigits: 4 });
+}
+
+function formatPercentLike(value: number): string {
+  return `${(value * 100).toLocaleString("en-US", { maximumFractionDigits: 2 })}%`;
 }
 
 function OutputSection({ report }: { report: BickSpecReportData }) {

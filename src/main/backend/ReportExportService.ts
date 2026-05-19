@@ -2,7 +2,8 @@ import { BrowserWindow, dialog } from "electron";
 import { basename, extname, join } from "node:path";
 import { writeFile } from "node:fs/promises";
 import * as XLSX from "xlsx";
-import type { BickSpecReportData, ReportExportFormat } from "@shared/contracts/reports";
+import type { BickSpecReportData, FinancialReportModel, ReportExportFormat } from "@shared/contracts/reports";
+import { extractFinancialReport } from "@shared/reports/financialReportExtractor";
 import { cleanInteractiveEntries, extractPlainProgramOutput } from "@shared/reports/runtimeOutput";
 
 export class ReportExportService {
@@ -35,6 +36,7 @@ export class ReportExportService {
   }
 
   private toCsv(report: BickSpecReportData): string {
+    const financial = this.getFinancialReport(report);
     const rows: string[][] = [
       ["Section", "Key", "Role", "Value"],
       ["Summary", "Title", "", report.title],
@@ -49,12 +51,14 @@ export class ReportExportService {
         : extractPlainProgramOutput(report.programOutput).map((line, index) => ["Program Output", `Line ${index + 1}`, "", line])),
       ...report.diagnostics.map((diagnostic) => ["Diagnostics", diagnostic.code, diagnostic.category, diagnostic.message]),
       ...report.artifacts.map((artifact) => ["Artifacts", artifact.type, "", `${artifact.absolutePath} (${artifact.exists ? "exists" : "missing"})`]),
+      ...(financial.detected ? this.financialCsvRows(financial) : [["Financial Analysis", "Status", "", financial.diagnostics[0] ?? "No financial chart data detected."]]),
       ...report.buildLog.split(/\r?\n/).filter(Boolean).map((line, index) => ["Build Log", String(index + 1), "", line])
     ];
     return rows.map((row) => row.map(this.escapeCsv).join(",")).join("\n");
   }
 
   private toWorkbook(report: BickSpecReportData): XLSX.WorkBook {
+    const financial = this.getFinancialReport(report);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
       ["Key", "Value"],
@@ -91,6 +95,35 @@ export class ReportExportService {
       path: artifact.absolutePath,
       status: artifact.exists ? "exists" : "missing"
     }))), "Artifacts");
+    if (financial.detected) {
+      XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
+        ["Metric", "Value"],
+        ["Investment", financial.investment ?? ""],
+        ["NPV Base", financial.npv.base ?? ""],
+        ["NPV Low", financial.npv.low ?? ""],
+        ["NPV High", financial.npv.high ?? ""],
+        ["Payback Years", financial.payback ?? ""],
+        ["ROI", financial.roi ?? ""],
+        ["Total Return", financial.totalReturn ?? ""],
+        ["Profitability Index", financial.profitabilityIndex ?? ""],
+        ...financial.decisions.map((decision) => ["Decision", decision])
+      ]), "Financial Summary");
+      if (financial.cashFlows.length) {
+        XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(financial.cashFlows.map((flow) => ({
+          period: flow.period,
+          cashFlow: flow.value,
+          cumulativeCashFlow: flow.cumulative
+        }))), "Cash Flows");
+      }
+      if (financial.npv.low !== undefined || financial.npv.base !== undefined || financial.npv.high !== undefined) {
+        XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
+          ["Scenario", "Rate", "NPV"],
+          ["Low Rate", financial.rates.find((rate) => rate.key === "RATE_LOW")?.value ?? "", financial.npv.low ?? ""],
+          ["Base Rate", financial.rates.find((rate) => rate.key === "RATE")?.value ?? "", financial.npv.base ?? ""],
+          ["High Rate", financial.rates.find((rate) => rate.key === "RATE_HIGH")?.value ?? "", financial.npv.high ?? ""]
+        ]), "NPV Analysis");
+      }
+    }
     XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet([
       ["Line", "Build Log"],
       ...report.buildLog.split(/\r?\n/).map((line, index) => [index + 1, line])
@@ -112,25 +145,68 @@ export class ReportExportService {
   }
 
   private toHtml(report: BickSpecReportData): string {
+    const financial = this.getFinancialReport(report);
     const diagnostics = report.diagnostics.length
       ? report.diagnostics.map((diagnostic) => `<li><strong>${this.escapeHtml(diagnostic.code)}</strong> ${this.escapeHtml(diagnostic.category)} — ${this.escapeHtml(diagnostic.message)}</li>`).join("")
       : "<li>No errors detected.</li>";
     const artifacts = report.artifacts.length
       ? report.artifacts.map((artifact) => `<li>${this.escapeHtml(artifact.type)} — ${this.escapeHtml(artifact.absolutePath)} (${artifact.exists ? "exists" : "missing"})</li>`).join("")
       : "<li>No artifacts discovered.</li>";
+    const financialHtml = financial.detected ? this.financialHtml(financial) : `<p>${this.escapeHtml(financial.diagnostics[0] ?? "No financial chart data detected.")}</p>`;
     return `<!doctype html><html><head><meta charset="utf-8"><style>
       body{font-family:Arial,sans-serif;color:#151c21;padding:24px} h1{color:#0b1d33} h2{margin-top:24px}
       pre{white-space:pre-wrap;background:#f3f6f8;padding:12px;border:1px solid #d5dde2}
-      .meta{color:#44474d}
+      table{border-collapse:collapse;width:100%;margin-top:10px} th,td{border:1px solid #d5dde2;padding:7px;text-align:left}
+      .meta{color:#44474d}.metric{display:inline-block;border:1px solid #d5dde2;padding:10px;margin:4px}
     </style></head><body>
       <h1>${this.escapeHtml(report.title)}</h1>
       <p class="meta">Source: ${this.escapeHtml(report.sourcePath)}<br>Generated: ${this.escapeHtml(report.generatedAt)}<br>Status: ${this.statusLabel(report.status)}</p>
       <h2>Summary</h2><p>Diagnostics: ${report.diagnostics.length} · Artifacts: ${report.artifacts.length} · Interactive: ${report.interactive ? "Yes" : "No"}</p>
       <h2>${report.interactive ? "Interactive Transcript" : "Program Output"}</h2><pre>${this.escapeHtml(report.interactive ? this.plainInteractiveText(report) : extractPlainProgramOutput(report.programOutput).join("\n") || "No program output.")}</pre>
+      <h2>Financial Analysis</h2>${financialHtml}<p class="meta">Charts are shown in the Studio preview. Exported tables are chart-ready for PDF, Excel, and CSV review.</p>
       <h2>Diagnostics</h2><ul>${diagnostics}</ul>
       <h2>Artifacts</h2><ul>${artifacts}</ul>
       <h2>Build Log</h2><pre>${this.escapeHtml(report.buildLog || "No build log.")}</pre>
     </body></html>`;
+  }
+
+  private getFinancialReport(report: BickSpecReportData): FinancialReportModel {
+    return report.financialReport ?? extractFinancialReport({
+      sourceText: report.sourceText,
+      programOutput: report.programOutput,
+      interactiveComplete: !report.interactive || report.status === "interactive-completed"
+    });
+  }
+
+  private financialCsvRows(financial: FinancialReportModel): string[][] {
+    return [
+      ["Financial Summary", "Investment", "", String(financial.investment ?? "")],
+      ["Financial Summary", "NPV Base", "", String(financial.npv.base ?? "")],
+      ["Financial Summary", "NPV Low", "", String(financial.npv.low ?? "")],
+      ["Financial Summary", "NPV High", "", String(financial.npv.high ?? "")],
+      ["Financial Summary", "Payback Years", "", String(financial.payback ?? "")],
+      ["Financial Summary", "ROI", "", String(financial.roi ?? "")],
+      ["Financial Summary", "Total Return", "", String(financial.totalReturn ?? "")],
+      ...financial.cashFlows.map((flow) => ["Cash Flows", `CF${flow.period}`, "Cumulative", `${flow.value}; ${flow.cumulative}`]),
+      ...financial.rates.map((rate) => ["NPV Analysis", rate.key, rate.label, String(rate.value)]),
+      ...financial.decisions.map((decision, index) => ["Financial Decisions", String(index + 1), "", decision])
+    ];
+  }
+
+  private financialHtml(financial: FinancialReportModel): string {
+    const metrics = [
+      ["Investment", financial.investment],
+      ["NPV Base", financial.npv.base],
+      ["NPV Low", financial.npv.low],
+      ["NPV High", financial.npv.high],
+      ["Payback Years", financial.payback],
+      ["ROI", financial.roi],
+      ["Total Return", financial.totalReturn]
+    ].filter((metric): metric is [string, number] => metric[1] !== undefined);
+    const cashFlows = financial.cashFlows.length
+      ? `<table><thead><tr><th>Period</th><th>Cash Flow</th><th>Cumulative Cash Flow</th></tr></thead><tbody>${financial.cashFlows.map((flow) => `<tr><td>${flow.period}</td><td>${flow.value}</td><td>${flow.cumulative}</td></tr>`).join("")}</tbody></table>`
+      : "<p>Cash flow variables were not detected.</p>";
+    return `<div>${metrics.map(([label, value]) => `<span class="metric"><strong>${this.escapeHtml(label)}</strong><br>${value}</span>`).join("")}</div>${cashFlows}`;
   }
 
   private escapeCsv(value: string): string {

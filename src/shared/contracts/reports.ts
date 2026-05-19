@@ -17,6 +17,41 @@ export interface BickSpecReportData {
   interactiveTranscript: string;
   interactiveEntries: InteractiveTranscriptEntry[];
   buildLog: string;
+  sourceText?: string;
+  financialReport?: FinancialReportModel;
 }
 
 export type ReportExportFormat = "pdf" | "csv" | "excel";
+
+export interface FinancialMetric {
+  key: string;
+  label: string;
+  value: number;
+}
+
+export interface FinancialCashFlow {
+  period: number;
+  label: string;
+  value: number;
+  cumulative: number;
+}
+
+export interface FinancialReportModel {
+  detected: boolean;
+  cashFlows: FinancialCashFlow[];
+  rates: FinancialMetric[];
+  npv: {
+    base?: number;
+    low?: number;
+    high?: number;
+  };
+  investment?: number;
+  payback?: number;
+  roi?: number;
+  totalReturn?: number;
+  profitabilityIndex?: number;
+  decisions: string[];
+  builtIns: Array<"NPV" | "PAYBACK">;
+  metrics: FinancialMetric[];
+  diagnostics: string[];
+}
