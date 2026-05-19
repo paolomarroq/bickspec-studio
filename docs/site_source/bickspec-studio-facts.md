@@ -4,8 +4,8 @@
 
 - **BickSpec Studio** is a desktop IDE for writing, compiling, reviewing, and exporting BickSpec financial specifications.
 - **BickSpec** is the language; **BickSpec Studio** is the desktop application around it.
-- Studio is implemented as a separate project from the compiler. The repository documentation explicitly states that Studio must reference the external `bickspec-lang` repository and must not duplicate or vendor the compiler implementation.
-- The linked-compiler model expects a local `bickspec-lang` checkout. By default, Studio prefers `bickspec-studio/bickspec-lang` if present, otherwise it falls back to a sibling `../bickspec-lang` layout. The linked repository path is configurable in backend settings and can be seeded with `BICKSPEC_LANG_REPOSITORY`.
+- Studio is implemented as a separate project from the compiler. Studio packages the built compiler JAR, but does not duplicate or vendor compiler source code.
+- The normal compiler model expects the bundled JAR in Studio resources. A local `bickspec-lang` checkout remains optional for developers who want to test linked compiler builds.
 - The default configured compiler repository URL is `https://github.com/paolomarroq/bickspec-lang`.
 
 ## 2. Architecture
@@ -276,8 +276,9 @@ The bottom session panel has four tabs:
 - Persisted setup state includes:
   - completion/skipped flags;
   - Java path;
-  - compiler repo path;
+  - optional compiler repo path;
   - compiler JAR path;
+  - compiler source;
   - workspace path;
   - output directory;
   - last validation results;
@@ -285,27 +286,28 @@ The bottom session panel has four tabs:
 - Implemented steps:
   1. Welcome
   2. Java Runtime
-  3. Compiler Repository
-  4. Compiler JAR
-  5. Workspace
-  6. Run Test Compilation
-  7. Interactive Mode
-  8. Artifacts & Reports
-  9. Ready
+  3. Compiler
+  4. Workspace
+  5. Run Test Compilation
+  6. Interactive Mode
+  7. Artifacts & Reports
+  8. Ready
 - Java validation:
   - runs `java -version`;
   - treats Java 21 as recommended;
   - warns rather than automatically failing for a different detected version.
-- Compiler repository validation:
+- Advanced compiler repository validation:
   - supports browsing to an existing local checkout;
   - supports cloning from GitHub;
   - validates root structure;
   - rejects obvious subfolders;
   - can safely update an existing repository only when the user asks and no local changes are present.
 - Compiler JAR validation:
+  - prefers the bundled Studio compiler JAR;
   - checks for a `.jar` file;
   - records the chosen artifact path;
-  - supports Maven build from repository using `mvn -f app/pom.xml package`.
+  - supports custom JAR overrides;
+  - supports Maven build from repository using `mvn -f app/pom.xml package` as a developer option.
 - Workspace validation:
   - verifies an existing directory;
   - writes into `.bickspec/setup` to test writability;

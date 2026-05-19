@@ -49,4 +49,8 @@ jobs:
             release/*.zip
             release/*.blockmap
             release/latest*.yml
+<<<<<<< HEAD
           if-no-files-found: error
+=======
+          if-no-files-found: error
+>>>>>>> a51a86b (release(studio): finalize bundled compiler desktop distribution)

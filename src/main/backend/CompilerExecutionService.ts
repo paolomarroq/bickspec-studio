@@ -128,10 +128,6 @@ export class CompilerExecutionService {
     this.interactiveSessions.reset();
     const settings = await this.settingsService.getSettings();
     const targetPath = resolve(request.targetPath);
-    const repositoryValidation = await this.repositoryResolver.validate(
-      settings.compiler.repositoryPath,
-      settings.compiler.preferredArtifactPath
-    );
     const artifact = await this.repositoryResolver.resolveArtifact(
       settings.compiler.repositoryPath,
       settings.compiler.preferredArtifactPath
@@ -147,24 +143,24 @@ export class CompilerExecutionService {
       lastTargetPath: targetPath
     };
 
-    if (!repositoryValidation.isValid || !artifact.found || !artifact.artifactPath || !targetExists) {
+    if (!artifact.found || !artifact.artifactPath || !targetExists) {
       const parsedOutput = this.outputParser.parse("");
       const result: CompilerExecutionResult = {
         success: false,
         command: settings.execution.javaCommand,
         args: artifact.artifactPath ? ["-jar", artifact.artifactPath, targetPath] : [],
-        workingDirectory: artifact.artifactPath ? dirname(artifact.artifactPath) : repositoryValidation.repositoryPath,
+        workingDirectory: artifact.artifactPath ? dirname(artifact.artifactPath) : artifact.repositoryPath,
         stdout: "",
-        stderr: this.buildPreflightError(repositoryValidation.isValid, artifact, targetExists),
+        stderr: this.buildPreflightError(artifact, targetExists),
         exitCode: null,
         durationMs: 0,
-        repositoryPath: repositoryValidation.repositoryPath,
+        repositoryPath: artifact.repositoryPath,
         compilerArtifactPath: artifact.artifactPath,
         interactive: false,
         targetPath,
         targetKind: request.targetKind,
         parsedOutput,
-        error: this.buildPreflightError(repositoryValidation.isValid, artifact, targetExists)
+        error: this.buildPreflightError(artifact, targetExists)
       };
       this.lastResult = result;
       this.status = {
@@ -193,7 +189,7 @@ export class CompilerExecutionService {
         stderr: started.stderr,
         exitCode: null,
         durationMs: Date.now() - new Date(startedAt).getTime(),
-        repositoryPath: repositoryValidation.repositoryPath,
+        repositoryPath: artifact.repositoryPath,
         compilerArtifactPath: artifact.artifactPath,
         interactive: started.started,
         targetPath,
@@ -219,7 +215,7 @@ export class CompilerExecutionService {
           stderr,
           exitCode,
           durationMs,
-          repositoryPath: repositoryValidation.repositoryPath,
+          repositoryPath: artifact.repositoryPath,
           compilerArtifactPath: artifact.artifactPath,
           interactive,
           targetPath,
@@ -253,9 +249,8 @@ export class CompilerExecutionService {
     });
   }
 
-  private buildPreflightError(repositoryValid: boolean, artifact: CompilerArtifactResolution, targetExists: boolean): string {
+  private buildPreflightError(artifact: CompilerArtifactResolution, targetExists: boolean): string {
     const errors: string[] = [];
-    if (!repositoryValid) errors.push("Linked BickSpec language repository is not valid.");
     if (!artifact.found) errors.push(artifact.message);
     if (!targetExists) errors.push("Compiler target path does not exist.");
     return errors.join(" ");

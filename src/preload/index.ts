@@ -88,6 +88,7 @@ const bridge: StudioBridge = {
     skipSetup: () => ipcRenderer.invoke("setup:skip") as ReturnType<StudioBridge["backend"]["skipSetup"]>,
     finishSetup: () => ipcRenderer.invoke("setup:finish") as ReturnType<StudioBridge["backend"]["finishSetup"]>,
     validateJava: (javaPath) => ipcRenderer.invoke("setup:validate-java", javaPath) as ReturnType<StudioBridge["backend"]["validateJava"]>,
+    installJava: () => ipcRenderer.invoke("setup:install-java") as ReturnType<StudioBridge["backend"]["installJava"]>,
     selectJava: () => ipcRenderer.invoke("setup:select-java") as ReturnType<StudioBridge["backend"]["selectJava"]>,
     selectCompilerRepo: () => ipcRenderer.invoke("setup:select-compiler-repo") as ReturnType<StudioBridge["backend"]["selectCompilerRepo"]>,
     validateCompilerRepo: (repositoryPath) =>

@@ -24,6 +24,11 @@ export interface SetupValidationResult {
   details?: Record<string, string | number | boolean | undefined>;
 }
 
+export interface JavaInstallResult extends SetupValidationResult {
+  installMethod: "winget" | "browser";
+  platform: NodeJS.Platform;
+}
+
 export interface SetupState {
   setupCompleted: boolean;
   setupSkipped: boolean;
@@ -31,6 +36,7 @@ export interface SetupState {
   javaPath?: string;
   compilerRepoPath?: string;
   compilerJarPath?: string;
+  compilerSource?: "bundled" | "custom" | "linked-repository" | "missing";
   workspacePath?: string;
   outputDirectory?: string;
   lastValidationResults: Partial<Record<
@@ -92,6 +98,7 @@ export interface CompilerArtifactResolution {
   buildable: boolean;
   checkedPaths: string[];
   message: string;
+  source?: "bundled" | "custom" | "linked-repository" | "missing";
 }
 
 export type CompilerExecutionTargetKind = "file" | "directory" | "target";

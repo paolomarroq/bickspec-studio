@@ -65,6 +65,7 @@ export function registerBackendIpc(backend: BackendServices): void {
   ipcMain.handle("setup:skip", () => backend.setupWizard.skip());
   ipcMain.handle("setup:finish", () => backend.setupWizard.finish());
   ipcMain.handle("setup:validate-java", (_event, javaPath?: string) => backend.setupWizard.validateJava(javaPath));
+  ipcMain.handle("setup:install-java", () => backend.setupWizard.installJava());
   ipcMain.handle("setup:select-java", () => backend.setupWizard.selectJava());
   ipcMain.handle("setup:select-compiler-repo", () => backend.setupWizard.selectCompilerRepo());
   ipcMain.handle("setup:validate-compiler-repo", (_event, repositoryPath?: string) => backend.setupWizard.validateCompilerRepo(repositoryPath));

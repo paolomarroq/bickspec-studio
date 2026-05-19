@@ -2,6 +2,7 @@ import type {
   BackendSettings,
   BackendStatus,
   CompilerArtifactResolution,
+  JavaInstallResult,
   ArtifactPreviewData,
   CompilerDiagnostic,
   CompilerExecutionResult,
@@ -74,6 +75,7 @@ export interface StudioBridge {
     skipSetup(): Promise<SetupState>;
     finishSetup(): Promise<SetupState>;
     validateJava(javaPath?: string): Promise<SetupValidationResult>;
+    installJava(): Promise<JavaInstallResult>;
     selectJava(): Promise<string | null>;
     selectCompilerRepo(): Promise<string | null>;
     validateCompilerRepo(repositoryPath?: string): Promise<SetupValidationResult>;

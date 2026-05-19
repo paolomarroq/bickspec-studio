@@ -39,7 +39,7 @@ export function createBackendServices(app: App, appRootPath: string): BackendSer
   const interactiveSessions = new InteractiveSessionManager();
   const reportExport = new ReportExportService();
   const settings = new BackendSettingsService(app, fileSystem, appRootPath);
-  const repositoryResolver = new CompilerRepositoryResolver(fileSystem);
+  const repositoryResolver = new CompilerRepositoryResolver(fileSystem, appRootPath);
   const compilerExecution = new CompilerExecutionService(
     settings,
     repositoryResolver,

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { CheckCircle2, CircleDot, FolderOpen, Play, RotateCcw, TerminalSquare } from "lucide-react";
-import type { SetupValidationResult } from "@shared/contracts/backend";
+import { CheckCircle2, CircleDot, Download, FolderOpen, Play, RotateCcw, TerminalSquare } from "lucide-react";
+import type { JavaInstallResult, SetupValidationResult } from "@shared/contracts/backend";
 import type { SetupCompilationResult } from "@shared/contracts/setup";
 import { BrandLogo } from "../../components/brand/BrandLogo";
 import { useStudioSession } from "../../state/StudioSessionProvider";
@@ -9,8 +9,7 @@ import "./setupWizard.css";
 const steps = [
   "Welcome",
   "Java Runtime",
-  "Compiler Repository",
-  "Compiler JAR",
+  "Compiler",
   "Workspace",
   "Run Test",
   "Interactive Mode",
@@ -26,11 +25,13 @@ export function SetupWizard() {
   const [message, setMessage] = useState("");
   const [compilation, setCompilation] = useState<SetupCompilationResult | null>(null);
   const [interactiveInput, setInteractiveInput] = useState("");
+  const [javaInstallResult, setJavaInstallResult] = useState<JavaInstallResult | null>(null);
 
   useEffect(() => {
     if (!setupWizardOpen) {
       setStep(0);
       setMessage("");
+      setJavaInstallResult(null);
     }
   }, [setupWizardOpen]);
 
@@ -38,12 +39,11 @@ export function SetupWizard() {
   const currentCheck = useMemo(() => {
     switch (step) {
       case 1: return checks.java;
-      case 2: return checks.compilerRepo;
-      case 3: return checks.compilerJar;
-      case 4: return checks.workspace;
-      case 5: return checks.compilation;
-      case 6: return checks.interactive;
-      case 7: return checks.artifacts;
+      case 2: return checks.compilerJar;
+      case 3: return checks.workspace;
+      case 4: return checks.compilation;
+      case 5: return checks.interactive;
+      case 6: return checks.artifacts;
       default: return undefined;
     }
   }, [checks, step]);
@@ -73,6 +73,12 @@ export function SetupWizard() {
 
   async function cloneRepo() {
     await run(() => backend.cloneCompilerRepo());
+  }
+
+  async function installJava() {
+    await run(async () => {
+      setJavaInstallResult(await backend.installJava());
+    });
   }
 
   async function chooseJar() {
@@ -116,8 +122,8 @@ export function SetupWizard() {
   }
 
   function canContinue() {
-    if ([0, 8].includes(step)) return true;
-    if (step === 6) return currentCheck?.status === "success" || currentCheck?.status === "warning";
+    if ([0, 7].includes(step)) return true;
+    if (step === 5) return currentCheck?.status === "success" || currentCheck?.status === "warning";
     return currentCheck?.status === "success" || currentCheck?.status === "warning";
   }
 
@@ -149,51 +155,47 @@ export function SetupWizard() {
           {step === 0 && (
             <section className="setup-step welcome">
               <h1>Welcome to BickSpec Studio</h1>
-              <p>Studio will validate Java, the linked compiler repository, compiler JAR, workspace, interactive mode, generated artifacts, and report readiness before your first real run.</p>
+              <p>Studio includes the BickSpec compiler. Java is required to execute it, and advanced users can override the compiler JAR or link a local bickspec-lang repository.</p>
             </section>
           )}
 
-          {step === 1 && <ValidationStep
-            title="Java Runtime"
-            description="Java 21 is recommended. Studio checks availability, version, and the command it will use."
-            value={setupState?.javaPath ?? "java"}
+          {step === 1 && <JavaRuntimeStep
             result={currentCheck}
-            actions={[
-              { label: "Re-check Java", onClick: () => run(() => backend.validateJava()) },
-              { label: "Select Java executable", onClick: () => run(async () => { const selected = await backend.selectJava(); if (selected) await backend.validateJava(selected); }) }
-            ]}
+            installResult={javaInstallResult}
+            value={setupState?.javaPath ?? "java"}
+            busy={busy}
+            onInstall={installJava}
+            onRecheck={() => run(() => backend.validateJava())}
+            onSelect={() => run(async () => { const selected = await backend.selectJava(); if (selected) await backend.validateJava(selected); })}
           />}
 
           {step === 2 && (
             <section className="setup-step">
-              <h1>Compiler Repository</h1>
-              <p>Link the real local bickspec-lang repository root, or clone the official compiler repository from GitHub into a local linked folder. Studio does not copy or duplicate the compiler.</p>
-              <div className="setup-path">{setupState?.compilerRepoPath ?? "No repository selected"}</div>
-              <p className="setup-helper">Clone the official bickspec-lang compiler repository from GitHub into a local linked folder.</p>
-              <p className="setup-helper">Choose a parent folder. Studio will create a bickspec-lang folder inside it.</p>
+              <h1>Compiler</h1>
+              <p>Studio uses the bundled BickSpec compiler JAR by default. No Git, Maven, or bickspec-lang checkout is required for normal use.</p>
+              <div className="setup-path">{setupState?.compilerJarPath ?? "Bundled compiler will be detected automatically"}</div>
               <div className="setup-actions">
-                <button className="button" onClick={chooseRepo} disabled={busy}>Browse Repository</button>
-                <button className="button" onClick={cloneRepo} disabled={busy}>Clone from GitHub</button>
-                <button className="button" onClick={() => run(() => backend.validateCompilerRepo())} disabled={busy}>Validate Repository</button>
-                <button className="button" onClick={() => run(() => backend.updateCompilerRepo())} disabled={busy || currentCheck?.status !== "success"}>Update Repository</button>
+                <button className="button primary" onClick={() => run(() => backend.validateCompilerJar())} disabled={busy}>Validate Bundled Compiler</button>
+                <button className="button" onClick={chooseJar} disabled={busy}>Select Custom Compiler JAR</button>
               </div>
               <ResultBanner result={currentCheck} />
+              <details className="setup-advanced">
+                <summary>Advanced Developer Options</summary>
+                <p className="setup-helper">For developers only. Link a local bickspec-lang repository when testing compiler builds outside the bundled Studio release.</p>
+                <div className="setup-path">{setupState?.compilerRepoPath ?? "No linked repository selected"}</div>
+                <div className="setup-actions">
+                  <button className="button" onClick={chooseRepo} disabled={busy}>Browse Repository</button>
+                  <button className="button" onClick={cloneRepo} disabled={busy}>Clone from GitHub</button>
+                  <button className="button" onClick={() => run(() => backend.validateCompilerRepo())} disabled={busy}>Validate Repository</button>
+                  <button className="button" onClick={() => run(() => backend.updateCompilerRepo())} disabled={busy || checks.compilerRepo?.status !== "success"}>Update Repository</button>
+                  <button className="button" onClick={() => run(() => backend.buildCompilerFromRepo())} disabled={busy}>Build from Repository</button>
+                </div>
+                <ResultBanner result={checks.compilerRepo} />
+              </details>
             </section>
           )}
 
           {step === 3 && <ValidationStep
-            title="Compiler JAR"
-            description="Validate the compiler artifact used by Studio. The expected artifact is usually app/target/bickspec-compiler-1.0.0.jar."
-            value={setupState?.compilerJarPath ?? "No JAR selected"}
-            result={currentCheck}
-            actions={[
-              { label: "Browse JAR", onClick: chooseJar },
-              { label: "Build from Repository", onClick: () => run(() => backend.buildCompilerFromRepo()) },
-              { label: "Validate Compiler", onClick: () => run(() => backend.validateCompilerJar()) }
-            ]}
-          />}
-
-          {step === 4 && <ValidationStep
             title="Workspace"
             description="Choose the folder Studio will use for projects and setup verification."
             value={setupState?.workspacePath ?? "No workspace selected"}
@@ -205,7 +207,7 @@ export function SetupWizard() {
             ]}
           />}
 
-          {step === 5 && (
+          {step === 4 && (
             <section className="setup-step">
               <h1>Run Test Compilation</h1>
               <p>Studio will compile a real valid BickSpec file and verify the runtime output <code>Resultado:</code> then <code>5.2</code>.</p>
@@ -224,13 +226,13 @@ export function SetupWizard() {
             </section>
           )}
 
-          {step === 6 && (
+          {step === 5 && (
             <section className="setup-step">
               <h1>Interactive Mode</h1>
               <p>Run a real READ program, send one value, and confirm Studio keeps a live stdin/stdout transcript.</p>
               <div className="setup-actions">
                 <button className="button primary" onClick={() => run(() => backend.runSetupInteractiveTest())} disabled={busy}><TerminalSquare size={15} /> Run Interactive Test</button>
-                <button className="button" onClick={() => setStep(7)} disabled={busy}>Skip Interactive Test</button>
+                <button className="button" onClick={() => setStep(6)} disabled={busy}>Skip Interactive Test</button>
               </div>
               <ResultBanner result={currentCheck} />
               <div className="setup-transcript">
@@ -248,10 +250,10 @@ export function SetupWizard() {
             </section>
           )}
 
-          {step === 7 && <ValidationStep
+          {step === 6 && <ValidationStep
             title="Artifacts & Reports"
             description="Check discovered artifacts plus report/export readiness from the latest real setup run."
-            value="Symbols CSV · Parse tree SVG · Generated Java · Class file · Reports"
+            value="Symbols CSV - Parse tree SVG - Generated Java - Class file - Reports"
             result={currentCheck}
             actions={[
               { label: "Validate Artifacts", onClick: () => run(() => backend.validateSetupArtifacts()) },
@@ -259,7 +261,7 @@ export function SetupWizard() {
             ]}
           />}
 
-          {step === 8 && (
+          {step === 7 && (
             <section className="setup-step ready">
               <BrandLogo className="setup-wizard-ready-logo" />
               <h1>Studio is ready</h1>
@@ -282,8 +284,8 @@ export function SetupWizard() {
             ) : (
               <>
                 <button className="button" onClick={() => setStep((value) => Math.max(0, value - 1))}>Back</button>
-                {step < 8 ? (
-                  <button className="button primary" onClick={() => setStep((value) => Math.min(8, value + 1))} disabled={!canContinue()}>Continue</button>
+                {step < 7 ? (
+                  <button className="button primary" onClick={() => setStep((value) => Math.min(7, value + 1))} disabled={!canContinue()}>Continue</button>
                 ) : (
                   <button className="button primary" onClick={() => void closeSetupAndOpenDocs(() => backend.finishSetup())}>Finish</button>
                 )}
@@ -322,6 +324,51 @@ function ValidationStep({
   );
 }
 
+function JavaRuntimeStep({
+  result,
+  installResult,
+  value,
+  busy,
+  onInstall,
+  onRecheck,
+  onSelect
+}: {
+  result?: SetupValidationResult;
+  installResult: JavaInstallResult | null;
+  value: string;
+  busy: boolean;
+  onInstall(): void;
+  onRecheck(): void;
+  onSelect(): void;
+}) {
+  const missing = result?.status === "error";
+  const version = result?.details?.version;
+  const command = result?.details?.command ?? value;
+
+  return (
+    <section className="setup-step">
+      <h1>{missing ? "Java Runtime Not Found" : "Java Runtime"}</h1>
+      <p>{missing
+        ? "BickSpec Studio includes the BickSpec compiler, but Java is required to execute it."
+        : "Java 21 is recommended. Studio checks availability, version, and the command it will use."}</p>
+      <div className="setup-path">{String(command)}</div>
+      {version ? (
+        <div className="setup-detail-grid">
+          <span>Detected version</span>
+          <strong>Java {String(version)}</strong>
+        </div>
+      ) : null}
+      <div className="setup-actions">
+        {missing ? <button className="button primary" onClick={onInstall} disabled={busy}><Download size={15} /> Install Java</button> : null}
+        <button className="button" onClick={onSelect} disabled={busy}>Select Java Manually</button>
+        <button className="button" onClick={onRecheck} disabled={busy}>Re-check Java</button>
+      </div>
+      <ResultBanner result={result} />
+      {installResult ? <ResultBanner result={installResult} /> : null}
+    </section>
+  );
+}
+
 function ResultBanner({ result }: { result?: SetupValidationResult }) {
   if (!result) return <div className="setup-result idle">Not checked yet.</div>;
   return (
@@ -347,8 +394,7 @@ function SummaryList({ checks }: { checks: Record<string, SetupValidationResult 
     <ul className="setup-summary">
       {[
         ["Java configured", checks.java],
-        ["Compiler repo configured", checks.compilerRepo],
-        ["Compiler JAR configured", checks.compilerJar],
+        ["Compiler ready", checks.compilerJar],
         ["Workspace configured", checks.workspace],
         ["Test compilation passed", checks.compilation],
         ["Interactive mode", checks.interactive],

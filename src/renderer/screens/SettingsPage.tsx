@@ -83,12 +83,12 @@ export function SettingsPage() {
         },
         {
           title: "Compiler adapter path",
-          description: "Prepared for the real compiler repository integration.",
-          content: <input className="field-control mono" value="local://bickspec-compiler" readOnly />
+          description: "Active compiler JAR used by Studio.",
+          content: <input className="field-control mono" value={setupState?.compilerJarPath ?? "Bundled compiler will be detected by setup"} readOnly />
         },
         {
           title: "Open Setup Wizard",
-          description: "Re-run Java, compiler, workspace, artifact, and report validation.",
+          description: "Re-run Java, bundled compiler, workspace, artifact, and report validation.",
           content: <ToolbarButton onClick={openSetupWizard}>Open Setup Wizard</ToolbarButton>
         },
         {
@@ -97,14 +97,14 @@ export function SettingsPage() {
           content: <input className="field-control mono" value={setupState?.javaPath ?? "java"} readOnly />
         },
         {
-          title: "Compiler repository",
-          description: "Linked local bickspec-lang repository root.",
-          content: <input className="field-control mono" value={setupState?.compilerRepoPath ?? "Not configured"} readOnly />
+          title: "Compiler source",
+          description: "Bundled is the normal installed-app mode. Custom and linked repository are developer overrides.",
+          content: <input className="field-control mono" value={setupState?.compilerSource ?? "bundled"} readOnly />
         },
         {
-          title: "Compiler JAR",
-          description: "Compiler artifact used by Studio.",
-          content: <input className="field-control mono" value={setupState?.compilerJarPath ?? "Not configured"} readOnly />
+          title: "Advanced linked repository",
+          description: "Optional developer-only bickspec-lang checkout.",
+          content: <input className="field-control mono" value={setupState?.compilerRepoPath ?? "Not configured"} readOnly />
         },
         {
           title: "Setup workspace",

@@ -11,16 +11,17 @@
     "dev": "electron-vite dev",
     "typecheck": "tsc --noEmit",
     "build": "tsc --noEmit && electron-vite build",
+    "prepare:compiler": "node scripts/prepare-compiler-jar.js",
     "preview": "electron-vite preview",
-    "package:dir": "npm run build && electron-builder --dir",
-    "package": "npm run build && electron-builder",
-    "package:win": "npm run build && electron-builder --win",
-    "package:mac": "npm run build && electron-builder --mac",
-    "package:linux": "npm run build && electron-builder --linux",
-    "dist": "npm run build && electron-builder",
-    "dist:win": "npm run build && electron-builder --win",
-    "dist:mac": "npm run build && electron-builder --mac",
-    "release": "npm run build && electron-builder --publish onTag"
+    "package:dir": "npm run prepare:compiler && npm run build && electron-builder --dir",
+    "package": "npm run prepare:compiler && npm run build && electron-builder",
+    "package:win": "npm run prepare:compiler && npm run build && electron-builder --win",
+    "package:mac": "npm run prepare:compiler && npm run build && electron-builder --mac",
+    "package:linux": "npm run prepare:compiler && npm run build && electron-builder --linux",
+    "dist": "npm run prepare:compiler && npm run build && electron-builder",
+    "dist:win": "npm run prepare:compiler && npm run build && electron-builder --win",
+    "dist:mac": "npm run prepare:compiler && npm run build && electron-builder --mac",
+    "release": "npm run prepare:compiler && npm run build && electron-builder --publish onTag"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
@@ -64,6 +65,10 @@
       {
         "from": "docs",
         "to": "docs"
+      },
+      {
+        "from": "resources/compiler/bickspec-compiler-1.0.0.jar",
+        "to": "compiler/bickspec-compiler-1.0.0.jar"
       }
     ],
     "mac": {

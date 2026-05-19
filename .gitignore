@@ -4,6 +4,12 @@ dist-electron/
 release/
 out/
 .vite/
+*.exe
+*.dmg
+*.zip
+*.blockmap
+*.AppImage
+*.msi
 .env
 .env.local
 npm-debug.log*

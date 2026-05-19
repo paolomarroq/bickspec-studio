@@ -1,7 +1,8 @@
 import { spawn } from "node:child_process";
 import { basename, dirname, extname, join, resolve } from "node:path";
-import { BrowserWindow, dialog } from "electron";
+import { BrowserWindow, dialog, shell } from "electron";
 import type {
+  JavaInstallResult,
   SetupState,
   SetupValidationResult
 } from "@shared/contracts/backend";
@@ -34,6 +35,9 @@ const interactiveSource = `PROJECT "Studio Interactive Test" {
 }
 `;
 
+const adoptiumJava21Url = "https://adoptium.net/temurin/releases/?version=21";
+const adoptiumInstallUrl = "https://adoptium.net/installation/";
+
 export class SetupWizardService {
   constructor(
     private readonly settings: BackendSettingsService,
@@ -60,6 +64,7 @@ export class SetupWizardService {
       javaPath: undefined,
       compilerRepoPath: undefined,
       compilerJarPath: undefined,
+      compilerSource: "missing",
       workspacePath: undefined,
       outputDirectory: undefined,
       lastValidationResults: {},
@@ -88,8 +93,8 @@ export class SetupWizardService {
     const result: SetupValidationResult = !availability.available
       ? {
           status: "error",
-          message: "Java was not found.",
-          suggestion: "Install Java 21 or select a Java executable.",
+          message: "Java was not found. BickSpec Studio requires Java to run the bundled compiler.",
+          suggestion: "Install Eclipse Temurin JDK 21, then return to Studio and click Re-check Java.",
           rawOutput: availability.error,
           details: { command }
         }
@@ -124,6 +129,93 @@ export class SetupWizardService {
       }
     });
     return result;
+  }
+
+  async installJava(): Promise<JavaInstallResult> {
+    if (process.platform === "win32") return this.installJavaOnWindows();
+    if (process.platform === "darwin") return this.openMacJavaInstaller();
+    await shell.openExternal(adoptiumInstallUrl);
+    return {
+      status: "warning",
+      message: "Opening Java installation page.",
+      suggestion: "Install Java 21, then return to Studio and click Re-check Java.",
+      installMethod: "browser",
+      platform: process.platform,
+      details: { url: adoptiumInstallUrl }
+    };
+  }
+
+  private async installJavaOnWindows(): Promise<JavaInstallResult> {
+    const winget = await this.processExecution.checkTool("winget", ["--version"]);
+    if (winget.available) {
+      const confirmation = await dialog.showMessageBox(this.parentWindow(), {
+        type: "question",
+        buttons: ["Install Java", "Cancel"],
+        defaultId: 0,
+        cancelId: 1,
+        title: "Install Java",
+        message: "BickSpec Studio can install Eclipse Temurin JDK 21 using Winget. Continue?",
+        detail: "Windows may ask for confirmation or elevation. After installation finishes, return to Studio and click Re-check Java."
+      });
+      if (confirmation.response !== 0) {
+        return {
+          status: "warning",
+          message: "Java installation was cancelled.",
+          suggestion: "Install Java 21 or select an existing Java executable.",
+          installMethod: "winget",
+          platform: process.platform
+        };
+      }
+
+      const install = await this.runCommand("winget", [
+        "install",
+        "EclipseAdoptium.Temurin.21.JDK",
+        "--accept-package-agreements",
+        "--accept-source-agreements"
+      ], dirname(this.settings.settingsPath));
+      return install.exitCode === 0
+        ? {
+            status: "success",
+            message: "Java installation finished.",
+            suggestion: "Click Re-check Java to verify Studio can find it.",
+            rawOutput: install.output,
+            installMethod: "winget",
+            platform: process.platform
+          }
+        : {
+            status: "error",
+            message: "Java installation could not be completed automatically.",
+            suggestion: "Open the official Java download page and install Eclipse Temurin JDK 21 manually.",
+            rawOutput: install.output,
+            installMethod: "winget",
+            platform: process.platform
+          };
+    }
+
+    await shell.openExternal(adoptiumJava21Url);
+    return {
+      status: "warning",
+      message: "Opening Java installer page.",
+      suggestion: "Download and install the Windows x64 MSI, then return to Studio and click Re-check Java.",
+      rawOutput: winget.error,
+      installMethod: "browser",
+      platform: process.platform,
+      details: { url: adoptiumJava21Url }
+    };
+  }
+
+  private async openMacJavaInstaller(): Promise<JavaInstallResult> {
+    await shell.openExternal(adoptiumJava21Url);
+    const architecture = process.arch === "arm64" ? "Apple Silicon" : process.arch === "x64" ? "Intel" : process.arch;
+    const pkg = process.arch === "arm64" ? "macOS aarch64 / arm64 PKG" : process.arch === "x64" ? "macOS x64 PKG" : "the macOS PKG for your chip";
+    return {
+      status: "warning",
+      message: "Opening Java installer page.",
+      suggestion: `Download and install the ${pkg}. After installation, return to Studio and click Re-check Java.`,
+      installMethod: "browser",
+      platform: process.platform,
+      details: { url: adoptiumJava21Url, architecture }
+    };
   }
 
   async selectJava(): Promise<string | null> {
@@ -220,7 +312,7 @@ export class SetupWizardService {
     }
 
     const validation = await this.validateCompilerRepo(targetPath);
-    const artifact = await this.repositoryResolver.resolveArtifact(targetPath);
+    const artifact = await this.repositoryResolver.resolveLinkedArtifact(targetPath);
     const result: SetupValidationResult = artifact.artifactPath
       ? {
           ...validation,
@@ -307,13 +399,14 @@ export class SetupWizardService {
             message: "Please select the bickspec-lang repository root.",
             suggestion: "The selected folder should contain app/pom.xml and app/src."
           };
-    const artifact = await this.repositoryResolver.resolveArtifact(normalized);
+    const artifact = await this.repositoryResolver.resolveLinkedArtifact(normalized);
     if (result.status === "success") {
       await this.settings.setLinkedCompilerPath(normalized);
     }
     await this.saveState({
       compilerRepoPath: normalized,
       compilerJarPath: artifact.artifactPath || current.setup.compilerJarPath,
+      compilerSource: artifact.artifactPath ? artifact.source : current.setup.compilerSource,
       lastValidationResults: { compilerRepo: result }
     });
     return result;
@@ -327,14 +420,16 @@ export class SetupWizardService {
 
   async validateCompilerJar(jarPath?: string): Promise<SetupValidationResult> {
     const current = await this.settings.getSettings();
-    const selectedPath = jarPath || current.setup.compilerJarPath || current.compiler.preferredArtifactPath;
+    const preferredPath = jarPath || current.compiler.preferredArtifactPath;
+    const artifact = await this.repositoryResolver.resolveArtifact(current.compiler.repositoryPath, preferredPath);
+    const selectedPath = artifact.artifactPath;
     if (!selectedPath || !(await this.fileSystem.isFile(selectedPath)) || extname(selectedPath).toLowerCase() !== ".jar") {
       const result = {
         status: "error" as const,
         message: "Compiler JAR was not found.",
-        suggestion: "Browse to bickspec-compiler-1.0.0.jar or build it from the linked repository."
+        suggestion: "Run npm run prepare:compiler before packaging, or select a custom bickspec-compiler-1.0.0.jar."
       };
-      await this.saveState({ lastValidationResults: { compilerJar: result } });
+      await this.saveState({ compilerSource: "missing", lastValidationResults: { compilerJar: result } });
       return result;
     }
     const java = await this.validateJava();
@@ -346,19 +441,22 @@ export class SetupWizardService {
         }
       : {
           status: "success",
-          message: `${basename(selectedPath)} is ready for setup compilation.`,
-          details: { compilerJarPath: selectedPath }
+          message: artifact.source === "bundled"
+            ? "Bundled BickSpec compiler JAR is ready."
+            : `${basename(selectedPath)} is ready for setup compilation.`,
+          details: { compilerJarPath: selectedPath, compilerSource: artifact.source }
         };
     const next = await this.settings.getSettings();
     await this.settings.saveSettings({
       ...next,
       compiler: {
         ...next.compiler,
-        preferredArtifactPath: selectedPath
+        preferredArtifactPath: artifact.source === "custom" ? selectedPath : next.compiler.preferredArtifactPath
       },
       setup: {
         ...next.setup,
         compilerJarPath: selectedPath,
+        compilerSource: artifact.source,
         lastValidationResults: {
           ...next.setup.lastValidationResults,
           compilerJar: result
@@ -372,7 +470,7 @@ export class SetupWizardService {
     const current = await this.settings.getSettings();
     const repoPath = current.setup.compilerRepoPath || current.compiler.repositoryPath;
     const result = await this.runCommand(current.execution.mavenCommand, ["-f", join(repoPath, "app", "pom.xml"), "package"], repoPath);
-    const artifact = await this.repositoryResolver.resolveArtifact(repoPath);
+    const artifact = await this.repositoryResolver.resolveLinkedArtifact(repoPath);
     const validation: SetupValidationResult = result.exitCode === 0 && artifact.artifactPath
       ? {
           status: "success",
@@ -388,6 +486,7 @@ export class SetupWizardService {
         };
     await this.saveState({
       compilerJarPath: artifact.artifactPath || current.setup.compilerJarPath,
+      compilerSource: artifact.artifactPath ? artifact.source : current.setup.compilerSource,
       lastValidationResults: { compilerJar: validation }
     });
     return validation;
@@ -449,7 +548,7 @@ export class SetupWizardService {
     const result: SetupCompilationResult = {
       status: passed ? "success" : "error",
       message: passed ? "Real setup compilation passed." : "Setup compilation did not produce the expected runtime output.",
-      suggestion: passed ? undefined : "Verify the linked compiler JAR and build log.",
+      suggestion: passed ? undefined : "Verify Java and the active compiler JAR, then review the build log.",
       rawOutput: `${execution.stdout}\n${execution.stderr}`.trim(),
       buildLog: session?.normalized.buildLog,
       programOutput,
@@ -621,7 +720,7 @@ export class SetupWizardService {
 
   private async useExistingRepository(path: string, message: string): Promise<SetupValidationResult> {
     const validation = await this.validateCompilerRepo(path);
-    const artifact = await this.repositoryResolver.resolveArtifact(path);
+    const artifact = await this.repositoryResolver.resolveLinkedArtifact(path);
     const result: SetupValidationResult = {
       ...validation,
       message: artifact.artifactPath ? `${message} Compiler JAR detected.` : `${message} Compiler JAR not found. Build from repository is required.`,
@@ -630,6 +729,7 @@ export class SetupWizardService {
     await this.saveState({
       compilerRepoPath: path,
       compilerJarPath: artifact.artifactPath,
+      compilerSource: artifact.artifactPath ? artifact.source : "missing",
       lastValidationResults: { compilerRepo: result }
     });
     return result;

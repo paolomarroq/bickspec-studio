@@ -2,9 +2,9 @@
 
 **Desktop IDE for the BickSpec finance and economic engineering DSL.**
 
-BickSpec Studio is the desktop product layer of the BickSpec ecosystem. It provides a professional interface for writing, compiling, running, reviewing, and exporting `.bks` financial specifications using the real BickSpec compiler from the linked `bickspec-lang` repository.
+BickSpec Studio is the desktop product layer of the BickSpec ecosystem. It provides a professional interface for writing, compiling, running, reviewing, and exporting `.bks` financial specifications using the real BickSpec compiler JAR bundled with Studio.
 
-Studio does **not** duplicate the compiler. It connects to the existing Java/ANTLR compiler and exposes it through a polished desktop IDE experience.
+Studio does **not** duplicate compiler source code. It packages the existing Java/ANTLR compiler artifact and exposes it through a polished desktop IDE experience. Normal users only need Java installed.
 
 ---
 
@@ -106,8 +106,8 @@ The VS Code extension is a lightweight companion tool for `.bks` files. It provi
 
 ### Compiler Integration
 
-- Linked `bickspec-lang` repository model.
-- Compiler repository validation.
+- Bundled compiler JAR model for normal installed-app execution.
+- Optional linked `bickspec-lang` repository model for developers.
 - Compiler JAR detection and validation.
 - Java runtime validation.
 - Real compiler execution through:
@@ -262,21 +262,19 @@ The wizard can also be reopened from Settings.
 The setup wizard validates:
 
 1. Java Runtime
-2. Linked `bickspec-lang` repository
-3. Compiler JAR
-4. Workspace folder
-5. Test compilation
-6. Interactive mode
-7. Artifacts
-8. Report export readiness
+2. Bundled compiler JAR
+3. Workspace folder
+4. Test compilation
+5. Interactive mode
+6. Artifacts
+7. Report export readiness
 
 ### Wizard Steps
 
 ```text
 Welcome
 → Java Runtime
-→ Compiler Repository
-→ Compiler JAR
+→ Compiler
 → Workspace
 → Run Test Compilation
 → Interactive Mode
@@ -294,9 +292,27 @@ java -version
 
 Java 21 is recommended. Other valid Java versions may show a warning instead of blocking setup.
 
-### Compiler Repository
+If Java is missing, the setup wizard can help install Eclipse Temurin JDK 21 or open the official Adoptium download page. Windows users may use Winget from the wizard; macOS users should install the appropriate PKG for Apple Silicon or Intel, then return to Studio and click Re-check Java.
 
-The wizard can validate an existing local `bickspec-lang` repository or clone the official repository from GitHub.
+### Compiler
+
+Studio ships with the compiler JAR and detects it automatically:
+
+```text
+resources/compiler/bickspec-compiler-1.0.0.jar
+```
+
+Packaged apps resolve the runtime JAR from app resources:
+
+```text
+process.resourcesPath/compiler/bickspec-compiler-1.0.0.jar
+```
+
+Advanced users can override the compiler JAR or link a local `bickspec-lang` repository for development.
+
+### Advanced Linked Repository
+
+Developer options can validate an existing local `bickspec-lang` repository or clone the official repository from GitHub.
 
 The repository root should contain files such as:
 
@@ -308,15 +324,7 @@ docs/BickSpec.g4
 
 The wizard rejects obvious subfolders such as `testing`, `output`, `app`, or `app/target`.
 
-### Compiler JAR
-
-The expected compiler artifact is:
-
-```text
-app/target/bickspec-compiler-1.0.0.jar
-```
-
-If the JAR is missing, Studio can build it from the linked repository using Maven.
+If the linked repository JAR is missing, developer options can build it from the linked repository using Maven. This is not required for normal Studio use.
 
 ### Setup Test
 
@@ -380,8 +388,8 @@ Code signing and notarization can be added in a future release.
 - Node.js
 - npm
 - Java JDK for compiler execution
-- Maven if building the compiler from source
-- Git if cloning the compiler repository
+- Maven only if building the compiler from source
+- Git only if cloning the optional compiler repository
 - Graphviz optional for SVG parse tree generation through compiler artifacts
 
 ### Install Dependencies
@@ -530,7 +538,7 @@ Resultado:
 
 ## Relationship to the Compiler
 
-BickSpec Studio depends on the compiler produced by `bickspec-lang`.
+BickSpec Studio depends on the compiler produced by `bickspec-lang` and ships the compiler JAR inside the app resources for normal end-user execution.
 
 The compiler performs:
 
@@ -553,7 +561,8 @@ Studio provides the desktop experience around that pipeline, but the compiler lo
 
 ## Notes and Limitations
 
-- Studio requires a valid compiler JAR or linked `bickspec-lang` repository.
+- Studio requires Java and a valid compiler JAR. The installed app uses the bundled JAR by default.
+- A linked `bickspec-lang` repository is optional for developers.
 - The setup wizard should be completed for the best experience.
 - Unsigned installers may show operating system warnings.
 - macOS builds should be generated on macOS or through GitHub Actions.

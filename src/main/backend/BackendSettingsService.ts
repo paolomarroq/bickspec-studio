@@ -42,6 +42,7 @@ export class BackendSettingsService {
         setupCompleted: false,
         setupSkipped: false,
         documentationShown: false,
+        compilerSource: "bundled",
         lastValidationResults: {}
       }
     };
